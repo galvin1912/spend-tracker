@@ -4,7 +4,7 @@ import { Skeleton } from "antd";
 import Layout from "./components/layouts/Layout";
 import AuthLayout from "./components/layouts/AuthLayout";
 
-const FinanceTracker = lazy(() => import("./pages/FinanceTracker"));
+const SpendTracker = lazy(() => import("./pages/SpendTracker"));
 const RevenueTracker = lazy(() => import("./pages/RevenueTracker"));
 const Login = lazy(() => import("./pages/Login"));
 const Page404 = lazy(() => import("./pages/404"));
@@ -15,12 +15,12 @@ const AppRoutes = () => {
     {
       element: <Layout />,
       children: [
-        { path: "/", element: <Navigate to="/finance-tracker" replace /> },
+        { path: "/", element: <Navigate to="/spend-tracker" replace /> },
         {
-          path: "/finance-tracker",
+          path: "/spend-tracker",
           element: (
             <Suspense fallback={<Skeleton active />}>
-              <FinanceTracker />
+              <SpendTracker />
             </Suspense>
           ),
         },

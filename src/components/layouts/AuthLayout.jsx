@@ -1,10 +1,22 @@
-import { Outlet } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { Outlet, Navigate } from "react-router-dom";
+import Header from "./Header";
 
 const AuthLayout = () => {
+  const isAuthenticated = useSelector((state) => state.user.isAuthenticated);
+
+  if (isAuthenticated) {
+    return <Navigate to="/" replace />;
+  }
+
   return (
-    <div>
-      <Outlet />
-    </div>
+    <>
+      <Header />
+
+      <div className="container-fluid">
+        <Outlet />
+      </div>
+    </>
   );
 };
 
