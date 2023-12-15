@@ -79,7 +79,7 @@ const Header = () => {
                     to={item.url}
                     className={({ isActive }) =>
                       `d-inline-flex align-items-center nav-link ${
-                        isActive ? "text-secondary" : "text-white"
+                        isActive ? "bg-white rounded text-dark" : "text-white"
                       }`
                     }
                   >
@@ -105,7 +105,11 @@ const Header = () => {
                 <li>
                   <NavLink
                     to="/login"
-                    className="d-inline-flex align-items-center nav-link text-white"
+                    className={({ isActive }) =>
+                      `d-inline-flex align-items-center nav-link ${
+                        isActive ? "bg-white rounded text-dark" : "text-white"
+                      }`
+                    }
                   >
                     <Login size="24" className="me-2" />
                     Đăng nhập
