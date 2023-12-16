@@ -1,14 +1,16 @@
+import { Link } from "react-router-dom";
+import { useDispatch } from "react-redux";
 import { Helmet } from "react-helmet-async";
 import { Button, Form, Input } from "antd";
+import { login } from "../features/user/userActions";
 import LoginImage from "../assets/account-login-protection-8876027-7271014.png";
 
 const Login = () => {
-  const onFinish = (values) => {
-    console.log("Success:", values);
-  };
+  const dispatch = useDispatch();
 
-  const onFinishFailed = (errorInfo) => {
-    console.log("Failed:", errorInfo);
+  const onFinish = (values) => {
+    const { email, password } = values;
+    dispatch(login(email, password));
   };
 
   return (
@@ -26,13 +28,12 @@ const Login = () => {
       <div className="row">
         <div className="col-md-6 order-md-2">
           <Form
-            name="basic"
+            name="loginForm"
             initialValues={{
               email: "",
               password: "",
             }}
             onFinish={onFinish}
-            onFinishFailed={onFinishFailed}
             layout="vertical"
             autoComplete="off"
           >
@@ -43,6 +44,10 @@ const Login = () => {
                 {
                   required: true,
                   message: "Vui lòng nhập email!",
+                },
+                {
+                  type: "email",
+                  message: "Email không hợp lệ!",
                 },
               ]}
             >
@@ -67,6 +72,10 @@ const Login = () => {
                 Đăng nhập
               </Button>
             </Form.Item>
+
+            <p>
+              Bạn chưa có tài khoản? <Link to="/register">Đăng kí</Link>
+            </p>
           </Form>
         </div>
 
@@ -74,8 +83,7 @@ const Login = () => {
           <h1 className="d-none d-md-block">Đăng nhập</h1>
           <p>
             Đăng nhập để sử dụng các tính năng của hệ thống. Nếu bạn chưa có tài
-            khoản, vui lòng liên hệ với quản trị viên để được cấp quyền truy
-            cập.
+            khoản, vui lòng đăng kí.
           </p>
           <img src={LoginImage} alt="Login" className="mw-100" />
         </div>

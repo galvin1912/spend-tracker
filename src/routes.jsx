@@ -7,6 +7,7 @@ import AuthLayout from "./components/layouts/AuthLayout";
 const SpendTracker = lazy(() => import("./pages/SpendTracker"));
 const RevenueTracker = lazy(() => import("./pages/RevenueTracker"));
 const Login = lazy(() => import("./pages/Login"));
+const Register = lazy(() => import("./pages/Register"));
 const Page404 = lazy(() => import("./pages/404"));
 
 const AppRoutes = () => {
@@ -43,6 +44,14 @@ const AppRoutes = () => {
           element: (
             <Suspense fallback={<Skeleton active />}>
               <Login />
+            </Suspense>
+          ),
+        },
+        {
+          path: "/register",
+          element: (
+            <Suspense fallback={<Skeleton active />}>
+              <Register />
             </Suspense>
           ),
         },
