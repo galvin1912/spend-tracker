@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Helmet } from "react-helmet-async";
 import { Button, Form, Input } from "antd";
 import { login } from "../features/user/userActions";
@@ -8,9 +8,10 @@ import LoginImage from "../assets/account-login-protection-8876027-7271014.png";
 const Login = () => {
   const dispatch = useDispatch();
 
+  const isLoggingIn = useSelector((state) => state.user.isLoggingIn);
+
   const onFinish = (values) => {
-    const { email, password } = values;
-    dispatch(login(email, password));
+    dispatch(login(values));
   };
 
   return (
@@ -68,7 +69,7 @@ const Login = () => {
             </Form.Item>
 
             <Form.Item>
-              <Button type="primary" htmlType="submit">
+              <Button type="primary" htmlType="submit" loading={isLoggingIn}>
                 Đăng nhập
               </Button>
             </Form.Item>

@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Helmet } from "react-helmet-async";
 import { Button, Form, Input, Select } from "antd";
 import { register } from "../features/user/userActions";
@@ -8,6 +8,10 @@ import LoginImage from "../assets/account-login-protection-8876027-7271014.png";
 const Register = () => {
   const dispatch = useDispatch();
 
+  // get state from redux store
+  const isRegistering = useSelector((state) => state.user.isRegistering);
+
+  // handle form submit
   const onFinish = (values) => {
     dispatch(register(values));
   };
@@ -132,7 +136,7 @@ const Register = () => {
             </Form.Item>
 
             <Form.Item>
-              <Button type="primary" htmlType="submit">
+              <Button type="primary" htmlType="submit" loading={isRegistering}>
                 Đăng kí
               </Button>
             </Form.Item>

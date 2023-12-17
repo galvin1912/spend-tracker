@@ -1,16 +1,23 @@
 import { useMemo } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { Link, NavLink } from "react-router-dom";
 import { Dropdown } from "antd";
 import { Gsc } from "@styled-icons/crypto";
 import { UserCircle } from "@styled-icons/boxicons-regular";
 import { PeopleMoney } from "@styled-icons/fluentui-system-filled";
 import { MoneyDollarBox } from "@styled-icons/remix-fill";
+import { UserGroup } from "@styled-icons/fa-solid";
 import { Login } from "@styled-icons/material-sharp";
+import { logout } from "../../features/user/userActions";
 
 const Header = () => {
-  const isAuthenticated = useSelector((state) => state.user.isAuthenticated);
+  const dispatch = useDispatch();
 
+  // get state from redux store
+  const isAuthenticated = useSelector((state) => state.user.isAuthenticated);
+  const user = useSelector((state) => state.user.user);
+
+  // memorize menu items
   const menu = useMemo(
     () => [
       {
@@ -25,14 +32,21 @@ const Header = () => {
         icon: <MoneyDollarBox size="24" className="me-2" />,
         url: "/revenue-tracker",
       },
+      {
+        label: "Nhóm",
+        key: "group",
+        icon: <UserGroup size="24" className="me-2" />,
+        url: "/group",
+      },
     ],
     []
   );
 
+  // memorize account menu items
   const accountMenu = useMemo(
     () => [
       {
-        label: "Xin chào, Nguyễn Văn A",
+        label: `Xin chào, ${user?.fullName}`,
         key: "account",
       },
       {
@@ -51,9 +65,10 @@ const Header = () => {
       {
         label: "Đăng xuất",
         key: "logout",
+        onClick: () => dispatch(logout()),
       },
     ],
-    []
+    [dispatch, user?.fullName]
   );
 
   return (

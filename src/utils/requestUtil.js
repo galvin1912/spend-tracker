@@ -126,3 +126,5 @@ export const deleteFile = async (url) => {
   const deleteTask = await deleteObject(storageRef);
   return deleteTask;
 };
+
+export default requestUtil;

@@ -1,6 +1,7 @@
 import {
   createUserWithEmailAndPassword,
-  // signInWithEmailAndPassword,
+  signOut,
+  signInWithEmailAndPassword,
 } from "firebase/auth";
 import { Timestamp } from "firebase/firestore";
 import { auth } from "../configs/firebase";
@@ -28,13 +29,31 @@ class UserServices {
       updatedAt: null,
     };
 
-    const response = await request("users", {
+    await request("users", {
       method: "PUT",
       uid: user.uid,
       data: newUser,
     });
 
-    return response;
+    return newUser;
+  };
+
+  static login = async (credentials) => {
+    const { email, password } = credentials;
+    await signInWithEmailAndPassword(auth, email, password);
+  };
+
+  static logout = async () => {
+    await signOut(auth);
+  };
+
+  static fetchUserInfo = async (uid) => {
+    const user = await request("users", {
+      method: "GET",
+      uid,
+    });
+
+    return user;
   };
 }
 
