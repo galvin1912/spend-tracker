@@ -20,22 +20,20 @@ class UserServices {
     const user = userCredential.user;
 
     const newUser = {
-      uid: user.uid,
       email,
       avatarUrl: "",
       fullName,
       gender,
+      groups: [],
       createdAt: Timestamp.now(),
       updatedAt: null,
     };
 
-    await request("users", {
+    await request("/users", {
       method: "PUT",
       uid: user.uid,
       data: newUser,
     });
-
-    return newUser;
   };
 
   static login = async (credentials) => {
@@ -48,12 +46,27 @@ class UserServices {
   };
 
   static fetchUserInfo = async (uid) => {
-    const user = await request("users", {
+    const user = await request("/users", {
       method: "GET",
       uid,
     });
 
-    return user;
+    return { ...user, uid };
+  };
+
+  static fetchOtherUserInfo = async (uid) => {
+    const user = await request("/users", {
+      method: "GET",
+      uid,
+    });
+
+    return {
+      uid,
+      fullName: user?.fullName,
+      avatarUrl: user?.avatarUrl,
+      email: user?.email,
+      gender: user?.gender,
+    };
   };
 }
 

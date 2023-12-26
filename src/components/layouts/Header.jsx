@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { Link, NavLink } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import { Dropdown } from "antd";
 import { Gsc } from "@styled-icons/crypto";
 import { UserCircle } from "@styled-icons/boxicons-regular";
@@ -11,6 +11,10 @@ import { Login } from "@styled-icons/material-sharp";
 import { logout } from "../../features/user/userActions";
 
 const Header = () => {
+  // create navigate function
+  const navigate = useNavigate();
+
+  // create dispatch function
   const dispatch = useDispatch();
 
   // get state from redux store
@@ -65,10 +69,10 @@ const Header = () => {
       {
         label: "Đăng xuất",
         key: "logout",
-        onClick: () => dispatch(logout()),
+        onClick: () => dispatch(logout()).then(() => navigate("/login")),
       },
     ],
-    [dispatch, user?.fullName]
+    [dispatch, navigate, user?.fullName]
   );
 
   return (

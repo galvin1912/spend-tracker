@@ -20,7 +20,7 @@ import Compressor from "compressorjs";
 
 class requestUtil {
   static get = async (url, options) => {
-    const { uid, queryConstraints } = options;
+    const { uid, queryConstraints = [] } = options;
 
     if (uid) {
       // If uid is provided, retrieve a specific document
@@ -28,8 +28,8 @@ class requestUtil {
       return docSnap.data();
     } else {
       // If uid is not provided, perform a query to retrieve multiple documents
-      const q = query(collection(db, url), ...queryConstraints);
-      const querySnapshot = await getDocs(q);
+      const queries = query(collection(db, url), ...queryConstraints);
+      const querySnapshot = await getDocs(queries);
 
       const queryResult = [];
       querySnapshot.forEach((doc) =>
@@ -60,7 +60,10 @@ class requestUtil {
 
   static delete = async (url, options) => {
     const { uid } = options;
-    const docRef = await deleteDoc(doc(db, url, uid));
+    const docRef = await deleteDoc(doc(db, url, uid), {
+      recursive: true,
+      force: true,
+    });
     return docRef;
   };
 }

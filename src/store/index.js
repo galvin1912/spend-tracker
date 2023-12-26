@@ -7,6 +7,7 @@ import {
 import { thunk } from "redux-thunk";
 import logger from "redux-logger";
 import userReducer from "../features/user/userReducer";
+import groupReducer from "../features/group/groupReducer";
 
 const middlewares = [thunk];
 
@@ -17,6 +18,7 @@ if (import.meta.env.DEV) {
 const store = createStore(
   combineReducers({
     user: userReducer,
+    group: groupReducer,
   }),
   compose(applyMiddleware(...middlewares))
 );

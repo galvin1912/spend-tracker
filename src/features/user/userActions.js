@@ -32,8 +32,8 @@ export const register = (credentials) => async (dispatch) => {
   dispatch({ type: USER_REGISTER });
 
   try {
-    const newUser = await UserServices.register(credentials);
-    dispatch({ type: USER_REGISTER_SUCCESS, payload: newUser });
+    await UserServices.register(credentials);
+    dispatch({ type: USER_REGISTER_SUCCESS });
     message.success("Đăng kí thành công!");
   } catch (error) {
     dispatch({ type: USER_REGISTER_FAILED });

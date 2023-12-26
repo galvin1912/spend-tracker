@@ -13,6 +13,11 @@ import {
   USER_FETCH_INFO_FAILED,
 } from "./userConstants";
 
+import {
+  GROUP_CREATE_SUCCESS,
+  GROUP_DELETE_OWNER_GROUP_SUCCESS,
+} from "../group/groupConstants";
+
 const initialState = {
   user: null,
   isAuthenticated: false,
@@ -32,8 +37,6 @@ const userReducer = (state = initialState, action) => {
     case USER_REGISTER_SUCCESS:
       return {
         ...state,
-        user: action.payload,
-        isAuthenticated: true,
         isRegistering: false,
       };
     case USER_REGISTER_FAILED:
@@ -89,6 +92,22 @@ const userReducer = (state = initialState, action) => {
       return {
         ...state,
         isFetching: false,
+      };
+    case GROUP_CREATE_SUCCESS:
+      return {
+        ...state,
+        user: {
+          ...state.user,
+          groups: [...(state.user.groups || []), action.payload],
+        },
+      };
+    case GROUP_DELETE_OWNER_GROUP_SUCCESS:
+      return {
+        ...state,
+        user: {
+          ...state.user,
+          groups: state.user.groups.filter((group) => group !== action.payload),
+        },
       };
     default:
       return state;

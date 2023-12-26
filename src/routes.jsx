@@ -5,8 +5,9 @@ import Layout from "./components/layouts/Layout";
 import AuthLayout from "./components/layouts/AuthLayout";
 
 const SpendTracker = lazy(() => import("./pages/SpendTracker"));
-const RevenueTracker = lazy(() => import("./pages/RevenueTracker"));
 const Group = lazy(() => import("./pages/Group"));
+const GroupCreate = lazy(() => import("./pages/GroupCreate"));
+const GroupDetail = lazy(() => import("./pages/GroupDetail"));
 const Login = lazy(() => import("./pages/Login"));
 const Register = lazy(() => import("./pages/Register"));
 const Page404 = lazy(() => import("./pages/404"));
@@ -27,18 +28,26 @@ const AppRoutes = () => {
           ),
         },
         {
-          path: "/revenue-tracker",
-          element: (
-            <Suspense fallback={<Skeleton active />}>
-              <RevenueTracker />
-            </Suspense>
-          ),
-        },
-        {
           path: "/group",
           element: (
             <Suspense fallback={<Skeleton active />}>
               <Group />
+            </Suspense>
+          ),
+        },
+        {
+          path: "/group/create",
+          element: (
+            <Suspense fallback={<Skeleton active />}>
+              <GroupCreate />
+            </Suspense>
+          ),
+        },
+        {
+          path: "/group/detail/:groupID",
+          element: (
+            <Suspense fallback={<Skeleton active />}>
+              <GroupDetail />
             </Suspense>
           ),
         },
