@@ -51,6 +51,7 @@ const Group = () => {
             <List
               itemLayout="horizontal"
               dataSource={ownerGroups}
+              locale={{ emptyText: "Bạn chưa sở hữu nhóm nào." }}
               renderItem={(item) => (
                 <List.Item
                   extra={
@@ -92,6 +93,7 @@ const Group = () => {
             <List
               itemLayout="horizontal"
               dataSource={joinedGroups}
+              locale={{ emptyText: "Bạn chưa tham gia nhóm nào." }}
               renderItem={(item) => (
                 <List.Item>
                   <Link
