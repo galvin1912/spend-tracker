@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { List, Button, Card, Popconfirm } from "antd";
 import { Groups } from "@styled-icons/material";
@@ -8,6 +8,8 @@ import { Trash } from "@styled-icons/bootstrap";
 import { deleteOwnerGroup, getJoinedGroups, getOwnerGroups } from "../features/group/groupActions";
 
 const Group = () => {
+  const navigate = useNavigate();
+
   const dispatch = useDispatch();
 
   const isOwnerGroupsLoading = useSelector((state) => state.group.isOwnerGroupsLoading);
@@ -68,16 +70,13 @@ const Group = () => {
                     </Popconfirm>
                   }
                 >
-                  <Link
-                    to={`/group/detail/${item.uid}`}
-                    className="text-decoration-none d-block w-100 text-dark"
-                  >
-                    <List.Item.Meta
-                      avatar={<Groups size={32} />}
-                      title={item.groupName}
-                      description={item.description}
-                    />
-                  </Link>
+                  <List.Item.Meta
+                    avatar={<Groups size={32} />}
+                    title={item.groupName}
+                    description={item.description}
+                    onClick={() => navigate(`/group/detail/${item.uid}`)}
+                    style={{ cursor: "pointer", paddingRight: "12px" }}
+                  />
                 </List.Item>
               )}
             />
@@ -96,16 +95,13 @@ const Group = () => {
               locale={{ emptyText: "Bạn chưa tham gia nhóm nào." }}
               renderItem={(item) => (
                 <List.Item>
-                  <Link
-                    to={`/group/detail/${item.uid}`}
-                    className="text-decoration-none d-block w-100 text-dark"
-                  >
-                    <List.Item.Meta
-                      avatar={<Groups size={32} />}
-                      title={item.groupName}
-                      description={item.description}
-                    />
-                  </Link>
+                  <List.Item.Meta
+                    avatar={<Groups size={32} />}
+                    title={item.groupName}
+                    description={item.description}
+                    onClick={() => navigate(`/group/detail/${item.uid}`)}
+                    style={{ cursor: "pointer", paddingRight: "12px" }}
+                  />
                 </List.Item>
               )}
             />
