@@ -5,7 +5,6 @@ import { Dropdown } from "antd";
 import { Gsc } from "@styled-icons/crypto";
 import { UserCircle } from "@styled-icons/boxicons-regular";
 import { PeopleMoney } from "@styled-icons/fluentui-system-filled";
-import { MoneyDollarBox } from "@styled-icons/remix-fill";
 import { UserGroup } from "@styled-icons/fa-solid";
 import { Login } from "@styled-icons/material-sharp";
 import { logout } from "../../features/user/userActions";
@@ -29,12 +28,6 @@ const Header = () => {
         key: "finance",
         icon: <PeopleMoney size="24" className="me-2" />,
         url: "/spend-tracker",
-      },
-      {
-        label: "Doanh thu",
-        key: "revenue",
-        icon: <MoneyDollarBox size="24" className="me-2" />,
-        url: "/revenue-tracker",
       },
       {
         label: "Nhóm",
