@@ -1,6 +1,6 @@
 import React from "react";
-import { Provider } from "react-redux";
 import ReactDOM from "react-dom/client";
+import { Provider } from "react-redux";
 import { BrowserRouter } from "react-router-dom";
 import ErrorBoundary from "./components/common/ErrorBoundary";
 import store from "./store";

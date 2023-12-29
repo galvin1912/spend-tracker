@@ -2,7 +2,7 @@ import { useEffect, useState, useMemo } from "react";
 import { useSelector } from "react-redux";
 import { Helmet } from "react-helmet-async";
 import { Link, useParams, useNavigate } from "react-router-dom";
-import { Form, Input, List, Button, Divider, Avatar, message } from "antd";
+import { Form, Input, ColorPicker, List, Button, Divider, Avatar, message } from "antd";
 import { PersonAdd } from "@styled-icons/evaicons-solid";
 import { PersonRemove } from "@styled-icons/material-rounded";
 import { debounce } from "lodash";
@@ -46,6 +46,7 @@ const GroupDetail = () => {
         form.setFieldsValue({
           groupName: group?.groupName || "",
           description: group?.description || "",
+          color: group?.color || "#1677FF",
           createdAt: group?.createdAt
             ? moment(group.createdAt.toDate()).format("DD/MM/YYYY HH:mm")
             : "",
@@ -97,6 +98,13 @@ const GroupDetail = () => {
 
     getMemberInfo();
   }, [groupID, members]);
+
+  // This function is used to handle change color
+  const handleChangeColor = (value) => {
+    form.setFieldsValue({
+      color: value.toHexString(),
+    });
+  };
 
   // This function is used to search member by email
   const handleSearchMember = (event) => {
@@ -177,12 +185,14 @@ const GroupDetail = () => {
 
   // This function is used to handle form submit
   const handleUpdateGroup = async (values) => {
-    const { groupName, description } = values;
+    console.log(values)
+    const { groupName, description, color } = values;
 
     try {
       await GroupServices.updateGroup(groupID, {
         groupName,
         description,
+        color,
       });
       message.success("Cập nhật nhóm thành công");
       navigate("/group");
@@ -238,6 +248,23 @@ const GroupDetail = () => {
               ]}
             >
               <Input />
+            </Form.Item>
+
+            <Form.Item
+              label="Màu sắc (hiển thị trên biểu đồ)"
+              name="color"
+              rules={[
+                {
+                  required: true,
+                  message: "Vui lòng chọn màu sắc!",
+                },
+              ]}
+            >
+              <ColorPicker
+                format="hex"
+                showText
+                onChangeComplete={handleChangeColor}
+              />
             </Form.Item>
 
             <Form.Item label="Tạo vào lúc" name="createdAt">

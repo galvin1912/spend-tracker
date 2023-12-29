@@ -27,7 +27,7 @@ const Header = () => {
         label: "Tài chính",
         key: "finance",
         icon: <PeopleMoney size="24" className="me-2" />,
-        url: "/spend-tracker",
+        url: "/tracker",
       },
       {
         label: "Nhóm",

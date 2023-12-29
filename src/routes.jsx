@@ -4,7 +4,7 @@ import { Skeleton } from "antd";
 import Layout from "./components/layouts/Layout";
 import AuthLayout from "./components/layouts/AuthLayout";
 
-const SpendTracker = lazy(() => import("./pages/SpendTracker"));
+const Tracker = lazy(() => import("./pages/Tracker"));
 const Group = lazy(() => import("./pages/Group"));
 const GroupCreate = lazy(() => import("./pages/GroupCreate"));
 const GroupDetail = lazy(() => import("./pages/GroupDetail"));
@@ -18,12 +18,12 @@ const AppRoutes = () => {
     {
       element: <Layout />,
       children: [
-        { path: "/", element: <Navigate to="/spend-tracker" replace /> },
+        { path: "/", element: <Navigate to="/tracker" replace /> },
         {
-          path: "/spend-tracker",
+          path: "/tracker",
           element: (
             <Suspense fallback={<Skeleton active />}>
-              <SpendTracker />
+              <Tracker />
             </Suspense>
           ),
         },

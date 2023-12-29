@@ -1,7 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { useDispatch, useSelector } from "react-redux";
-import { Form, Input, Button } from "antd";
+import { Form, Input, ColorPicker, Button } from "antd";
 import { createGroup } from "../features/group/groupActions";
 import GroupImage from "../assets/89z_2203_w009_n001_120b_p14_120.jpg";
 
@@ -10,7 +10,15 @@ const GroupCreate = () => {
 
   const dispatch = useDispatch();
 
+  const [form] = Form.useForm();
+
   const isCreatingGroup = useSelector((state) => state.group.isCreatingGroup);
+
+  const handleChangeColor = (value) => {
+    form.setFieldsValue({
+      color: value.toHexString(),
+    });
+  };
 
   const onFinish = (values) => {
     dispatch(createGroup(values)).then(() => navigate("/group"));
@@ -32,9 +40,11 @@ const GroupCreate = () => {
         <div className="col-md-6">
           <Form
             name="groupCreateForm"
+            form={form}
             initialValues={{
               groupName: "",
               description: "",
+              color: "#1677FF",
             }}
             layout="vertical"
             autoComplete="off"
@@ -52,6 +62,7 @@ const GroupCreate = () => {
             >
               <Input placeholder="Nhập tên nhóm" />
             </Form.Item>
+
             <Form.Item
               label="Mô tả"
               name="description"
@@ -64,6 +75,24 @@ const GroupCreate = () => {
             >
               <Input.TextArea placeholder="Nhập mô tả" />
             </Form.Item>
+
+            <Form.Item
+              label="Màu sắc (hiển thị trên biểu đồ)"
+              name="color"
+              rules={[
+                {
+                  required: true,
+                  message: "Vui lòng chọn màu sắc!",
+                },
+              ]}
+            >
+              <ColorPicker
+                format="hex"
+                showText
+                onChangeComplete={handleChangeColor}
+              />
+            </Form.Item>
+
             <Form.Item>
               <Link to="/group">
                 <Button className="me-2" type="default">

@@ -8,6 +8,8 @@ class GroupServices {
 
     const newGroup = {
       ...groupData,
+      owner: user?.uid,
+      members: [],
       createdAt: Timestamp.now(),
       updatedAt: null,
     };
