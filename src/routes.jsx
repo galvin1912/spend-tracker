@@ -5,6 +5,7 @@ import Layout from "./components/layouts/Layout";
 import AuthLayout from "./components/layouts/AuthLayout";
 
 const Tracker = lazy(() => import("./pages/Tracker"));
+const TrackerDetail = lazy(() => import("./pages/TrackerDetail"));
 const Group = lazy(() => import("./pages/Group"));
 const GroupCreate = lazy(() => import("./pages/GroupCreate"));
 const GroupDetail = lazy(() => import("./pages/GroupDetail"));
@@ -24,6 +25,14 @@ const AppRoutes = () => {
           element: (
             <Suspense fallback={<Skeleton active />}>
               <Tracker />
+            </Suspense>
+          ),
+        },
+        {
+          path: "/tracker/detail/:trackerID",
+          element: (
+            <Suspense fallback={<Skeleton active />}>
+              <TrackerDetail />
             </Suspense>
           ),
         },

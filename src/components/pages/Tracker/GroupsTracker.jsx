@@ -1,46 +1,34 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import PropTypes from "prop-types";
 import { Col, Card, List, Button, Drawer } from "antd";
 import { Analytics } from "@styled-icons/ionicons-outline";
 import useMediaQuery from "../../../hooks/useMediaQuery";
+import UserServices from "../../../services/UserServices";
 import GroupsAnalytics from "./GroupsAnalytics";
 
-const mockList = [
-  {
-    groupName: "Group 1",
-    description: "Description 1",
-  },
-  {
-    groupName: "Group 2",
-    description: "Description 2",
-  },
-  {
-    groupName: "Group 3",
-    description: "Description 3",
-  },
-  {
-    groupName: "Group 4",
-    description: "Description 4",
-  },
-  {
-    groupName: "Group 5",
-    description: "Description 5",
-  },
-  {
-    groupName: "Group 6",
-    description: "Description 6",
-  },
-];
-
-const GroupsTracker = () => {
+const GroupsTracker = ({ tracker }) => {
   const isNotMobile = useMediaQuery("(min-width: 768px)");
 
   const [isAnalyticsVisible, setIsAnalyticsVisible] = useState(false);
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const getUser = async () => {
+      const user = await UserServices.fetchOtherUserInfo(tracker?.owner);
+      setUser(user);
+    };
+
+    getUser();
+  }, [tracker?.owner]);
 
   return (
     <>
       <Col span={24} md={12}>
         <Card
-          title={`Sở hữu bởi Galvin Nguyen (haidangnguyen1912@gmail.com)`}
+          {...(user && {
+            title: `Sở hữu bởi ${user?.fullName} (${user?.email})`,
+          })}
           bordered={false}
           style={isNotMobile && { ...{ minHeight: "100%" } }}
           extra={
@@ -57,14 +45,19 @@ const GroupsTracker = () => {
         >
           <List
             itemLayout="horizontal"
-            dataSource={mockList}
+            dataSource={tracker?.groups}
             renderItem={(item) => (
-              <List.Item>
-                <List.Item.Meta
-                  title={item.groupName}
-                  description={item.description}
-                />
-              </List.Item>
+              <Link
+                to={`/tracker/detail/${item?.uid}`}
+                className="text-decoration-none"
+              >
+                <List.Item>
+                  <List.Item.Meta
+                    title={item.groupName}
+                    description={item.description}
+                  />
+                </List.Item>
+              </Link>
             )}
           />
         </Card>
@@ -73,7 +66,7 @@ const GroupsTracker = () => {
       {isNotMobile ? (
         <Col span={24} md={12}>
           <Card bordered={false} style={{ minHeight: "100%" }}>
-            <GroupsAnalytics />
+            <GroupsAnalytics tracker={tracker} />
           </Card>
         </Col>
       ) : (
@@ -85,11 +78,15 @@ const GroupsTracker = () => {
           width="100%"
           height="100%"
         >
-          <GroupsAnalytics />
+          <GroupsAnalytics tracker={tracker} />
         </Drawer>
       )}
     </>
   );
+};
+
+GroupsTracker.propTypes = {
+  tracker: PropTypes.object.isRequired,
 };
 
 export default GroupsTracker;

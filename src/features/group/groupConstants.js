@@ -1,15 +1,15 @@
-export const GROUP_CREATE = "GROUP_CREATE";
-export const GROUP_CREATE_SUCCESS = "GROUP_CREATE_SUCCESS";
-export const GROUP_CREATE_FAILED = "GROUP_CREATE_FAILED";
+export const GROUP_CREATE = "group/create";
+export const GROUP_CREATE_SUCCESS = "group/createSuccess";
+export const GROUP_CREATE_FAILED = "group/createFailed";
 
-export const GROUP_GET_OWNER_GROUPS = "GROUP_GET_OWNER_GROUPS";
-export const GROUP_GET_OWNER_GROUPS_SUCCESS = "GROUP_GET_OWNER_GROUPS_SUCCESS";
-export const GROUP_GET_OWNER_GROUPS_FAILED = "GROUP_GET_OWNER_GROUPS_FAILED";
+export const GROUP_GET_OWNER_GROUPS = "group/getOwnerGroups";
+export const GROUP_GET_OWNER_GROUPS_SUCCESS = "group/getOwnerGroupsSuccess";
+export const GROUP_GET_OWNER_GROUPS_FAILED = "group/getOwnerGroupsFailed";
 
-export const GROUP_GET_JOINED_GROUPS = "GROUP_GET_JOINED_GROUPS";
-export const GROUP_GET_JOINED_GROUPS_SUCCESS = "GROUP_GET_JOINED_GROUPS_SUCCESS";
-export const GROUP_GET_JOINED_GROUPS_FAILED = "GROUP_GET_JOINED_GROUPS_FAILED";
+export const GROUP_GET_JOINED_GROUPS = "group/getJoinedGroups";
+export const GROUP_GET_JOINED_GROUPS_SUCCESS = "group/getJoinedGroupsSuccess";
+export const GROUP_GET_JOINED_GROUPS_FAILED = "group/getJoinedGroupsFailed";
 
-export const GROUP_DELETE_OWNER_GROUP = "GROUP_DELETE_OWNER_GROUP";
-export const GROUP_DELETE_OWNER_GROUP_SUCCESS = "GROUP_DELETE_OWNER_GROUP_SUCCESS";
-export const GROUP_DELETE_OWNER_GROUP_FAILED = "GROUP_DELETE_OWNER_GROUP_FAILED";
+export const GROUP_DELETE_OWNER_GROUP = "group/deleteOwnerGroup";
+export const GROUP_DELETE_OWNER_GROUP_SUCCESS = "group/deleteOwnerGroupSuccess";
+export const GROUP_DELETE_OWNER_GROUP_FAILED = "group/deleteOwnerGroupFailed";

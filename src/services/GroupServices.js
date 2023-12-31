@@ -14,12 +14,12 @@ class GroupServices {
       updatedAt: null,
     };
 
-    const groupRef = await request("groups", {
+    const groupRef = await request("/groups", {
       method: "POST",
       data: newGroup,
     });
 
-    await request("users", {
+    await request("/users", {
       method: "PATCH",
       uid: user?.uid,
       data: {
@@ -35,10 +35,12 @@ class GroupServices {
 
     if (!user?.groups?.length) return [];
 
-    const groups = await request("groups", {
+    const groups = await request("/groups", {
       method: "GET",
       queryConstraints: [where(documentId(), "in", user.groups), limit(10)],
     });
+
+    groups.sort((a, b) => a?.groupName.localeCompare(b?.groupName));
 
     return groups;
   };
@@ -46,16 +48,18 @@ class GroupServices {
   static getJoinedGroups = async () => {
     const { user } = store.getState().user;
 
-    const groups = await request("groups", {
+    const groups = await request("/groups", {
       method: "GET",
       queryConstraints: [where("members", "array-contains", user?.uid)],
     });
+
+    groups.sort((a, b) => a?.groupName.localeCompare(b?.groupName));
 
     return groups;
   };
 
   static getDetail = async (groupID) => {
-    const group = await request(`groups`, {
+    const group = await request(`/groups`, {
       method: "GET",
       uid: groupID,
     });
@@ -64,7 +68,7 @@ class GroupServices {
   };
 
   static updateGroup = async (groupID, groupData) => {
-    await request(`groups`, {
+    await request(`/groups`, {
       method: "PATCH",
       uid: groupID,
       data: { ...groupData, updatedAt: Timestamp.now() },
@@ -86,7 +90,7 @@ class GroupServices {
     await Promise.all(removeMemberPromises);
 
     // Remove group
-    await request(`groups`, {
+    await request(`/groups`, {
       method: "DELETE",
       uid: groupID,
     });
@@ -94,7 +98,7 @@ class GroupServices {
     // Remove group from user's groups
     const { user } = store.getState().user;
 
-    await request("users", {
+    await request("/users", {
       method: "PATCH",
       uid: user?.uid,
       data: {
@@ -104,7 +108,7 @@ class GroupServices {
   };
 
   static getMembers = async (groupID) => {
-    const members = await request(`groups/${groupID}/members`, {
+    const members = await request(`/groups/${groupID}/members`, {
       method: "GET",
     });
 
@@ -112,7 +116,7 @@ class GroupServices {
   };
 
   static searchMember = async (email) => {
-    const users = await request("users", {
+    const users = await request("/users", {
       method: "GET",
       queryConstraints: [
         where("email", ">=", email),
@@ -126,10 +130,10 @@ class GroupServices {
 
   static addMember = async (groupID, memberID) => {
     const memberPermissions = {
-      spendTracker: true,
+      tracker: true,
     };
 
-    await request(`groups/${groupID}/members`, {
+    await request(`/groups/${groupID}/members`, {
       method: "PUT",
       uid: memberID,
       data: {
@@ -139,7 +143,7 @@ class GroupServices {
   };
 
   static removeMember = async (groupID, memberID) => {
-    await request(`groups/${groupID}/members`, {
+    await request(`/groups/${groupID}/members`, {
       method: "DELETE",
       uid: memberID,
     });

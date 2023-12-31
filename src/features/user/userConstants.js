@@ -1,15 +1,15 @@
-export const USER_LOGIN = "USER_LOGIN";
-export const USER_LOGIN_SUCCESS = "USER_LOGIN_SUCCESS";
-export const USER_LOGIN_FAILED = "USER_LOGIN_FAILED";
+export const USER_LOGIN = "user/login";
+export const USER_LOGIN_SUCCESS = "user/loginSuccess";
+export const USER_LOGIN_FAILED = "user/loginFailed";
 
-export const USER_REGISTER = "USER_REGISTER";
-export const USER_REGISTER_SUCCESS = "USER_REGISTER_SUCCESS";
-export const USER_REGISTER_FAILED = "USER_REGISTER_FAILED";
+export const USER_REGISTER = "user/register";
+export const USER_REGISTER_SUCCESS = "user/registerSuccess";
+export const USER_REGISTER_FAILED = "user/registerFailed";
 
-export const USER_LOGOUT = "USER_LOGOUT";
-export const USER_LOGOUT_SUCCESS = "USER_LOGOUT_SUCCESS";
-export const USER_LOGOUT_FAILED = "USER_LOGOUT_FAILED";
+export const USER_LOGOUT = "user/logout";
+export const USER_LOGOUT_SUCCESS = "user/logoutSuccess";
+export const USER_LOGOUT_FAILED = "user/logoutFailed";
 
-export const USER_FETCH_INFO = "USER_FETCH_INFO";
-export const USER_FETCH_INFO_SUCCESS = "USER_FETCH_INFO_SUCCESS";
-export const USER_FETCH_INFO_FAILED = "USER_FETCH_INFO_FAILED";
+export const USER_FETCH_INFO = "user/fetchInfo";
+export const USER_FETCH_INFO_SUCCESS = "user/fetchInfoSuccess";
+export const USER_FETCH_INFO_FAILED = "user/fetchInfoFailed";

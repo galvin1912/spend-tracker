@@ -6,7 +6,7 @@ import { Form, Input, ColorPicker, List, Button, Divider, Avatar, message } from
 import { PersonAdd } from "@styled-icons/evaicons-solid";
 import { PersonRemove } from "@styled-icons/material-rounded";
 import { debounce } from "lodash";
-import moment from "moment";
+import dayjs from "dayjs";
 import GroupServices from "../services/GroupServices";
 import GroupDetailImage from "../assets/4380.jpg";
 import UserServices from "../services/UserServices";
@@ -48,10 +48,10 @@ const GroupDetail = () => {
           description: group?.description || "",
           color: group?.color || "#1677FF",
           createdAt: group?.createdAt
-            ? moment(group.createdAt.toDate()).format("DD/MM/YYYY HH:mm")
+            ? dayjs(group.createdAt.toDate()).format("DD/MM/YYYY HH:mm")
             : "",
           updatedAt: group?.updatedAt
-            ? moment(group.updatedAt.toDate()).format("DD/MM/YYYY HH:mm")
+            ? dayjs(group.updatedAt.toDate()).format("DD/MM/YYYY HH:mm")
             : "",
         });
       } catch (error) {
@@ -292,7 +292,7 @@ const GroupDetail = () => {
           <h3 className="mb-3">Thành viên</h3>
           {isOwnerGroup && (
             <Input
-              placeholder="Nhập email thành viên"
+              placeholder="Nhập email thành viên (tối thiểu 3 ký tự)"
               allowClear
               value={searchText}
               onChange={handleSearchMember}
