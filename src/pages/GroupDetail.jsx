@@ -2,7 +2,18 @@ import { useEffect, useState, useMemo } from "react";
 import { useSelector } from "react-redux";
 import { Helmet } from "react-helmet-async";
 import { Link, useParams, useNavigate } from "react-router-dom";
-import { Form, Input, ColorPicker, List, Button, Divider, Avatar, message } from "antd";
+import {
+  Row,
+  Col,
+  Form,
+  Input,
+  ColorPicker,
+  List,
+  Button,
+  Avatar,
+  Card,
+  message,
+} from "antd";
 import { PersonAdd } from "@styled-icons/evaicons-solid";
 import { PersonRemove } from "@styled-icons/material-rounded";
 import { debounce } from "lodash";
@@ -185,7 +196,7 @@ const GroupDetail = () => {
 
   // This function is used to handle form submit
   const handleUpdateGroup = async (values) => {
-    console.log(values)
+    console.log(values);
     const { groupName, description, color } = values;
 
     try {
@@ -213,147 +224,154 @@ const GroupDetail = () => {
         ]}
       />
 
-      <div className="row">
-        <div className="col-md-6">
-          <h3 className="mb-3">Chi tiết nhóm</h3>
-          <Form
-            form={form}
-            name="groupDetailForm"
-            layout="vertical"
-            autoComplete="off"
-            onFinish={handleUpdateGroup}
-            disabled={!isOwnerGroup}
-          >
-            <Form.Item
-              label="Tên nhóm"
-              name="groupName"
-              rules={[
-                {
-                  required: true,
-                  message: "Vui lòng nhập tên nhóm",
-                },
-              ]}
-            >
-              <Input />
-            </Form.Item>
-
-            <Form.Item
-              label="Mô tả"
-              name="description"
-              rules={[
-                {
-                  required: true,
-                  message: "Vui lòng nhập mô tả nhóm",
-                },
-              ]}
-            >
-              <Input />
-            </Form.Item>
-
-            <Form.Item
-              label="Màu sắc (hiển thị trên biểu đồ)"
-              name="color"
-              rules={[
-                {
-                  required: true,
-                  message: "Vui lòng chọn màu sắc!",
-                },
-              ]}
-            >
-              <ColorPicker
-                format="hex"
-                showText
-                onChangeComplete={handleChangeColor}
-              />
-            </Form.Item>
-
-            <Form.Item label="Tạo vào lúc" name="createdAt">
-              <Input disabled />
-            </Form.Item>
-
-            <Form.Item label="Cập nhật vào lúc" name="updatedAt">
-              <Input disabled />
-            </Form.Item>
-
-            <Form.Item>
+      <Row gutter={[24, 12]}>
+        <Col span={24} md={12}>
+          <Card
+            title="Chi tiết nhóm"
+            extra={
               <Link to="/group">
-                <Button className="me-2" type="default" disabled={false} danger>
-                  Quay lại
-                </Button>
+                <Button danger>Quay lại</Button>
               </Link>
-              <Button type="primary" htmlType="submit">
-                Cập nhật
-              </Button>
-            </Form.Item>
-          </Form>
+            }
+          >
+            <Form
+              form={form}
+              name="groupDetailForm"
+              layout="vertical"
+              autoComplete="off"
+              onFinish={handleUpdateGroup}
+              disabled={!isOwnerGroup}
+            >
+              <Form.Item
+                label="Tên nhóm"
+                name="groupName"
+                rules={[
+                  {
+                    required: true,
+                    message: "Vui lòng nhập tên nhóm",
+                  },
+                ]}
+              >
+                <Input />
+              </Form.Item>
 
-          <Divider />
+              <Form.Item
+                label="Mô tả"
+                name="description"
+                rules={[
+                  {
+                    required: true,
+                    message: "Vui lòng nhập mô tả nhóm",
+                  },
+                ]}
+              >
+                <Input />
+              </Form.Item>
 
-          <h3 className="mb-3">Thành viên</h3>
-          {isOwnerGroup && (
-            <Input
-              placeholder="Nhập email thành viên (tối thiểu 3 ký tự)"
-              allowClear
-              value={searchText}
-              onChange={handleSearchMember}
-            />
-          )}
-          {searchText.length >= 3 && (
-            <List
-              bordered
-              className="mt-1"
-              dataSource={memberOptions}
-              loading={memberOptionsLoading}
-              locale={{ emptyText: <i>Không có kết quả phù hợp</i> }}
-              renderItem={(memeberOption) => (
-                <List.Item
-                  style={{ cursor: "pointer" }}
-                  extra={<PersonAdd size={20} />}
-                  onClick={() => handleAddMember(memeberOption.uid)}
-                >
-                  <span>{memeberOption.label}</span>
-                </List.Item>
-              )}
-            />
-          )}
-          {members.length > 0 && (
-            <List
-              dataSource={memberInfos}
-              renderItem={(memberInfo) => (
-                <List.Item
-                  extra={
-                    isOwnerGroup && (
-                      <Button
-                        type="text"
-                        onClick={() => handleRemoveMember(memberInfo?.uid)}
-                      >
-                        <PersonRemove size={20} />
-                      </Button>
-                    )
-                  }
-                >
-                  <List.Item.Meta
-                    avatar={
-                      <Avatar>
-                        {memberInfo?.fullName?.charAt(0).toUpperCase()}
-                      </Avatar>
+              <Form.Item
+                label="Màu sắc (hiển thị trên biểu đồ)"
+                name="color"
+                rules={[
+                  {
+                    required: true,
+                    message: "Vui lòng chọn màu sắc!",
+                  },
+                ]}
+              >
+                <ColorPicker
+                  format="hex"
+                  showText
+                  onChangeComplete={handleChangeColor}
+                />
+              </Form.Item>
+
+              <Form.Item label="Tạo vào lúc" name="createdAt">
+                <Input disabled />
+              </Form.Item>
+
+              <Form.Item label="Cập nhật vào lúc" name="updatedAt">
+                <Input disabled />
+              </Form.Item>
+
+              <Form.Item>
+                <Link to="/group">
+                  <Button className="me-2" type="default">
+                    Hủy
+                  </Button>
+                </Link>
+                <Button type="primary" htmlType="submit">
+                  Cập nhật
+                </Button>
+              </Form.Item>
+            </Form>
+          </Card>
+
+          <Card title="Thành viên" className="mt-3">
+            {isOwnerGroup && (
+              <Input
+                placeholder="Nhập email thành viên (tối thiểu 3 ký tự)"
+                allowClear
+                value={searchText}
+                onChange={handleSearchMember}
+              />
+            )}
+            {searchText.length >= 3 && (
+              <List
+                bordered
+                className="mt-1"
+                dataSource={memberOptions}
+                loading={memberOptionsLoading}
+                locale={{ emptyText: <i>Không có kết quả phù hợp</i> }}
+                renderItem={(memeberOption) => (
+                  <List.Item
+                    style={{ cursor: "pointer" }}
+                    extra={<PersonAdd size={20} />}
+                    onClick={() => handleAddMember(memeberOption.uid)}
+                  >
+                    <span>{memeberOption.label}</span>
+                  </List.Item>
+                )}
+              />
+            )}
+            {members.length > 0 && (
+              <List
+                dataSource={memberInfos}
+                renderItem={(memberInfo) => (
+                  <List.Item
+                    extra={
+                      isOwnerGroup && (
+                        <Button
+                          type="text"
+                          onClick={() => handleRemoveMember(memberInfo?.uid)}
+                        >
+                          <PersonRemove size={20} />
+                        </Button>
+                      )
                     }
-                    title={memberInfo?.fullName}
-                    description={memberInfo?.email}
-                  />
-                </List.Item>
-              )}
-            />
-          )}
-        </div>
-        <div className="col-md-6">
+                  >
+                    <List.Item.Meta
+                      avatar={
+                        <Avatar>
+                          {memberInfo?.fullName?.charAt(0).toUpperCase()}
+                        </Avatar>
+                      }
+                      title={memberInfo?.fullName}
+                      description={memberInfo?.email}
+                    />
+                  </List.Item>
+                )}
+              />
+            )}
+          </Card>
+        </Col>
+        <Col span={24} md={12}>
           <img
             src={GroupDetailImage}
             alt="Group Detail"
             className="img-fluid"
           />
-        </div>
-      </div>
+        </Col>
+      </Row>
     </>
   );
 };

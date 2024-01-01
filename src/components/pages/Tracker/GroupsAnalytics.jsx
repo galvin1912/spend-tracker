@@ -3,8 +3,8 @@ import { Col, Row, Statistic, DatePicker } from "antd";
 import PropTypes from "prop-types";
 import { Bar } from "react-chartjs-2";
 import { convertCurrency, convertShorterCurrency } from "../../../utils/numberUtils";
-import vi_VN from "antd/locale/vi_VN";
 import dayjs from "dayjs";
+import vi_VN from "../../../locale/vi_VN";
 
 const chartOptions = {
   responsive: true,
@@ -60,27 +60,7 @@ const GroupsAnalytics = ({ tracker }) => {
         value={selectedMonth}
         onChange={(value) => setSelectedMonth(value)}
         disabledDate={(current) => current && current > dayjs()}
-        locale={{
-          ...vi_VN.DatePicker,
-          lang: {
-            ...vi_VN.DatePicker.lang,
-            monthPlaceholder: "Chọn tháng để xem thống kê",
-            shortMonths: [
-              "Th.1",
-              "Th.2",
-              "Th.3",
-              "Th.4",
-              "Th.5",
-              "Th.6",
-              "Th.7",
-              "Th.8",
-              "Th.9",
-              "Th.10",
-              "Th.11",
-              "Th.12",
-            ],
-          },
-        }}
+        locale={vi_VN.DataPicker}
       />
       <Bar data={chartData} options={chartOptions} />
       <Row gutter={[24, 24]} className="mt-4">

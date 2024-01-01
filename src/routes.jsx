@@ -6,6 +6,10 @@ import AuthLayout from "./components/layouts/AuthLayout";
 
 const Tracker = lazy(() => import("./pages/Tracker"));
 const TrackerDetail = lazy(() => import("./pages/TrackerDetail"));
+const TrackerCategoryCreate = lazy(() =>import("./pages/TrackerCategoryCreate"));
+const TrackerCategoryList = lazy(() => import("./pages/TrackerCategoryList"));
+const TrackerCategoryDetail = lazy(() => import("./pages/TrackerCategoryDetail"));
+const TrackerTransactionCreate = lazy(() => import("./pages/TrackerTransactionCreate"));
 const Group = lazy(() => import("./pages/Group"));
 const GroupCreate = lazy(() => import("./pages/GroupCreate"));
 const GroupDetail = lazy(() => import("./pages/GroupDetail"));
@@ -33,6 +37,38 @@ const AppRoutes = () => {
           element: (
             <Suspense fallback={<Skeleton active />}>
               <TrackerDetail />
+            </Suspense>
+          ),
+        },
+        {
+          path: "/tracker/detail/:trackerID/category/create",
+          element: (
+            <Suspense fallback={<Skeleton active />}>
+              <TrackerCategoryCreate />
+            </Suspense>
+          ),
+        },
+        {
+          path: "/tracker/detail/:trackerID/category/list",
+          element: (
+            <Suspense fallback={<Skeleton active />}>
+              <TrackerCategoryList />
+            </Suspense>
+          ),
+        },
+        {
+          path: "/tracker/detail/:trackerID/category/detail/:categoryID",
+          element: (
+            <Suspense fallback={<Skeleton active />}>
+              <TrackerCategoryDetail />
+            </Suspense>
+          ),
+        },
+        {
+          path: "/tracker/detail/:trackerID/transaction/create",
+          element: (
+            <Suspense fallback={<Skeleton active />}>
+              <TrackerTransactionCreate />
             </Suspense>
           ),
         },

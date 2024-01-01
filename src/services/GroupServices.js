@@ -1,6 +1,7 @@
 import { Timestamp, where, documentId, limit } from "firebase/firestore";
 import { request } from "../utils/requestUtil";
 import store from "../store";
+import TrackerServices from "./TrackerServices";
 
 class GroupServices {
   static createGroup = async (groupData) => {
@@ -14,16 +15,30 @@ class GroupServices {
       updatedAt: null,
     };
 
+    // Create group
     const groupRef = await request("/groups", {
       method: "POST",
       data: newGroup,
     });
 
+    // Add group to user's groups
     await request("/users", {
       method: "PATCH",
       uid: user?.uid,
       data: {
         groups: [...(user?.groups || []), groupRef.id],
+      },
+    });
+
+    // Create tracker for group
+    await request("/trackers", {
+      method: "PUT",
+      uid: groupRef.id,
+      data: {
+        categories: [],
+        transactions: [],
+        createdAt: Timestamp.now(),
+        updatedAt: null,
       },
     });
 
@@ -76,18 +91,21 @@ class GroupServices {
   };
 
   static deleteGroup = async (groupID) => {
+    // Remove tracker
+    await TrackerServices.deleteTracker(groupID);
+
     // Remove all members
     const groupDetail = await GroupServices.getDetail(groupID);
 
-    let removeMemberPromises = [];
-
     if (groupDetail?.members && groupDetail?.members.length) {
+      let removeMemberPromises = [];
+
       groupDetail.members.forEach((uid) => {
         removeMemberPromises.push(GroupServices.removeMember(groupID, uid));
       });
-    }
 
-    await Promise.all(removeMemberPromises);
+      await Promise.all(removeMemberPromises);
+    }
 
     // Remove group
     await request(`/groups`, {

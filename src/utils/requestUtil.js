@@ -60,10 +60,7 @@ class requestUtil {
 
   static delete = async (url, options) => {
     const { uid } = options;
-    const docRef = await deleteDoc(doc(db, url, uid), {
-      recursive: true,
-      force: true,
-    });
+    const docRef = await deleteDoc(doc(db, url, uid));
     return docRef;
   };
 }

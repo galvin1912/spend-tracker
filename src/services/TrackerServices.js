@@ -62,6 +62,101 @@ class TrackerServices {
 
     return groups;
   };
+
+  static getDetail = async (trackerID) => {
+    const trackerDetail = await request(`/trackers`, {
+      method: "GET",
+      uid: trackerID,
+    });
+
+    return trackerDetail;
+  };
+
+  static deleteTracker = async (trackerID) => {
+    const trackerDetail = await TrackerServices.getDetail(trackerID);
+
+    // remove categories
+    if (trackerDetail?.categories && trackerDetail?.categories.length) {
+      let removeCategoryPromises = [];
+
+      trackerDetail.categories.forEach((categoryID) => {
+        removeCategoryPromises.push(
+          request(`/trackers/${trackerID}/categories`, {
+            method: "DELETE",
+            uid: categoryID,
+          })
+        );
+      });
+
+      await Promise.all(removeCategoryPromises);
+    }
+
+    // remove transactions
+    if (trackerDetail?.transactions && trackerDetail?.transactions.length) {
+      let removeTransactionPromises = [];
+
+      trackerDetail.transactions.forEach((transactionID) => {
+        removeTransactionPromises.push(
+          request(`/trackers/${trackerID}/transactions`, {
+            method: "DELETE",
+            uid: transactionID,
+          })
+        );
+      });
+
+      await Promise.all(removeTransactionPromises);
+    }
+
+    // remove tracker
+    await request(`/trackers`, {
+      method: "DELETE",
+      uid: trackerID,
+    });
+  };
+
+  static createCategory = async (trackerID, categoryData) => {
+    const categoryRef = await request(`/trackers/${trackerID}/categories`, {
+      method: "POST",
+      data: categoryData,
+    });
+
+    const trackerDetail = await TrackerServices.getDetail(trackerID);
+
+    await request(`/trackers`, {
+      method: "PATCH",
+      uid: trackerID,
+      data: {
+        categories: [...(trackerDetail.categories || []), categoryRef.id],
+      },
+    });
+  };
+
+  static getCategories = async (trackerID) => {
+    const categories = await request(`/trackers/${trackerID}/categories`, {
+      method: "GET",
+    });
+
+    categories.sort((a, b) => a.name.localeCompare(b.name));
+
+    return categories;
+  };
+
+  static getCategoryDetail = async (trackerID, categoryID) => {
+    const categoryDetail = await request(`/trackers/${trackerID}/categories`, {
+      method: "GET",
+      uid: categoryID,
+    });
+
+    return categoryDetail;
+  };
+
+  static updateCategory = async (trackerID, categoryID, categoryData) => {
+    await request(`/trackers/${trackerID}/categories`, {
+      method: "PATCH",
+      uid: categoryID,
+      data: categoryData,
+    });
+  };
 }
 
 export default TrackerServices;
