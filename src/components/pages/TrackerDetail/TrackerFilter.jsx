@@ -1,10 +1,5 @@
 import PropTypes from "prop-types";
-import {
-  useNavigate,
-  useParams,
-  createSearchParams,
-  Link,
-} from "react-router-dom";
+import { useNavigate, useParams, createSearchParams, Link } from "react-router-dom";
 import { Select, Space, Checkbox, DatePicker, Card, Button } from "antd";
 import vi_VN from "../../../locale/vi_VN";
 import dayjs from "dayjs";
@@ -56,11 +51,7 @@ const TrackerFilter = ({ filter, categories, isCategoriesLoading }) => {
             locale={vi_VN.DataPicker}
           />
 
-          <Checkbox
-            checked={filter.showChart}
-            onChange={(e) => handleFilterChange(e.target.checked, "showChart")}
-            disabled
-          >
+          <Checkbox checked={filter.showChart} onChange={(e) => handleFilterChange(e.target.checked, "showChart")} disabled>
             Hiển thị biểu đồ
           </Checkbox>
         </Space>
@@ -69,10 +60,7 @@ const TrackerFilter = ({ filter, categories, isCategoriesLoading }) => {
       <Card
         style={{ marginTop: 12 }}
         title={
-          <Link
-            to={`/tracker/detail/${trackerID}/category/list`}
-            className="text-dark text-decoration-none"
-          >
+          <Link to={`/tracker/detail/${trackerID}/category/list`} className="text-dark text-decoration-none">
             Danh mục (nhấn để xem danh sách)
           </Link>
         }
@@ -92,9 +80,7 @@ const TrackerFilter = ({ filter, categories, isCategoriesLoading }) => {
             })),
           ]}
           value={filter.categories.split(",")}
-          onChange={(value) =>
-            handleFilterChange(value.toString(), "categories")
-          }
+          onChange={(value) => handleFilterChange(value.toString(), "categories")}
         />
       </Card>
     </>

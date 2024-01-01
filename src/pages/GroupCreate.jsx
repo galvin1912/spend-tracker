@@ -66,6 +66,14 @@ const GroupCreate = () => {
                     required: true,
                     message: "Vui lòng nhập tên nhóm!",
                   },
+                  {
+                    max: 50,
+                    message: "Tên nhóm không được dài quá 50 ký tự!",
+                  },
+                  {
+                    whitespace: true,
+                    message: "Tên nhóm không được để trống!",
+                  },
                 ]}
               >
                 <Input placeholder="Nhập tên nhóm" />
@@ -78,6 +86,14 @@ const GroupCreate = () => {
                   {
                     required: true,
                     message: "Vui lòng nhập mô tả!",
+                  },
+                  {
+                    max: 200,
+                    message: "Mô tả không được dài quá 200 ký tự!",
+                  },
+                  {
+                    whitespace: true,
+                    message: "Mô tả không được để trống!",
                   },
                 ]}
               >
@@ -94,28 +110,16 @@ const GroupCreate = () => {
                   },
                 ]}
               >
-                <ColorPicker
-                  format="hex"
-                  showText
-                  onChangeComplete={handleChangeColor}
-                />
+                <ColorPicker format="hex" showText onChangeComplete={handleChangeColor} />
               </Form.Item>
 
               <Form.Item>
                 <Link to="/group">
-                  <Button
-                    className="me-2"
-                    type="default"
-                    disabled={isCreatingGroup}
-                  >
+                  <Button className="me-2" type="default" disabled={isCreatingGroup}>
                     Hủy
                   </Button>
                 </Link>
-                <Button
-                  type="primary"
-                  htmlType="submit"
-                  loading={isCreatingGroup}
-                >
+                <Button type="primary" htmlType="submit" loading={isCreatingGroup}>
                   Tạo nhóm
                 </Button>
               </Form.Item>

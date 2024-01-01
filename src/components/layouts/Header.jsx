@@ -70,16 +70,10 @@ const Header = () => {
 
   return (
     <header>
-      <div
-        className="py-3 mb-3 border-bottom"
-        style={{ background: "linear-gradient(to right, #f64c32, #5c0a98)" }}
-      >
+      <div className="py-3 mb-3 border-bottom" style={{ background: "linear-gradient(to right, #f64c32, #5c0a98)" }}>
         <div className="container-fluid">
           <div className="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
-            <Link
-              to="/"
-              className="d-flex align-items-center my-2 my-lg-0 me-lg-auto text-white text-decoration-none"
-            >
+            <Link to="/" className="d-flex align-items-center my-2 my-lg-0 me-lg-auto text-white text-decoration-none">
               <Gsc size="32" />
               <span className="fs-4 fw-bold ms-2">GST</span>
             </Link>
@@ -90,9 +84,7 @@ const Header = () => {
                   <NavLink
                     to={item.url}
                     className={({ isActive }) =>
-                      `d-inline-flex align-items-center nav-link ${
-                        isActive ? "bg-white rounded text-dark" : "text-white"
-                      }`
+                      `d-inline-flex align-items-center nav-link ${isActive ? "bg-white rounded text-dark" : "text-white"}`
                     }
                   >
                     {item.icon}
@@ -104,10 +96,7 @@ const Header = () => {
               {isAuthenticated ? (
                 <li>
                   <Dropdown menu={{ items: accountMenu }} trigger={["click"]}>
-                    <span
-                      style={{ cursor: "pointer" }}
-                      className="d-inline-flex align-items-center nav-link text-white"
-                    >
+                    <span style={{ cursor: "pointer" }} className="d-inline-flex align-items-center nav-link text-white">
                       <UserCircle size="24" className="me-2" />
                       Tài khoản
                     </span>
@@ -118,9 +107,7 @@ const Header = () => {
                   <NavLink
                     to="/login"
                     className={({ isActive }) =>
-                      `d-inline-flex align-items-center nav-link ${
-                        isActive ? "bg-white rounded text-dark" : "text-white"
-                      }`
+                      `d-inline-flex align-items-center nav-link ${isActive ? "bg-white rounded text-dark" : "text-white"}`
                     }
                   >
                     <Login size="24" className="me-2" />

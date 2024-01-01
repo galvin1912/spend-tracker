@@ -48,10 +48,7 @@ const TrackerCategoryList = () => {
               <List.Item
                 extra={
                   <Space>
-                    <Link
-                      to={`/tracker/detail/${trackerID}/category/detail/${category?.uid}`}
-                      className="text-dark"
-                    >
+                    <Link to={`/tracker/detail/${trackerID}/category/detail/${category?.uid}`} className="text-dark">
                       <Edit size={20} />
                     </Link>
                     <Popconfirm
@@ -61,11 +58,7 @@ const TrackerCategoryList = () => {
                       okText="Xóa"
                       cancelText="Hủy"
                     >
-                      <Trash
-                        size={20}
-                        className="text-danger"
-                        style={{ cursor: "pointer" }}
-                      />
+                      <Trash size={20} className="text-danger" style={{ cursor: "pointer" }} />
                     </Popconfirm>
                   </Space>
                 }

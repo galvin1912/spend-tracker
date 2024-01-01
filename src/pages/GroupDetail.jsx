@@ -2,18 +2,7 @@ import { useEffect, useState, useMemo } from "react";
 import { useSelector } from "react-redux";
 import { Helmet } from "react-helmet-async";
 import { Link, useParams, useNavigate } from "react-router-dom";
-import {
-  Row,
-  Col,
-  Form,
-  Input,
-  ColorPicker,
-  List,
-  Button,
-  Avatar,
-  Card,
-  message,
-} from "antd";
+import { Row, Col, Form, Input, ColorPicker, List, Button, Avatar, Card, message } from "antd";
 import { PersonAdd } from "@styled-icons/evaicons-solid";
 import { PersonRemove } from "@styled-icons/material-rounded";
 import { debounce } from "lodash";
@@ -58,12 +47,8 @@ const GroupDetail = () => {
           groupName: group?.groupName || "",
           description: group?.description || "",
           color: group?.color || "#1677FF",
-          createdAt: group?.createdAt
-            ? dayjs(group.createdAt.toDate()).format("DD/MM/YYYY HH:mm")
-            : "",
-          updatedAt: group?.updatedAt
-            ? dayjs(group.updatedAt.toDate()).format("DD/MM/YYYY HH:mm")
-            : "",
+          createdAt: group?.createdAt ? dayjs(group.createdAt.toDate()).format("DD/MM/YYYY HH:mm") : "",
+          updatedAt: group?.updatedAt ? dayjs(group.updatedAt.toDate()).format("DD/MM/YYYY HH:mm") : "",
         });
       } catch (error) {
         message.error(error.message);
@@ -138,10 +123,7 @@ const GroupDetail = () => {
 
         // Filter options that already in members or current user
         const filterOptions = options.filter((option) => {
-          return (
-            option.uid !== user.uid &&
-            !members.find((memberUid) => memberUid === option.uid)
-          );
+          return option.uid !== user.uid && !members.find((memberUid) => memberUid === option.uid);
         });
 
         setMemberOptions(filterOptions);
@@ -234,14 +216,7 @@ const GroupDetail = () => {
               </Link>
             }
           >
-            <Form
-              form={form}
-              name="groupDetailForm"
-              layout="vertical"
-              autoComplete="off"
-              onFinish={handleUpdateGroup}
-              disabled={!isOwnerGroup}
-            >
+            <Form form={form} name="groupDetailForm" layout="vertical" autoComplete="off" onFinish={handleUpdateGroup} disabled={!isOwnerGroup}>
               <Form.Item
                 label="Tên nhóm"
                 name="groupName"
@@ -249,6 +224,14 @@ const GroupDetail = () => {
                   {
                     required: true,
                     message: "Vui lòng nhập tên nhóm",
+                  },
+                  {
+                    max: 50,
+                    message: "Tên nhóm không được dài quá 50 ký tự",
+                  },
+                  {
+                    whitespace: true,
+                    message: "Tên nhóm không được để trống",
                   },
                 ]}
               >
@@ -262,6 +245,14 @@ const GroupDetail = () => {
                   {
                     required: true,
                     message: "Vui lòng nhập mô tả nhóm",
+                  },
+                  {
+                    max: 200,
+                    message: "Mô tả nhóm không được dài quá 200 ký tự",
+                  },
+                  {
+                    whitespace: true,
+                    message: "Mô tả nhóm không được để trống",
                   },
                 ]}
               >
@@ -278,11 +269,7 @@ const GroupDetail = () => {
                   },
                 ]}
               >
-                <ColorPicker
-                  format="hex"
-                  showText
-                  onChangeComplete={handleChangeColor}
-                />
+                <ColorPicker format="hex" showText onChangeComplete={handleChangeColor} />
               </Form.Item>
 
               <Form.Item label="Tạo vào lúc" name="createdAt">
@@ -308,12 +295,7 @@ const GroupDetail = () => {
 
           <Card title="Thành viên" className="mt-3">
             {isOwnerGroup && (
-              <Input
-                placeholder="Nhập email thành viên (tối thiểu 3 ký tự)"
-                allowClear
-                value={searchText}
-                onChange={handleSearchMember}
-              />
+              <Input placeholder="Nhập email thành viên (tối thiểu 3 ký tự)" allowClear value={searchText} onChange={handleSearchMember} />
             )}
             {searchText.length >= 3 && (
               <List
@@ -323,11 +305,7 @@ const GroupDetail = () => {
                 loading={memberOptionsLoading}
                 locale={{ emptyText: <i>Không có kết quả phù hợp</i> }}
                 renderItem={(memeberOption) => (
-                  <List.Item
-                    style={{ cursor: "pointer" }}
-                    extra={<PersonAdd size={20} />}
-                    onClick={() => handleAddMember(memeberOption.uid)}
-                  >
+                  <List.Item style={{ cursor: "pointer" }} extra={<PersonAdd size={20} />} onClick={() => handleAddMember(memeberOption.uid)}>
                     <span>{memeberOption.label}</span>
                   </List.Item>
                 )}
@@ -340,21 +318,14 @@ const GroupDetail = () => {
                   <List.Item
                     extra={
                       isOwnerGroup && (
-                        <Button
-                          type="text"
-                          onClick={() => handleRemoveMember(memberInfo?.uid)}
-                        >
+                        <Button type="text" onClick={() => handleRemoveMember(memberInfo?.uid)}>
                           <PersonRemove size={20} />
                         </Button>
                       )
                     }
                   >
                     <List.Item.Meta
-                      avatar={
-                        <Avatar>
-                          {memberInfo?.fullName?.charAt(0).toUpperCase()}
-                        </Avatar>
-                      }
+                      avatar={<Avatar>{memberInfo?.fullName?.charAt(0).toUpperCase()}</Avatar>}
                       title={memberInfo?.fullName}
                       description={memberInfo?.email}
                     />
@@ -365,11 +336,7 @@ const GroupDetail = () => {
           </Card>
         </Col>
         <Col span={24} md={12}>
-          <img
-            src={GroupDetailImage}
-            alt="Group Detail"
-            className="img-fluid"
-          />
+          <img src={GroupDetailImage} alt="Group Detail" className="img-fluid" />
         </Col>
       </Row>
     </>

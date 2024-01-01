@@ -68,15 +68,8 @@ const Group = () => {
                     </Popconfirm>
                   }
                 >
-                  <Link
-                    to={`/group/detail/${item.uid}`}
-                    className="text-decoration-none text-dark d-flex flex-fill pe-3"
-                  >
-                    <List.Item.Meta
-                      avatar={<Groups size={32} />}
-                      title={item.groupName}
-                      description={item.description}
-                    />
+                  <Link to={`/group/detail/${item.uid}`} className="text-decoration-none text-dark d-flex flex-fill pe-3">
+                    <List.Item.Meta avatar={<Groups size={32} />} title={item.groupName} description={item.description} />
                   </Link>
                 </List.Item>
               )}
@@ -85,26 +78,15 @@ const Group = () => {
         </div>
 
         <div className="col-md-6">
-          <Card
-            title="Nhóm tôi tham gia"
-            bordered={false}
-            loading={isJoinedGroupsLoading}
-          >
+          <Card title="Nhóm tôi tham gia" bordered={false} loading={isJoinedGroupsLoading}>
             <List
               itemLayout="horizontal"
               dataSource={joinedGroups}
               locale={{ emptyText: "Bạn chưa tham gia nhóm nào." }}
               renderItem={(item) => (
                 <List.Item>
-                  <Link
-                    to={`/group/detail/${item.uid}`}
-                    className="text-decoration-none text-dark d-flex flex-fill pe-3"
-                  >
-                    <List.Item.Meta
-                      avatar={<Groups size={32} />}
-                      title={item.groupName}
-                      description={item.description}
-                    />
+                  <Link to={`/group/detail/${item.uid}`} className="text-decoration-none text-dark d-flex flex-fill pe-3">
+                    <List.Item.Meta avatar={<Groups size={32} />} title={item.groupName} description={item.description} />
                   </Link>
                 </List.Item>
               )}

@@ -6,7 +6,7 @@ import AuthLayout from "./components/layouts/AuthLayout";
 
 const Tracker = lazy(() => import("./pages/Tracker"));
 const TrackerDetail = lazy(() => import("./pages/TrackerDetail"));
-const TrackerCategoryCreate = lazy(() =>import("./pages/TrackerCategoryCreate"));
+const TrackerCategoryCreate = lazy(() => import("./pages/TrackerCategoryCreate"));
 const TrackerCategoryList = lazy(() => import("./pages/TrackerCategoryList"));
 const TrackerCategoryDetail = lazy(() => import("./pages/TrackerCategoryDetail"));
 const TrackerTransactionCreate = lazy(() => import("./pages/TrackerTransactionCreate"));

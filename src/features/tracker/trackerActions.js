@@ -1,8 +1,4 @@
-import {
-  TRACKER_GET_TRACKERS,
-  TRACKER_GET_TRACKERS_SUCCESS,
-  TRACKER_GET_TRACKERS_FAILED,
-} from "./trackerConstants";
+import { TRACKER_GET_TRACKERS, TRACKER_GET_TRACKERS_SUCCESS, TRACKER_GET_TRACKERS_FAILED } from "./trackerConstants";
 import { message } from "antd";
 import TrackerServices from "../../services/TrackerServices";
 

@@ -40,15 +40,18 @@ const chartOptions = {
 
 const GroupsAnalytics = ({ tracker }) => {
   const [selectedMonth, setSelectedMonth] = useState(dayjs());
-  
-  const chartData = useMemo(() => ({
-    labels: [dayjs(selectedMonth).format("MM/YYYY")],
-    datasets: tracker?.groups?.map((group) => ({
-      label: group?.groupName,
-      data: [-Math.floor(Math.random() * 1000000)],
-      backgroundColor: group?.color,
-    })),
-  }), [selectedMonth, tracker?.groups]);
+
+  const chartData = useMemo(
+    () => ({
+      labels: [dayjs(selectedMonth).format("MM/YYYY")],
+      datasets: tracker?.groups?.map((group) => ({
+        label: group?.groupName,
+        data: [-Math.floor(Math.random() * 1000000)],
+        backgroundColor: group?.color,
+      })),
+    }),
+    [selectedMonth, tracker?.groups]
+  );
 
   return (
     <>
@@ -65,24 +68,13 @@ const GroupsAnalytics = ({ tracker }) => {
       <Bar data={chartData} options={chartOptions} />
       <Row gutter={[24, 24]} className="mt-4">
         <Col span={24} md={12}>
-          <Statistic
-            title="Tổng thu nhập"
-            value={convertCurrency(123456789)}
-            valueStyle={{ color: "#3f8600" }}
-          />
+          <Statistic title="Tổng thu nhập" value={convertCurrency(123456789)} valueStyle={{ color: "#3f8600" }} />
         </Col>
         <Col span={24} md={12}>
-          <Statistic
-            title="Tổng chi tiêu"
-            value={convertCurrency(123456789)}
-            valueStyle={{ color: "#cf1322" }}
-          />
+          <Statistic title="Tổng chi tiêu" value={convertCurrency(123456789)} valueStyle={{ color: "#cf1322" }} />
         </Col>
         <Col span={24} md={12}>
-          <Statistic
-            title="Tổng tiền hiện có"
-            value={convertCurrency(123456789)}
-          />
+          <Statistic title="Tổng tiền hiện có" value={convertCurrency(123456789)} />
         </Col>
       </Row>
     </>

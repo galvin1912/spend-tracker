@@ -1,5 +1,5 @@
 import store from "../store";
-import { where, or } from "firebase/firestore";
+import { where, or, Timestamp } from "firebase/firestore";
 import { request } from "../utils/requestUtil";
 
 class TrackerServices {
@@ -9,12 +9,7 @@ class TrackerServices {
     // get all groups that user is owner or member
     let groups = await request("/groups", {
       method: "GET",
-      queryConstraints: [
-        or(
-          where("owner", "==", user?.uid),
-          where("members", "array-contains", user?.uid)
-        ),
-      ],
+      queryConstraints: [or(where("owner", "==", user?.uid), where("members", "array-contains", user?.uid))],
     });
 
     // loop through groups result, if user is owner, skip, else user is member, check permission, if tracker is true, keep it, else skip
@@ -155,6 +150,31 @@ class TrackerServices {
       method: "PATCH",
       uid: categoryID,
       data: categoryData,
+    });
+  };
+
+  static createTransaction = async (trackerID, transactionData) => {
+    const newTransaction = {
+      ...transactionData,
+      time: Timestamp.fromDate(transactionData.time.toDate()),
+      amount: Number(transactionData.amount) * (transactionData.type === "expense" ? -1 : 1),
+      createdAt: Timestamp.now(),
+      updatedAt: null,
+    };
+
+    const transactionRef = await request(`/trackers/${trackerID}/transactions`, {
+      method: "POST",
+      data: newTransaction,
+    });
+
+    const trackerDetail = await TrackerServices.getDetail(trackerID);
+
+    await request(`/trackers`, {
+      method: "PATCH",
+      uid: trackerID,
+      data: {
+        transactions: [...(trackerDetail.transactions || []), transactionRef.id],
+      },
     });
   };
 }

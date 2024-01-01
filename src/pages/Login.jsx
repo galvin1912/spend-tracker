@@ -82,10 +82,7 @@ const Login = () => {
 
         <div className="col-md-6 order-md-1">
           <h1 className="d-none d-md-block">Đăng nhập</h1>
-          <p>
-            Đăng nhập để sử dụng các tính năng của hệ thống. Nếu bạn chưa có tài
-            khoản, vui lòng đăng kí.
-          </p>
+          <p>Đăng nhập để sử dụng các tính năng của hệ thống. Nếu bạn chưa có tài khoản, vui lòng đăng kí.</p>
           <img src={LoginImage} alt="Login" className="mw-100" />
         </div>
       </div>

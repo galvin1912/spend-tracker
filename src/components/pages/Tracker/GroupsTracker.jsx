@@ -33,11 +33,7 @@ const GroupsTracker = ({ tracker }) => {
           style={isNotMobile && { ...{ minHeight: "100%" } }}
           extra={
             !isNotMobile && (
-              <Button
-                type="primary"
-                className="d-md-none"
-                onClick={() => setIsAnalyticsVisible(true)}
-              >
+              <Button type="primary" className="d-md-none" onClick={() => setIsAnalyticsVisible(true)}>
                 <Analytics size="20" />
               </Button>
             )
@@ -47,15 +43,9 @@ const GroupsTracker = ({ tracker }) => {
             itemLayout="horizontal"
             dataSource={tracker?.groups}
             renderItem={(item) => (
-              <Link
-                to={`/tracker/detail/${item?.uid}`}
-                className="text-decoration-none"
-              >
+              <Link to={`/tracker/detail/${item?.uid}`} className="text-decoration-none">
                 <List.Item>
-                  <List.Item.Meta
-                    title={item.groupName}
-                    description={item.description}
-                  />
+                  <List.Item.Meta title={item.groupName} description={item.description} />
                 </List.Item>
               </Link>
             )}
@@ -70,14 +60,7 @@ const GroupsTracker = ({ tracker }) => {
           </Card>
         </Col>
       ) : (
-        <Drawer
-          placement="right"
-          closable={true}
-          onClose={() => setIsAnalyticsVisible(false)}
-          open={isAnalyticsVisible}
-          width="100%"
-          height="100%"
-        >
+        <Drawer placement="right" closable={true} onClose={() => setIsAnalyticsVisible(false)} open={isAnalyticsVisible} width="100%" height="100%">
           <GroupsAnalytics tracker={tracker} />
         </Drawer>
       )}

@@ -1,20 +1,5 @@
-import {
-  collection,
-  getDocs,
-  getDoc,
-  doc,
-  query,
-  addDoc,
-  setDoc,
-  updateDoc,
-  deleteDoc,
-} from "firebase/firestore";
-import {
-  ref,
-  uploadBytes,
-  getDownloadURL,
-  deleteObject,
-} from "firebase/storage";
+import { collection, getDocs, getDoc, doc, query, addDoc, setDoc, updateDoc, deleteDoc } from "firebase/firestore";
+import { ref, uploadBytes, getDownloadURL, deleteObject } from "firebase/storage";
 import { db, storage } from "../configs/firebase";
 import Compressor from "compressorjs";
 
@@ -32,9 +17,7 @@ class requestUtil {
       const querySnapshot = await getDocs(queries);
 
       const queryResult = [];
-      querySnapshot.forEach((doc) =>
-        queryResult.push({ ...doc.data(), uid: doc.id })
-      );
+      querySnapshot.forEach((doc) => queryResult.push({ ...doc.data(), uid: doc.id }));
 
       return queryResult;
     }

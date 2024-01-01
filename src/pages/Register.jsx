@@ -101,10 +101,8 @@ const Register = () => {
                   message: "Vui lòng nhập mật khẩu!",
                 },
                 {
-                  pattern:
-                    /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/,
-                  message:
-                    "Mật khẩu phải có ít nhất 8 ký tự và chứa ít nhất 1 chữ cái viết hoa, 1 chữ cái viết thường, 1 số và 1 ký tự đặc biệt!",
+                  pattern: /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/,
+                  message: "Mật khẩu phải có ít nhất 8 ký tự và chứa ít nhất 1 chữ cái viết hoa, 1 chữ cái viết thường, 1 số và 1 ký tự đặc biệt!",
                 },
               ]}
             >
@@ -125,9 +123,7 @@ const Register = () => {
                       return Promise.resolve();
                     }
 
-                    return Promise.reject(
-                      new Error("Mật khẩu nhập lại không khớp!")
-                    );
+                    return Promise.reject(new Error("Mật khẩu nhập lại không khớp!"));
                   },
                 }),
               ]}
@@ -149,10 +145,7 @@ const Register = () => {
 
         <div className="col-md-6 order-md-1">
           <h1 className="d-none d-md-block">Đăng kí</h1>
-          <p>
-            Đăng kí để sử dụng các tính năng của hệ thống. Nếu bạn đã có tài
-            khoản, vui lòng đăng nhập.
-          </p>
+          <p>Đăng kí để sử dụng các tính năng của hệ thống. Nếu bạn đã có tài khoản, vui lòng đăng nhập.</p>
           <img src={LoginImage} alt="Login" className="mw-100" />
         </div>
       </div>

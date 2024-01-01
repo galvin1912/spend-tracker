@@ -1,8 +1,4 @@
-import {
-  createUserWithEmailAndPassword,
-  signOut,
-  signInWithEmailAndPassword,
-} from "firebase/auth";
+import { createUserWithEmailAndPassword, signOut, signInWithEmailAndPassword } from "firebase/auth";
 import { Timestamp } from "firebase/firestore";
 import { auth } from "../configs/firebase";
 import { request } from "../utils/requestUtil";
@@ -11,11 +7,7 @@ class UserServices {
   static register = async (credentials) => {
     const { email, password, fullName, gender } = credentials;
 
-    const userCredential = await createUserWithEmailAndPassword(
-      auth,
-      email,
-      password
-    );
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
 
     const user = userCredential.user;
 

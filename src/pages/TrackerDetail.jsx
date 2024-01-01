@@ -28,9 +28,7 @@ const TrackerDetail = () => {
     return {
       type: searchParams.get("type") || "all",
       sortBy: searchParams.get("sortBy") || "default",
-      time: searchParams.get("time")
-        ? dayjs(searchParams.get("time"))
-        : dayjs(),
+      time: searchParams.get("time") ? dayjs(searchParams.get("time")) : dayjs(),
       showChart: searchParams.get("showChart") === "true",
       categories: searchParams.get("categories") || "",
     };
@@ -87,23 +85,15 @@ const TrackerDetail = () => {
 
       <Row gutter={[24, 12]}>
         <Col span={24}>
-          <Typography.Title level={2}>
-            {trackerDetail?.groupName}
-          </Typography.Title>
+          <Typography.Title level={2}>{trackerDetail?.groupName}</Typography.Title>
           <p className="lead">
             Hôm nay đã chi tiêu <mark>{convertCurrency(1000000)}</mark>
           </p>
-          <TrackerFilter
-            filter={filter}
-            categories={categories}
-            isCategoriesLoading={isCategoriesLoading}
-          />
+          <TrackerFilter filter={filter} categories={categories} isCategoriesLoading={isCategoriesLoading} />
           {filter.showChart && <TrackerChart />}
         </Col>
 
-        <Col span={24}>
-          {isNotMobile ? <TransactionsDekstop /> : <TransactionsMobile />}
-        </Col>
+        <Col span={24}>{isNotMobile ? <TransactionsDekstop /> : <TransactionsMobile />}</Col>
       </Row>
     </>
   );

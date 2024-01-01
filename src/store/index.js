@@ -1,9 +1,4 @@
-import {
-  legacy_createStore as createStore,
-  applyMiddleware,
-  combineReducers,
-  compose,
-} from "redux";
+import { legacy_createStore as createStore, applyMiddleware, combineReducers, compose } from "redux";
 import { thunk } from "redux-thunk";
 import logger from "redux-logger";
 import userReducer from "../features/user/userReducer";

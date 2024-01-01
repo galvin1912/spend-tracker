@@ -13,10 +13,7 @@ import {
   USER_FETCH_INFO_FAILED,
 } from "./userConstants";
 
-import {
-  GROUP_CREATE_SUCCESS,
-  GROUP_DELETE_OWNER_GROUP_SUCCESS,
-} from "../group/groupConstants";
+import { GROUP_CREATE_SUCCESS, GROUP_DELETE_OWNER_GROUP_SUCCESS } from "../group/groupConstants";
 
 const initialState = {
   user: null,

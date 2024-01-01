@@ -75,6 +75,10 @@ const TrackerCategoryCreate = () => {
                   max: 20,
                   message: "Tên danh mục không được vượt quá 20 ký tự",
                 },
+                {
+                  whitespace: true,
+                  message: "Tên danh mục không được để trống",
+                },
               ]}
             >
               <Input placeholder="Nhập tên danh mục" />

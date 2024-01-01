@@ -8,9 +8,7 @@ import { getTrackers } from "../features/tracker/trackerActions";
 const Tracker = () => {
   const dispatch = useDispatch();
 
-  const isTrackersLoading = useSelector(
-    (state) => state.tracker.isTrackersLoading
-  );
+  const isTrackersLoading = useSelector((state) => state.tracker.isTrackersLoading);
   const trackers = useSelector((state) => state.tracker.trackers);
 
   useEffect(() => {
@@ -32,9 +30,7 @@ const Tracker = () => {
       <Spin spinning={isTrackersLoading}>
         <Row gutter={[24, 12]}>
           {trackers?.length ? (
-            trackers?.map((tracker) => (
-              <GroupsTracker key={tracker?.owner} tracker={tracker} />
-            ))
+            trackers?.map((tracker) => <GroupsTracker key={tracker?.owner} tracker={tracker} />)
           ) : (
             <Col span={24}>
               <Alert

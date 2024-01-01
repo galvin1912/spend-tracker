@@ -136,11 +136,7 @@ class GroupServices {
   static searchMember = async (email) => {
     const users = await request("/users", {
       method: "GET",
-      queryConstraints: [
-        where("email", ">=", email),
-        where("email", "<=", email + "\uf8ff"),
-        limit(10),
-      ],
+      queryConstraints: [where("email", ">=", email), where("email", "<=", email + "\uf8ff"), limit(10)],
     });
 
     return users;
