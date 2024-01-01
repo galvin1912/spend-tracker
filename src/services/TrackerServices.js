@@ -1,6 +1,7 @@
 import store from "../store";
-import { where, or, Timestamp } from "firebase/firestore";
+import { where, or, orderBy, Timestamp } from "firebase/firestore";
 import { request } from "../utils/requestUtil";
+import dayjs from "dayjs";
 
 class TrackerServices {
   static getTrackers = async () => {
@@ -154,8 +155,11 @@ class TrackerServices {
   };
 
   static createTransaction = async (trackerID, transactionData) => {
+    const { user } = store.getState().user;
+
     const newTransaction = {
       ...transactionData,
+      owner: user?.uid,
       time: Timestamp.fromDate(transactionData.time.toDate()),
       amount: Number(transactionData.amount) * (transactionData.type === "expense" ? -1 : 1),
       createdAt: Timestamp.now(),
@@ -176,6 +180,112 @@ class TrackerServices {
         transactions: [...(trackerDetail.transactions || []), transactionRef.id],
       },
     });
+  };
+
+  static updateTransaction = async (trackerID, transactionID, transactionData) => {
+    const updateTransaction = {
+      ...transactionData,
+      time: Timestamp.fromDate(transactionData.time.toDate()),
+      amount: Number(transactionData.amount) * (transactionData.type === "expense" ? -1 : 1),
+      updatedAt: Timestamp.now(),
+    };
+
+    await request(`/trackers/${trackerID}/transactions`, {
+      method: "PATCH",
+      uid: transactionID,
+      data: updateTransaction,
+    });
+  }
+
+  static deleteTransaction = async (trackerID, transactionID) => {
+    await request(`/trackers/${trackerID}/transactions`, {
+      method: "DELETE",
+      uid: transactionID,
+    });
+
+    const trackerDetail = await TrackerServices.getDetail(trackerID);
+
+    await request(`/trackers`, {
+      method: "PATCH",
+      uid: trackerID,
+      data: {
+        transactions: trackerDetail.transactions.filter((transaction) => transaction !== transactionID),
+      },
+    });
+  };
+
+  static getTransactions = async (trackerID, filter) => {
+    let transactions = await request(`/trackers/${trackerID}/transactions`, {
+      method: "GET",
+      queryConstraints: [
+        where("time", ">=", Timestamp.fromDate(filter.time.startOf("month").toDate())),
+        where("time", "<=", Timestamp.fromDate(filter.time.endOf("month").toDate())),
+        orderBy("time", "desc"),
+      ],
+    });
+
+    // filter by type
+    if (filter.type !== "all") {
+      transactions = transactions.filter((transaction) => transaction.type === filter.type);
+    }
+
+    // filter by sortBy
+    if (filter.sortBy === "amount") {
+      transactions.sort((a, b) => a.amount - b.amount);
+    }
+
+    // filter by categories
+    if (filter.categories) {
+      transactions = transactions.filter((transaction) => filter.categories.includes(transaction.category));
+    }
+
+    return transactions;
+  };
+
+  static getTransactionDetail = async (trackerID, transactionID) => {
+    const transactionDetail = await request(`/trackers/${trackerID}/transactions`, {
+      method: "GET",
+      uid: transactionID,
+    });
+
+    return transactionDetail;
+  }
+
+  static getTransactionsTodayExpenseSum = async (trackerID) => {
+    const today = dayjs();
+
+    const sum = await request(`/trackers/${trackerID}/transactions`, {
+      method: "GET_SUM",
+      queryConstraints: [
+        where("time", ">=", Timestamp.fromDate(today.startOf("day").toDate())),
+        where("time", "<=", Timestamp.fromDate(today.endOf("day").toDate())),
+        where("type", "==", "expense"),
+      ],
+      field: "amount",
+    });
+
+    return sum;
+  };
+
+  static getTransactionsMonthSum = async (trackerID, filter) => {
+    const queryConstraints = [
+      where("time", ">=", Timestamp.fromDate(filter.time.startOf("month").toDate())),
+      where("time", "<=", Timestamp.fromDate(filter.time.endOf("month").toDate())),
+    ];
+
+    if (filter.category) {
+      queryConstraints.push(where("category", "==", filter.category));
+    }
+
+    queryConstraints.push(where("type", "==", filter.type));
+
+    const sum = await request(`/trackers/${trackerID}/transactions`, {
+      method: "GET_SUM",
+      queryConstraints,
+      field: "amount",
+    });
+
+    return sum;
   };
 }
 

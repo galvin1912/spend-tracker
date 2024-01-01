@@ -1,15 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
-import {
-  Row,
-  Col,
-  Form,
-  Input,
-  ColorPicker,
-  Button,
-  Card,
-  message,
-} from "antd";
+import { Row, Col, Form, Input, ColorPicker, Button, Card, message } from "antd";
 import TrackerServices from "../services/TrackerServices";
 import EditImage from "../assets/write-edit.webp";
 
@@ -25,10 +16,7 @@ const TrackerCategoryDetail = () => {
   useEffect(() => {
     const getCategoryDetail = async () => {
       try {
-        const categoryDetail = await TrackerServices.getCategoryDetail(
-          trackerID,
-          categoryID
-        );
+        const categoryDetail = await TrackerServices.getCategoryDetail(trackerID, categoryID);
         form.setFieldsValue({
           name: categoryDetail.name,
           color: categoryDetail.color,
@@ -72,13 +60,7 @@ const TrackerCategoryDetail = () => {
             </Link>
           }
         >
-          <Form
-            name="categoryDetailForm"
-            form={form}
-            layout="vertical"
-            autoComplete="off"
-            onFinish={onFinish}
-          >
+          <Form name="categoryDetailForm" form={form} layout="vertical" autoComplete="off" onFinish={onFinish}>
             <Form.Item
               label="Tên danh mục"
               name="name"
@@ -94,7 +76,7 @@ const TrackerCategoryDetail = () => {
                 {
                   whitespace: true,
                   message: "Tên danh mục không được để trống",
-                }
+                },
               ]}
             >
               <Input placeholder="Nhập tên danh mục" />
@@ -110,11 +92,7 @@ const TrackerCategoryDetail = () => {
                 },
               ]}
             >
-              <ColorPicker
-                format="hex"
-                showText
-                onChangeComplete={handleChangeColor}
-              />
+              <ColorPicker format="hex" showText onChangeComplete={handleChangeColor} />
             </Form.Item>
 
             <Form.Item>

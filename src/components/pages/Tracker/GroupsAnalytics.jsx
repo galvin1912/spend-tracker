@@ -56,6 +56,7 @@ const GroupsAnalytics = ({ tracker }) => {
   return (
     <>
       <DatePicker
+        allowClear={false}
         picker="month"
         className="mb-4"
         style={{ width: "100%" }}

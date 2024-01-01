@@ -10,6 +10,7 @@ const TrackerCategoryCreate = lazy(() => import("./pages/TrackerCategoryCreate")
 const TrackerCategoryList = lazy(() => import("./pages/TrackerCategoryList"));
 const TrackerCategoryDetail = lazy(() => import("./pages/TrackerCategoryDetail"));
 const TrackerTransactionCreate = lazy(() => import("./pages/TrackerTransactionCreate"));
+const TrackerTransactionDetail = lazy(() => import("./pages/TrackerTransactionDetail"));
 const Group = lazy(() => import("./pages/Group"));
 const GroupCreate = lazy(() => import("./pages/GroupCreate"));
 const GroupDetail = lazy(() => import("./pages/GroupDetail"));
@@ -69,6 +70,14 @@ const AppRoutes = () => {
           element: (
             <Suspense fallback={<Skeleton active />}>
               <TrackerTransactionCreate />
+            </Suspense>
+          ),
+        },
+        {
+          path: "/tracker/detail/:trackerID/transaction/detail/:transactionID",
+          element: (
+            <Suspense fallback={<Skeleton active />}>
+              <TrackerTransactionDetail />
             </Suspense>
           ),
         },

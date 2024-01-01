@@ -1,15 +1,6 @@
 import { useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
-import {
-  Row,
-  Col,
-  Form,
-  Input,
-  ColorPicker,
-  Button,
-  Card,
-  message,
-} from "antd";
+import { Row, Col, Form, Input, ColorPicker, Button, Card, message } from "antd";
 import CategoryImage from "../assets/4569774.jpg";
 import TrackerServices from "../services/TrackerServices";
 
@@ -94,11 +85,7 @@ const TrackerCategoryCreate = () => {
                 },
               ]}
             >
-              <ColorPicker
-                format="hex"
-                showText
-                onChangeComplete={handleChangeColor}
-              />
+              <ColorPicker format="hex" showText onChangeComplete={handleChangeColor} />
             </Form.Item>
 
             <Form.Item>

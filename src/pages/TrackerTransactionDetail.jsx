@@ -1,19 +1,19 @@
 import { useState, useEffect } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
-import { Row, Col, Form, Input, InputNumber, Button, DatePicker, Card, Select, message } from "antd";
+import { Row, Col, Form, Input, InputNumber, Button, DatePicker, Card, Select, Popconfirm, message } from "antd";
 import dayjs from "dayjs";
-import TransactionBg from "../assets/transaction-bg.jpg";
+import TransactionBg from "../assets/aaaaa.webp";
 import TrackerServices from "../services/TrackerServices";
 
-const TrackerTransactionCreate = () => {
+const TrackerTransactionDetail = () => {
   const navigate = useNavigate();
 
-  const { trackerID } = useParams();
+  const { trackerID, transactionID } = useParams();
 
   const [form] = Form.useForm();
 
   const [categories, setCategories] = useState([]);
-  
+
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // get categories
@@ -30,12 +30,30 @@ const TrackerTransactionCreate = () => {
     getCategories();
   }, [trackerID]);
 
+  // get transaction detail
+  useEffect(() => {
+    const getTransactionDetail = async () => {
+      try {
+        const transactionDetail = await TrackerServices.getTransactionDetail(trackerID, transactionID);
+        form.setFieldsValue({
+          ...transactionDetail,
+          time: dayjs(transactionDetail.time.toDate()),
+          amount: Math.abs(transactionDetail.amount),
+        });
+      } catch (error) {
+        message.error(error.message);
+      }
+    };
+
+    getTransactionDetail();
+  }, [trackerID, transactionID, form]);
+
   const onFinish = async (values) => {
     setIsSubmitting(true);
 
     try {
-      await TrackerServices.createTransaction(trackerID, values);
-      message.success("Thêm giao dịch thành công");
+      await TrackerServices.updateTransaction(trackerID, transactionID, values);
+      message.success("Cập nhật giao dịch thành công");
       navigate(`/tracker/detail/${trackerID}`);
     } catch (error) {
       message.error(error.message);
@@ -44,29 +62,28 @@ const TrackerTransactionCreate = () => {
     }
   };
 
+  const handleDeleteTransaction = async () => {
+    try {
+      await TrackerServices.deleteTransaction(trackerID, transactionID);
+      message.success("Xóa giao dịch thành công");
+      navigate(`/tracker/detail/${trackerID}`);
+    } catch (error) {
+      message.error(error.message);
+    }
+  };
+
   return (
     <Row gutter={[24, 12]}>
       <Col span={24} md={12}>
         <Card
-          title="Thêm giao dịch"
+          title="Chi tiết giao dịch"
           extra={
             <Link to={`/tracker/detail/${trackerID}`}>
               <Button danger>Quay lại</Button>
             </Link>
           }
         >
-          <Form
-            name="transactionCreateForm"
-            form={form}
-            autoComplete="off"
-            layout="vertical"
-            onFinish={onFinish}
-            initialValues={{
-              time: dayjs(),
-              category: "uncategorized",
-              description: "",
-            }}
-          >
+          <Form name="transactionCreateForm" form={form} autoComplete="off" layout="vertical" onFinish={onFinish}>
             <Form.Item
               label="Thời gian"
               name="time"
@@ -183,8 +200,19 @@ const TrackerTransactionCreate = () => {
               <Link to={`/tracker/detail/${trackerID}`}>
                 <Button className="me-2">Hủy</Button>
               </Link>
+              <Popconfirm
+                title="Bạn có chắc chắn muốn xóa giao dịch này?"
+                description="Hành động này không thể hoàn tác"
+                okText="Xóa"
+                cancelText="Hủy"
+                onConfirm={handleDeleteTransaction}
+              >
+                <Button danger type="primary" className="me-2">
+                  Xóa giao dịch
+                </Button>
+              </Popconfirm>
               <Button type="primary" htmlType="submit" loading={isSubmitting}>
-                Thêm
+                Cập nhật
               </Button>
             </Form.Item>
           </Form>
@@ -197,4 +225,4 @@ const TrackerTransactionCreate = () => {
   );
 };
 
-export default TrackerTransactionCreate;
+export default TrackerTransactionDetail;

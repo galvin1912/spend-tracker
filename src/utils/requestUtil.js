@@ -1,4 +1,17 @@
-import { collection, getDocs, getDoc, doc, query, addDoc, setDoc, updateDoc, deleteDoc } from "firebase/firestore";
+import {
+  collection,
+  getDocs,
+  getDoc,
+  doc,
+  query,
+  addDoc,
+  setDoc,
+  updateDoc,
+  deleteDoc,
+  getCountFromServer,
+  getAggregateFromServer,
+  sum,
+} from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL, deleteObject } from "firebase/storage";
 import { db, storage } from "../configs/firebase";
 import Compressor from "compressorjs";
@@ -21,6 +34,26 @@ class requestUtil {
 
       return queryResult;
     }
+  };
+
+  static getCount = async (url, options) => {
+    const { queryConstraints = [] } = options;
+
+    const queries = query(collection(db, url), ...queryConstraints);
+    const querySnapshot = await getCountFromServer(queries);
+
+    return querySnapshot.data().count;
+  };
+
+  static getSum = async (url, options) => {
+    const { queryConstraints = [], field } = options;
+
+    const queries = query(collection(db, url), ...queryConstraints);
+    const querySnapshot = await getAggregateFromServer(queries, {
+      sum: sum(field),
+    });
+
+    return querySnapshot.data().sum;
   };
 
   static post = async (url, options) => {
@@ -51,10 +84,11 @@ class requestUtil {
 /**
  * @param {string} url - The url of the collection
  * @param {{
- * method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'
+ * method: 'GET' | 'GET_COUNT' | 'GET_SUM' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'
  * uid?: string
  * queryConstraints?: Array<import('firebase/firestore').QueryConstraint>
  * data?: Object
+ * field?: string - only use for sum
  * }} options - The options object
  */
 export const request = async (url, options) => {
@@ -63,6 +97,10 @@ export const request = async (url, options) => {
   switch (method) {
     case "GET":
       return await requestUtil.get(url, restOptions);
+    case "GET_COUNT":
+      return await requestUtil.getCount(url, restOptions);
+    case "GET_SUM":
+      return await requestUtil.getSum(url, restOptions);
     case "POST":
       return await requestUtil.post(url, restOptions);
     case "PUT":

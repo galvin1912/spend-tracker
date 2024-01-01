@@ -1,10 +1,11 @@
 import PropTypes from "prop-types";
 import { useNavigate, useParams, createSearchParams, Link } from "react-router-dom";
-import { Select, Space, Checkbox, DatePicker, Card, Button } from "antd";
+import { Select, Space, Checkbox, DatePicker, Card, Button, Alert } from "antd";
 import vi_VN from "../../../locale/vi_VN";
 import dayjs from "dayjs";
+import { convertCurrency } from "../../../utils/numberUtils";
 
-const TrackerFilter = ({ filter, categories, isCategoriesLoading }) => {
+const TrackerFilter = ({ filter, categories, isCategoriesLoading, thisMonthExpenseSum, thisMonthIncomeSum, categorySum }) => {
   const { trackerID } = useParams();
 
   const navigate = useNavigate();
@@ -16,6 +17,28 @@ const TrackerFilter = ({ filter, categories, isCategoriesLoading }) => {
       search: createSearchParams(newFilter).toString(),
     });
   };
+
+  const renderCategorySum = Object.keys(categorySum).map((category) => {
+    const categoryDetail = categories.find((categoryItem) => categoryItem.uid === category);
+
+    const categoryName = categoryDetail?.name || "Không có danh mục";
+    const time = dayjs(filter.time).format("MM/YYYY");
+
+    return (
+      <Alert
+        key={category}
+        type="info"
+        className="mt-3"
+        message={
+          <span>
+            Thống kê &quot;{categoryName}&quot; trong tháng {time}: Tổng thu nhập:{" "}
+            <strong className="text-success">{convertCurrency(categorySum[category].income)}</strong> - Tổng chi tiêu:{" "}
+            <strong className="text-danger">{convertCurrency(categorySum[category].expense)}</strong>
+          </span>
+        }
+      />
+    );
+  });
 
   return (
     <>
@@ -49,12 +72,35 @@ const TrackerFilter = ({ filter, categories, isCategoriesLoading }) => {
             onChange={(value) => handleFilterChange(value, "time")}
             disabledDate={(current) => current && current > dayjs()}
             locale={vi_VN.DataPicker}
+            allowClear={false}
           />
 
           <Checkbox checked={filter.showChart} onChange={(e) => handleFilterChange(e.target.checked, "showChart")} disabled>
             Hiển thị biểu đồ
           </Checkbox>
         </Space>
+
+        <Alert
+          type="success"
+          showIcon
+          className="mt-3"
+          message={
+            <span>
+              Tổng thu nhập trong tháng {dayjs(filter.time).format("MM/YYYY")}: <strong className="text-success">{convertCurrency(thisMonthIncomeSum)}</strong>
+            </span>
+          }
+        />
+
+        <Alert
+          type="error"
+          showIcon
+          className="mt-3"
+          message={
+            <span>
+              Tổng chi tiêu trong tháng {dayjs(filter.time).format("MM/YYYY")}: <strong className="text-danger">{convertCurrency(thisMonthExpenseSum)}</strong>
+            </span>
+          }
+        />
       </Card>
 
       <Card
@@ -82,15 +128,20 @@ const TrackerFilter = ({ filter, categories, isCategoriesLoading }) => {
           value={filter.categories.split(",")}
           onChange={(value) => handleFilterChange(value.toString(), "categories")}
         />
+
+        {categorySum && renderCategorySum}
       </Card>
     </>
   );
 };
 
 TrackerFilter.propTypes = {
-  filter: PropTypes.object,
-  categories: PropTypes.array,
-  isCategoriesLoading: PropTypes.bool,
+  filter: PropTypes.object.isRequired,
+  categories: PropTypes.array.isRequired,
+  isCategoriesLoading: PropTypes.bool.isRequired,
+  thisMonthExpenseSum: PropTypes.number.isRequired,
+  thisMonthIncomeSum: PropTypes.number.isRequired,
+  categorySum: PropTypes.object.isRequired,
 };
 
 export default TrackerFilter;
