@@ -24,6 +24,26 @@ const TrackerFilter = ({ filter, categories, isCategoriesLoading, thisMonthExpen
     const categoryName = categoryDetail?.name || "Không có danh mục";
     const time = dayjs(filter.time).format("MM/YYYY");
 
+    const incomeMessage = categorySum[category].income ? (
+      <>
+        Tổng thu nhập: <strong className="text-success">{convertCurrency(categorySum[category].income)}</strong>
+      </>
+    ) : (
+      ""
+    );
+
+    const dashIcon = categorySum[category].income && categorySum[category].expense ? " - " : "";
+
+    const noTransactionMessage = !categorySum[category].income && !categorySum[category].expense ? "Không có giao dịch" : "";
+
+    const expenseMessage = categorySum[category].expense ? (
+      <>
+        Tổng chi tiêu: <strong className="text-danger">{convertCurrency(categorySum[category].expense)}</strong>
+      </>
+    ) : (
+      ""
+    );
+
     return (
       <Alert
         key={category}
@@ -31,9 +51,7 @@ const TrackerFilter = ({ filter, categories, isCategoriesLoading, thisMonthExpen
         className="mt-3"
         message={
           <span>
-            Thống kê &quot;{categoryName}&quot; trong tháng {time}: Tổng thu nhập:{" "}
-            <strong className="text-success">{convertCurrency(categorySum[category].income)}</strong> - Tổng chi tiêu:{" "}
-            <strong className="text-danger">{convertCurrency(categorySum[category].expense)}</strong>
+            Thống kê &quot;{categoryName}&quot; trong tháng {time}: {incomeMessage} {dashIcon} {noTransactionMessage} {expenseMessage}
           </span>
         }
       />
@@ -76,29 +94,37 @@ const TrackerFilter = ({ filter, categories, isCategoriesLoading, thisMonthExpen
           />
         </Space>
 
-        <Alert
-          type="success"
-          showIcon
-          className="mt-3"
-          message={
-            <span>
-              Tổng thu nhập trong tháng {dayjs(filter.time).format("MM/YYYY")}:{" "}
-              <strong className="text-success">{convertCurrency(thisMonthIncomeSum)}</strong>
-            </span>
-          }
-        />
+        {thisMonthIncomeSum ? (
+          <Alert
+            type="success"
+            showIcon
+            className="mt-3"
+            message={
+              <span>
+                Tổng thu nhập trong tháng {dayjs(filter.time).format("MM/YYYY")}:{" "}
+                <strong className="text-success">{convertCurrency(thisMonthIncomeSum)}</strong>
+              </span>
+            }
+          />
+        ) : (
+          ""
+        )}
 
-        <Alert
-          type="error"
-          showIcon
-          className="mt-3"
-          message={
-            <span>
-              Tổng chi tiêu trong tháng {dayjs(filter.time).format("MM/YYYY")}:{" "}
-              <strong className="text-danger">{convertCurrency(thisMonthExpenseSum)}</strong>
-            </span>
-          }
-        />
+        {thisMonthExpenseSum ? (
+          <Alert
+            type="error"
+            showIcon
+            className="mt-3"
+            message={
+              <span>
+                Tổng chi tiêu trong tháng {dayjs(filter.time).format("MM/YYYY")}:{" "}
+                <strong className="text-danger">{convertCurrency(thisMonthExpenseSum)}</strong>
+              </span>
+            }
+          />
+        ) : (
+          ""
+        )}
       </Card>
 
       <Card
