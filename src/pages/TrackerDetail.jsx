@@ -4,7 +4,6 @@ import { useParams, useSearchParams } from "react-router-dom";
 import { Row, Col, Typography, message } from "antd";
 import dayjs from "dayjs";
 import TrackerFilter from "../components/pages/TrackerDetail/TrackerFilter";
-import TrackerChart from "../components/pages/TrackerDetail/TrackerChart";
 import { convertCurrency } from "../utils/numberUtils";
 import TrackerServices from "../services/TrackerServices";
 import GroupServices from "../services/GroupServices";
@@ -24,7 +23,7 @@ const TrackerDetail = () => {
   const [thisMonthExpenseSum, setThisMonthExpenseSum] = useState(0);
   const [thisMonthIncomeSum, setThisMonthIncomeSum] = useState(0);
   const [categorySum, setCategorySum] = useState({});
-  
+
   const transactionPageSize = useMemo(() => 15, []);
 
   // filter from search params
@@ -33,7 +32,6 @@ const TrackerDetail = () => {
       type: searchParams.get("type") || "all",
       sortBy: searchParams.get("sortBy") || "default",
       time: searchParams.get("time") ? dayjs(searchParams.get("time")) : dayjs(),
-      showChart: searchParams.get("showChart") === "true",
       categories: searchParams.get("categories") || "",
     };
   }, [searchParams]);
@@ -64,7 +62,7 @@ const TrackerDetail = () => {
 
       try {
         const categories = await TrackerServices.getCategories(trackerID);
-        setCategories(categories);
+        setCategories([{ name: "Không có danh mục", uid: "uncategorized" }, ...categories]);
       } catch (error) {
         message.error(error.message);
       } finally {
@@ -97,7 +95,8 @@ const TrackerDetail = () => {
   useEffect(() => {
     const getTodaySum = async () => {
       try {
-        const todaySum = await TrackerServices.getTransactionsTodayExpenseSum(trackerID);
+        const newFilter = { time: dayjs(), timeType: "day", type: "expense" };
+        const todaySum = await TrackerServices.getTransactionsSum(trackerID, newFilter);
         setTodaySum(todaySum);
       } catch (error) {
         message.error(error.message);
@@ -111,8 +110,8 @@ const TrackerDetail = () => {
   useEffect(() => {
     const getThisMonthSum = async () => {
       try {
-        const newFilter = { time: filter.time, type: "expense" };
-        const thisMonthSum = await TrackerServices.getTransactionsMonthSum(trackerID, newFilter);
+        const newFilter = { time: filter.time, timeType: "month", type: "expense" };
+        const thisMonthSum = await TrackerServices.getTransactionsSum(trackerID, newFilter);
         setThisMonthExpenseSum(thisMonthSum);
       } catch (error) {
         message.error(error.message);
@@ -126,8 +125,8 @@ const TrackerDetail = () => {
   useEffect(() => {
     const getThisMonthSum = async () => {
       try {
-        const newFilter = { time: filter.time, type: "income" };
-        const thisMonthSum = await TrackerServices.getTransactionsMonthSum(trackerID, newFilter);
+        const newFilter = { time: filter.time, timeType: "month", type: "income" };
+        const thisMonthSum = await TrackerServices.getTransactionsSum(trackerID, newFilter);
         setThisMonthIncomeSum(thisMonthSum);
       } catch (error) {
         message.error(error.message);
@@ -149,10 +148,10 @@ const TrackerDetail = () => {
         const categorySumPromises = [];
         const categories = filter.categories.split(",");
         categories.forEach((category) => {
-          const expenseFilter = { time: filter.time, type: "expense", category };
-          const incomeFilter = { time: filter.time, type: "income", category };
-          categorySumPromises.push(TrackerServices.getTransactionsMonthSum(trackerID, expenseFilter));
-          categorySumPromises.push(TrackerServices.getTransactionsMonthSum(trackerID, incomeFilter));
+          const expenseFilter = { time: filter.time, timeType: "month", type: "expense", category };
+          const incomeFilter = { time: filter.time, timeType: "month", type: "income", category };
+          categorySumPromises.push(TrackerServices.getTransactionsSum(trackerID, expenseFilter));
+          categorySumPromises.push(TrackerServices.getTransactionsSum(trackerID, incomeFilter));
         });
 
         const categorySum = await Promise.all(categorySumPromises);
@@ -202,7 +201,6 @@ const TrackerDetail = () => {
             thisMonthIncomeSum={thisMonthIncomeSum}
             categorySum={categorySum}
           />
-          {filter.showChart && <TrackerChart />}
         </Col>
 
         <Col span={24}>

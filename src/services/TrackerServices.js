@@ -1,7 +1,6 @@
 import store from "../store";
 import { where, or, orderBy, Timestamp } from "firebase/firestore";
 import { request } from "../utils/requestUtil";
-import dayjs from "dayjs";
 
 class TrackerServices {
   static getTrackers = async () => {
@@ -195,7 +194,7 @@ class TrackerServices {
       uid: transactionID,
       data: updateTransaction,
     });
-  }
+  };
 
   static deleteTransaction = async (trackerID, transactionID) => {
     await request(`/trackers/${trackerID}/transactions`, {
@@ -249,35 +248,23 @@ class TrackerServices {
     });
 
     return transactionDetail;
-  }
-
-  static getTransactionsTodayExpenseSum = async (trackerID) => {
-    const today = dayjs();
-
-    const sum = await request(`/trackers/${trackerID}/transactions`, {
-      method: "GET_SUM",
-      queryConstraints: [
-        where("time", ">=", Timestamp.fromDate(today.startOf("day").toDate())),
-        where("time", "<=", Timestamp.fromDate(today.endOf("day").toDate())),
-        where("type", "==", "expense"),
-      ],
-      field: "amount",
-    });
-
-    return sum;
   };
 
-  static getTransactionsMonthSum = async (trackerID, filter) => {
-    const queryConstraints = [
-      where("time", ">=", Timestamp.fromDate(filter.time.startOf("month").toDate())),
-      where("time", "<=", Timestamp.fromDate(filter.time.endOf("month").toDate())),
-    ];
+  static getTransactionsSum = async (trackerID, filter) => {
+    let queryConstraints = [];
+
+    if (filter.time && filter.timeType) {
+      queryConstraints.push(where("time", ">=", Timestamp.fromDate(filter.time.startOf(filter.timeType).toDate())));
+      queryConstraints.push(where("time", "<=", Timestamp.fromDate(filter.time.endOf(filter.timeType).toDate())));
+    }
 
     if (filter.category) {
       queryConstraints.push(where("category", "==", filter.category));
     }
 
-    queryConstraints.push(where("type", "==", filter.type));
+    if (filter.type !== "all") {
+      queryConstraints.push(where("type", "==", filter.type));
+    }
 
     const sum = await request(`/trackers/${trackerID}/transactions`, {
       method: "GET_SUM",

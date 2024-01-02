@@ -13,7 +13,7 @@ const TrackerTransactionCreate = () => {
   const [form] = Form.useForm();
 
   const [categories, setCategories] = useState([]);
-  
+
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // get categories
@@ -21,7 +21,7 @@ const TrackerTransactionCreate = () => {
     const getCategories = async () => {
       try {
         const categories = await TrackerServices.getCategories(trackerID);
-        setCategories(categories);
+        setCategories([{ name: "Không có danh mục", uid: "uncategorized" }, ...categories]);
       } catch (error) {
         message.error(error.message);
       }
@@ -152,13 +152,10 @@ const TrackerTransactionCreate = () => {
             >
               <Select
                 placeholder="Chọn danh mục"
-                options={[
-                  { label: "Không có danh mục", value: "uncategorized" },
-                  ...categories.map((category) => ({
-                    label: category?.name,
-                    value: category?.uid,
-                  })),
-                ]}
+                options={categories.map((category) => ({
+                  label: category?.name,
+                  value: category?.uid,
+                }))}
               />
             </Form.Item>
 

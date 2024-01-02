@@ -74,10 +74,6 @@ const TrackerFilter = ({ filter, categories, isCategoriesLoading, thisMonthExpen
             locale={vi_VN.DataPicker}
             allowClear={false}
           />
-
-          <Checkbox checked={filter.showChart} onChange={(e) => handleFilterChange(e.target.checked, "showChart")} disabled>
-            Hiển thị biểu đồ
-          </Checkbox>
         </Space>
 
         <Alert
@@ -86,7 +82,8 @@ const TrackerFilter = ({ filter, categories, isCategoriesLoading, thisMonthExpen
           className="mt-3"
           message={
             <span>
-              Tổng thu nhập trong tháng {dayjs(filter.time).format("MM/YYYY")}: <strong className="text-success">{convertCurrency(thisMonthIncomeSum)}</strong>
+              Tổng thu nhập trong tháng {dayjs(filter.time).format("MM/YYYY")}:{" "}
+              <strong className="text-success">{convertCurrency(thisMonthIncomeSum)}</strong>
             </span>
           }
         />
@@ -97,7 +94,8 @@ const TrackerFilter = ({ filter, categories, isCategoriesLoading, thisMonthExpen
           className="mt-3"
           message={
             <span>
-              Tổng chi tiêu trong tháng {dayjs(filter.time).format("MM/YYYY")}: <strong className="text-danger">{convertCurrency(thisMonthExpenseSum)}</strong>
+              Tổng chi tiêu trong tháng {dayjs(filter.time).format("MM/YYYY")}:{" "}
+              <strong className="text-danger">{convertCurrency(thisMonthExpenseSum)}</strong>
             </span>
           }
         />
@@ -107,7 +105,7 @@ const TrackerFilter = ({ filter, categories, isCategoriesLoading, thisMonthExpen
         style={{ marginTop: 12 }}
         title={
           <Link to={`/tracker/detail/${trackerID}/category/list`} className="text-dark text-decoration-none">
-            Danh mục (nhấn để xem danh sách)
+            Danh mục (nhấp vào để xem danh sách)
           </Link>
         }
         extra={
@@ -118,13 +116,10 @@ const TrackerFilter = ({ filter, categories, isCategoriesLoading, thisMonthExpen
         loading={isCategoriesLoading}
       >
         <Checkbox.Group
-          options={[
-            { label: "Không có danh mục", value: "uncategorized" },
-            ...categories.map((category) => ({
-              label: category?.name,
-              value: category?.uid,
-            })),
-          ]}
+          options={categories.map((category) => ({
+            label: category?.name,
+            value: category?.uid,
+          }))}
           value={filter.categories.split(",")}
           onChange={(value) => handleFilterChange(value.toString(), "categories")}
         />
