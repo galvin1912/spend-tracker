@@ -20,10 +20,8 @@ const TrackerFilter = ({ filter, categories, isCategoriesLoading, thisMonthExpen
 
   const renderCategorySum = Object.keys(categorySum).map((category) => {
     const categoryDetail = categories.find((categoryItem) => categoryItem.uid === category);
-
     const categoryName = categoryDetail?.name || "Không có danh mục";
     const time = dayjs(filter.time).format("MM/YYYY");
-
     const incomeMessage = categorySum[category].income ? (
       <>
         Tổng thu nhập: <strong className="text-success">{convertCurrency(categorySum[category].income)}</strong>
@@ -31,11 +29,8 @@ const TrackerFilter = ({ filter, categories, isCategoriesLoading, thisMonthExpen
     ) : (
       ""
     );
-
     const dashIcon = categorySum[category].income && categorySum[category].expense ? " - " : "";
-
     const noTransactionMessage = !categorySum[category].income && !categorySum[category].expense ? "Không có giao dịch" : "";
-
     const expenseMessage = categorySum[category].expense ? (
       <>
         Tổng chi tiêu: <strong className="text-danger">{convertCurrency(categorySum[category].expense)}</strong>
