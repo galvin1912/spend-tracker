@@ -188,13 +188,13 @@ const TrackerDetail = () => {
       <Row gutter={[24, 12]}>
         <Col span={24}>
           <Typography.Title level={2}>{trackerDetail?.groupName}</Typography.Title>
-          {todaySum && (
+          {todaySum ? (
             <p className="lead">
               <mark>
                 Hôm nay đã chi tiêu <strong className="text-danger">{convertCurrency(todaySum)}</strong>
               </mark>
             </p>
-          )}
+          ) : null}
           <TrackerFilter
             filter={filter}
             categories={categories}
