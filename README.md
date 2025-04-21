@@ -16,6 +16,7 @@ This template provides a minimal setup to get React working in Vite with HMR and
 - Each group has a unique color for visual identification
 - Members can add/edit transactions and categories
 - Supports group analytics through charts and statistics
+- Can create budget for each group
 
 ### Tracker Model
 - **Attributes**: transactions, categories, group association, timestamps

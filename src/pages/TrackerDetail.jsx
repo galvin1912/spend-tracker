@@ -4,6 +4,7 @@ import { useParams, useSearchParams } from "react-router-dom";
 import { Row, Col, Typography, message, Button, Modal, InputNumber, Alert } from "antd";
 import dayjs from "dayjs";
 import TrackerFilter from "../components/pages/TrackerDetail/TrackerFilter";
+import SpendingInsights from '../components/pages/TrackerDetail/SpendingInsights';
 import { convertCurrency } from "../utils/numberUtils";
 import TrackerServices from "../services/TrackerServices";
 import GroupServices from "../services/GroupServices";
@@ -30,6 +31,7 @@ const TrackerDetail = () => {
   const [budgetAmount, setBudgetAmount] = useState(null);
   const [isSavingBudget, setIsSavingBudget] = useState(false);
   const [warningShown, setWarningShown] = useState(false);
+  const [isInsightsModalVisible, setIsInsightsModalVisible] = useState(false);
 
   const transactionPageSize = useMemo(() => 15, []);
 
@@ -271,20 +273,36 @@ const TrackerDetail = () => {
         <Col span={24}>
           <Typography.Title level={2}>
             {trackerDetail?.groupName}
+          </Typography.Title>
+
+          <div style={{ display: 'flex', alignItems: 'center', marginBottom: '15px' }}>
             <Button 
-              type="primary" 
-              style={{ marginLeft: '16px' }}
+              type="primary"
               onClick={showBudgetModal}
             >
               {groupDetail?.budget ? 'Thay đổi ngân sách' : 'Đặt ngân sách'}
             </Button>
             {groupDetail?.budget && (
-              <span style={{ marginLeft: '16px' }}>
+              <Typography.Title level={4} style={{ marginLeft: '16px' }}>
                 Ngân sách: <strong>{convertCurrency(groupDetail.budget)}</strong>
-              </span>
+              </Typography.Title>
             )}
-          </Typography.Title>
-          
+          </div>
+          {/* Button to open Spending Insights Modal */}
+          <Button type="default" onClick={() => setIsInsightsModalVisible(true)} style={{ marginBottom: 16 }}>
+            Xem báo cáo chi tiêu
+          </Button>
+
+          <Modal
+            open={isInsightsModalVisible}
+            onCancel={() => setIsInsightsModalVisible(false)}
+            footer={null}
+            width={800}
+            title="Báo cáo chi tiêu & Thống kê"
+          >
+            <SpendingInsights trackerID={trackerID} categories={categories} />
+          </Modal>
+
           {groupDetail?.budget && thisMonthExpenseSum < 0 && (
             <Alert 
               type={Math.abs(thisMonthExpenseSum) / groupDetail.budget >= 0.8 ? 'error' : Math.abs(thisMonthExpenseSum) / groupDetail.budget >= 0.6 ? 'warning' : 'info'}
@@ -300,6 +318,7 @@ const TrackerDetail = () => {
               </mark>
             </p>
           ) : null}
+          
           <TrackerFilter
             filter={filter}
             categories={categories}

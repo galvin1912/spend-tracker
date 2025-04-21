@@ -129,6 +129,14 @@ class TrackerServices {
     });
   };
 
+  static createCategory = async (trackerID, categoryData) => {
+    const res = await request(`/trackers/${trackerID}/categories`, {
+      method: "POST",
+      data: categoryData,
+    });
+    return res;
+  };
+
   static createTransaction = async (trackerID, transactionData) => {
     const { user } = store.getState().user;
 
