@@ -4,58 +4,93 @@ import { request } from "../utils/requestUtil";
 
 class TrackerServices {
   static getTrackers = async () => {
-    const { user } = store.getState().user;
-
-    // get all groups that user is owner or member
-    let groups = await request("/groups", {
+    const { user: { uid } } = store.getState().user;
+    
+    const groups = await request("/groups", {
       method: "GET",
-      queryConstraints: [or(where("owner", "==", user?.uid), where("members", "array-contains", user?.uid))],
+      queryConstraints: [or(
+        where("owner", "==", uid),
+        where("members", "array-contains", uid)
+      )],
     });
 
-    // loop through groups result, if user is owner, skip, else user is member, check permission, if tracker is true, keep it, else skip
-    groups = await Promise.all(
-      groups.map(async (group) => {
-        if (group?.owner === user?.uid) return group;
+    const processedGroups = await Promise.all(groups.map(async group => {
+      if (group.owner === uid) return group;
+      
+      const member = await request(`/groups/${group.uid}/members`, {
+        method: "GET",
+        uid,
+      });
 
-        const member = await request(`/groups/${group.uid}/members`, {
-          method: "GET",
-          uid: user?.uid,
-        });
+      return member?.permissions?.tracker ? group : null;
+    }));
 
-        if (member?.permissions?.tracker) return group;
+    const grouped = processedGroups
+      .filter(Boolean)
+      .reduce((acc, group) => {
+        const ownerGroups = acc.find(g => g.owner === group.owner)?.groups || [];
+        return [
+          ...acc.filter(g => g.owner !== group.owner),
+          { owner: group.owner, groups: [...ownerGroups, group] }
+        ];
+      }, [])
+      .sort((a, b) => (a.owner === uid ? -1 : b.owner === uid ? 1 : 0));
 
-        return null;
-      })
-    );
+    return grouped.map(group => ({
+      ...group,
+      groups: group.groups.sort((a, b) => a.groupName.localeCompare(b.groupName))
+    }));
+  };
 
-    // filter null group
-    groups = groups.filter((group) => group);
+  static deleteTracker = async trackerID => {
+    const trackerDetail = await this.getDetail(trackerID);
+    const deleteOperations = [];
 
-    // instead of return array of groups, we return array of group of groups by owner, example [{owner: "uid", groups: [{}, {}]}]
-    groups = groups?.reduce((acc, group) => {
-      const owner = group?.owner;
-      const groupByOwner = acc?.find((item) => item?.owner === owner);
-      if (groupByOwner) {
-        groupByOwner.groups?.push(group);
-      } else {
-        acc?.push({ owner, groups: [group] });
+    const deleteSubcollection = (collectionName, ids) => {
+      if (ids?.length) {
+        deleteOperations.push(...ids.map(id =>
+          request(`/trackers/${trackerID}/${collectionName}`, {
+            method: "DELETE",
+            uid: id,
+          })
+        ));
       }
-      return acc;
-    }, []);
+    };
 
-    // sort groups by owner (priority: owner is current user)
-    groups.sort((a, b) => {
-      if (a.owner === user?.uid) return -1;
-      if (b.owner === user?.uid) return 1;
-      return 0;
+    deleteSubcollection('categories', trackerDetail.categories);
+    deleteSubcollection('transactions', trackerDetail.transactions);
+    
+    await Promise.all(deleteOperations);
+    await request(`/trackers`, { method: "DELETE", uid: trackerID });
+  };
+
+  static createTransaction = async (trackerID, transactionData) => {
+    const { user: { uid } } = store.getState().user;
+    
+    const newTransaction = {
+      ...transactionData,
+      owner: uid,
+      time: Timestamp.fromDate(transactionData.time.toDate()),
+      amount: Number(transactionData.amount) * (transactionData.type === "expense" ? -1 : 1),
+      createdAt: Timestamp.now(),
+    };
+
+    const transactionRef = await request(`/trackers/${trackerID}/transactions`, {
+      method: "POST",
+      data: newTransaction,
     });
 
-    // sort by group name
-    groups.forEach((item) => {
-      item.groups.sort((a, b) => a.groupName.localeCompare(b.groupName));
-    });
+    await this.updateTrackerCollection(trackerID, 'transactions', transactionRef.id);
+    return transactionRef;
+  };
 
-    return groups;
+  static updateTrackerCollection = async (trackerID, collectionName, newID) => {
+    const trackerDetail = await this.getDetail(trackerID);
+    await request(`/trackers`, {
+      method: "PATCH",
+      uid: trackerID,
+      data: { [collectionName]: [...(trackerDetail[collectionName] || []), newID] },
+    });
   };
 
   static getDetail = async (trackerID) => {
@@ -65,65 +100,6 @@ class TrackerServices {
     });
 
     return trackerDetail;
-  };
-
-  static deleteTracker = async (trackerID) => {
-    const trackerDetail = await TrackerServices.getDetail(trackerID);
-
-    // remove categories
-    if (trackerDetail?.categories && trackerDetail?.categories.length) {
-      let removeCategoryPromises = [];
-
-      trackerDetail.categories.forEach((categoryID) => {
-        removeCategoryPromises.push(
-          request(`/trackers/${trackerID}/categories`, {
-            method: "DELETE",
-            uid: categoryID,
-          })
-        );
-      });
-
-      await Promise.all(removeCategoryPromises);
-    }
-
-    // remove transactions
-    if (trackerDetail?.transactions && trackerDetail?.transactions.length) {
-      let removeTransactionPromises = [];
-
-      trackerDetail.transactions.forEach((transactionID) => {
-        removeTransactionPromises.push(
-          request(`/trackers/${trackerID}/transactions`, {
-            method: "DELETE",
-            uid: transactionID,
-          })
-        );
-      });
-
-      await Promise.all(removeTransactionPromises);
-    }
-
-    // remove tracker
-    await request(`/trackers`, {
-      method: "DELETE",
-      uid: trackerID,
-    });
-  };
-
-  static createCategory = async (trackerID, categoryData) => {
-    const categoryRef = await request(`/trackers/${trackerID}/categories`, {
-      method: "POST",
-      data: categoryData,
-    });
-
-    const trackerDetail = await TrackerServices.getDetail(trackerID);
-
-    await request(`/trackers`, {
-      method: "PATCH",
-      uid: trackerID,
-      data: {
-        categories: [...(trackerDetail.categories || []), categoryRef.id],
-      },
-    });
   };
 
   static getCategories = async (trackerID) => {

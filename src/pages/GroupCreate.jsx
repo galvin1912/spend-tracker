@@ -84,16 +84,8 @@ const GroupCreate = () => {
                 name="description"
                 rules={[
                   {
-                    required: true,
-                    message: "Vui lòng nhập mô tả!",
-                  },
-                  {
-                    max: 200,
-                    message: "Mô tả không được dài quá 200 ký tự!",
-                  },
-                  {
-                    whitespace: true,
-                    message: "Mô tả không được để trống!",
+                    max: 500,
+                    message: "Mô tả không được dài quá 500 ký tự!",
                   },
                 ]}
               >

@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { useParams, useSearchParams } from "react-router-dom";
-import { Row, Col, Typography, message } from "antd";
+import { Row, Col, Typography, message, Button, Modal, InputNumber, Alert } from "antd";
 import dayjs from "dayjs";
 import TrackerFilter from "../components/pages/TrackerDetail/TrackerFilter";
 import { convertCurrency } from "../utils/numberUtils";
@@ -23,6 +23,13 @@ const TrackerDetail = () => {
   const [thisMonthExpenseSum, setThisMonthExpenseSum] = useState(0);
   const [thisMonthIncomeSum, setThisMonthIncomeSum] = useState(0);
   const [categorySum, setCategorySum] = useState({});
+  
+  // Budget related states
+  const [groupDetail, setGroupDetail] = useState(null);
+  const [isBudgetModalVisible, setIsBudgetModalVisible] = useState(false);
+  const [budgetAmount, setBudgetAmount] = useState(null);
+  const [isSavingBudget, setIsSavingBudget] = useState(false);
+  const [warningShown, setWarningShown] = useState(false);
 
   const transactionPageSize = useMemo(() => 15, []);
 
@@ -35,6 +42,13 @@ const TrackerDetail = () => {
       categories: searchParams.get("categories") || "",
     };
   }, [searchParams]);
+  
+  // Calculate remaining days in the month
+  const remainingDays = useMemo(() => {
+    const currentDate = dayjs();
+    const endOfMonth = currentDate.endOf('month');
+    return endOfMonth.diff(currentDate, 'day');
+  }, []);
 
   /** Effect **/
   // get tracker detail
@@ -47,11 +61,18 @@ const TrackerDetail = () => {
           ...trackerDetail,
           groupName: groupDetail.groupName,
         });
+        setGroupDetail(groupDetail);
+        if (groupDetail.budget) {
+          setBudgetAmount(groupDetail.budget);
+        }
       } catch (error) {
         message.error(error.message);
       }
     };
 
+    // Reset warning shown flag when component mounts
+    setWarningShown(false);
+    
     getTrackerDetail();
   }, [trackerID]);
 
@@ -173,6 +194,67 @@ const TrackerDetail = () => {
     getThisMonthSum();
   }, [filter.categories, filter.time, trackerID]);
 
+  // Budget warning system
+  useEffect(() => {
+    // Check if budget exists and warning hasn't been shown yet
+    if (groupDetail?.budget && thisMonthExpenseSum < 0 && !warningShown) {
+      const budgetUsedPercentage = Math.abs(thisMonthExpenseSum) / groupDetail.budget * 100;
+      
+      if (budgetUsedPercentage >= 80) {
+        // Red warning (80% or more of the budget)
+        Modal.warning({
+          title: 'Cảnh báo ngân sách',
+          content: (
+            <div style={{ color: 'red' }}>
+              Còn {remainingDays} ngày nữa mới hết tháng mà đã chi hết {convertCurrency(Math.abs(thisMonthExpenseSum))}/{convertCurrency(groupDetail.budget)}
+            </div>
+          ),
+          onOk: () => setWarningShown(true)
+        });
+      } else if (budgetUsedPercentage >= 60) {
+        // Yellow warning (60% or more of the budget)
+        Modal.warning({
+          title: 'Cảnh báo ngân sách',
+          content: (
+            <div style={{ color: '#ffc107' }}>
+              Còn {remainingDays} ngày nữa mới hết tháng mà đã chi hết {convertCurrency(Math.abs(thisMonthExpenseSum))}/{convertCurrency(groupDetail.budget)}
+            </div>
+          ),
+          onOk: () => setWarningShown(true)
+        });
+      }
+    }
+  }, [groupDetail, thisMonthExpenseSum, remainingDays, warningShown]);
+
+  // Show budget modal
+  const showBudgetModal = () => {
+    setIsBudgetModalVisible(true);
+    if (groupDetail?.budget) {
+      setBudgetAmount(groupDetail.budget);
+    }
+  };
+
+  // Handle budget save
+  const handleSaveBudget = async () => {
+    if (!budgetAmount || budgetAmount <= 0) {
+      message.error('Vui lòng nhập số tiền hợp lệ');
+      return;
+    }
+
+    setIsSavingBudget(true);
+    try {
+      await GroupServices.updateGroup(trackerID, { budget: budgetAmount });
+      message.success('Cập nhật ngân sách thành công');
+      setGroupDetail({ ...groupDetail, budget: budgetAmount });
+      setIsBudgetModalVisible(false);
+      setWarningShown(false); // Reset warning shown flag after updating budget
+    } catch (error) {
+      message.error(error.message);
+    } finally {
+      setIsSavingBudget(false);
+    }
+  };
+
   return (
     <>
       <Helmet
@@ -187,7 +269,30 @@ const TrackerDetail = () => {
 
       <Row gutter={[24, 12]}>
         <Col span={24}>
-          <Typography.Title level={2}>{trackerDetail?.groupName}</Typography.Title>
+          <Typography.Title level={2}>
+            {trackerDetail?.groupName}
+            <Button 
+              type="primary" 
+              style={{ marginLeft: '16px' }}
+              onClick={showBudgetModal}
+            >
+              {groupDetail?.budget ? 'Thay đổi ngân sách' : 'Đặt ngân sách'}
+            </Button>
+            {groupDetail?.budget && (
+              <span style={{ marginLeft: '16px' }}>
+                Ngân sách: <strong>{convertCurrency(groupDetail.budget)}</strong>
+              </span>
+            )}
+          </Typography.Title>
+          
+          {groupDetail?.budget && thisMonthExpenseSum < 0 && (
+            <Alert 
+              type={Math.abs(thisMonthExpenseSum) / groupDetail.budget >= 0.8 ? 'error' : Math.abs(thisMonthExpenseSum) / groupDetail.budget >= 0.6 ? 'warning' : 'info'}
+              message={`Đã sử dụng ${(Math.abs(thisMonthExpenseSum) / groupDetail.budget * 100).toFixed(1)}% ngân sách tháng này (${convertCurrency(Math.abs(thisMonthExpenseSum))}/${convertCurrency(groupDetail.budget)})`}
+              style={{ marginBottom: '12px' }}
+            />
+          )}
+          
           {todaySum ? (
             <p className="lead">
               <mark>
@@ -214,6 +319,25 @@ const TrackerDetail = () => {
           />
         </Col>
       </Row>
+      
+      {/* Budget Modal */}
+      <Modal
+        title="Đặt ngân sách cho nhóm"
+        open={isBudgetModalVisible}
+        onOk={handleSaveBudget}
+        onCancel={() => setIsBudgetModalVisible(false)}
+        confirmLoading={isSavingBudget}
+      >
+        <p>Nhập ngân sách tháng cho nhóm (VND):</p>
+        <InputNumber
+          style={{ width: '100%' }}
+          value={budgetAmount}
+          onChange={(value) => setBudgetAmount(value)}
+          formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+          parser={(value) => value.replace(/\$\s?|(,*)/g, '')}
+          min={1}
+        />
+      </Modal>
     </>
   );
 };

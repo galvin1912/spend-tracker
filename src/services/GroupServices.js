@@ -11,6 +11,7 @@ class GroupServices {
       ...groupData,
       owner: user?.uid,
       members: [],
+      budget: null,
       createdAt: Timestamp.now(),
       updatedAt: null,
     };
