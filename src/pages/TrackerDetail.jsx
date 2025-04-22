@@ -1,10 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { useParams, useSearchParams } from "react-router-dom";
-import { Row, Col, Typography, message, Button, Modal, InputNumber, Alert } from "antd";
+import { Row, Col, Typography, message, Button, Modal, InputNumber } from "antd";
 import dayjs from "dayjs";
 import TrackerFilter from "../components/pages/TrackerDetail/TrackerFilter";
 import SpendingInsights from '../components/pages/TrackerDetail/SpendingInsights';
+import BudgetTimeline from '../components/pages/TrackerDetail/BudgetTimeline/BudgetTimeline';
 import { convertCurrency } from "../utils/numberUtils";
 import TrackerServices from "../services/TrackerServices";
 import GroupServices from "../services/GroupServices";
@@ -47,6 +48,17 @@ const TrackerDetail = () => {
       dateRangeEnd: searchParams.get("dateRangeEnd"),
     };
   }, [searchParams]);
+  
+  // Create a date range object for the BudgetTimeline component
+  const dateRangeForBudget = useMemo(() => {
+    if (filter.dateRange && filter.dateRangeStart && filter.dateRangeEnd) {
+      return {
+        startDate: dayjs(filter.dateRangeStart),
+        endDate: dayjs(filter.dateRangeEnd)
+      };
+    }
+    return null;
+  }, [filter.dateRange, filter.dateRangeStart, filter.dateRangeEnd]);
   
   // Calculate remaining days in the month
   const remainingDays = useMemo(() => {
@@ -359,6 +371,7 @@ const TrackerDetail = () => {
               </Typography.Title>
             )}
           </div>
+          
           {/* Button to open Spending Insights Modal */}
           <Button type="default" onClick={() => setIsInsightsModalVisible(true)} style={{ marginBottom: 16 }}>
             Xem báo cáo chi tiêu
@@ -373,12 +386,13 @@ const TrackerDetail = () => {
           >
             <SpendingInsights trackerID={trackerID} categories={categories} />
           </Modal>
-
-          {groupDetail?.budget && thisMonthExpenseSum < 0 && (
-            <Alert 
-              type={Math.abs(thisMonthExpenseSum) / groupDetail.budget >= 0.8 ? 'error' : Math.abs(thisMonthExpenseSum) / groupDetail.budget >= 0.6 ? 'warning' : 'info'}
-              message={`Đã sử dụng ${(Math.abs(thisMonthExpenseSum) / groupDetail.budget * 100).toFixed(1)}% ngân sách tháng này (${convertCurrency(Math.abs(thisMonthExpenseSum))}/${convertCurrency(groupDetail.budget)})`}
-              style={{ marginBottom: '12px' }}
+          
+          {/* Budget Timeline Component */}
+          {groupDetail?.budget && thisMonthExpenseSum !== 0 && (
+            <BudgetTimeline 
+              totalExpense={thisMonthExpenseSum} 
+              budget={groupDetail.budget} 
+              dateRange={dateRangeForBudget}
             />
           )}
           
