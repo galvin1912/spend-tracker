@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Link, NavLink, useNavigate } from "react-router-dom";
-import { Dropdown } from "antd";
+import { Dropdown, Avatar } from "antd";
 import { Gsc } from "@styled-icons/crypto";
 import { UserCircle } from "@styled-icons/boxicons-regular";
 import { PeopleMoney } from "@styled-icons/fluentui-system-filled";
@@ -45,6 +45,7 @@ const Header = () => {
       {
         label: `Xin chào, ${user?.fullName}`,
         key: "account",
+        className: "font-medium",
       },
       {
         label: "Cài đặt tài khoản",
@@ -62,6 +63,7 @@ const Header = () => {
       {
         label: "Đăng xuất",
         key: "logout",
+        danger: true,
         onClick: () => dispatch(logout()).then(() => navigate("/login")),
       },
     ],
@@ -69,8 +71,14 @@ const Header = () => {
   );
 
   return (
-    <header>
-      <div className="py-3 mb-3 border-bottom" style={{ background: "linear-gradient(to right, #f64c32, #5c0a98)" }}>
+    <header className="sticky top-0 z-10 w-full">
+      <div 
+        className="py-3 mb-4 border-b shadow-sm" 
+        style={{ 
+          background: "var(--header-bg)",
+          borderRadius: "0 0 20px 20px",
+        }}
+      >
         <div className="container-fluid">
           <div className="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
             <Link to="/" className="d-flex align-items-center my-2 my-lg-0 me-lg-auto text-white text-decoration-none">
@@ -84,7 +92,7 @@ const Header = () => {
                   <NavLink
                     to={item.url}
                     className={({ isActive }) =>
-                      `d-inline-flex align-items-center nav-link ${isActive ? "bg-white rounded text-dark" : "text-white"}`
+                      `d-inline-flex align-items-center nav-link ${isActive ? "active-nav bg-white rounded-xl text-primary font-medium shadow-sm" : "text-white"}`
                     }
                   >
                     {item.icon}
@@ -95,11 +103,23 @@ const Header = () => {
 
               {isAuthenticated ? (
                 <li>
-                  <Dropdown menu={{ items: accountMenu }} trigger={["click"]}>
-                    <span style={{ cursor: "pointer" }} className="d-inline-flex align-items-center nav-link text-white">
-                      <UserCircle size="24" className="me-2" />
+                  <Dropdown 
+                    menu={{ 
+                      items: accountMenu,
+                      className: 'rounded-xl shadow-lg'
+                    }} 
+                    trigger={["click"]}
+                    placement="bottomRight"
+                    arrow
+                  >
+                    <div style={{ cursor: "pointer" }} className="d-inline-flex align-items-center nav-link text-white">
+                      {user?.avatarUrl ? (
+                        <Avatar src={user.avatarUrl} className="me-2" />
+                      ) : (
+                        <UserCircle size="24" className="me-2" />
+                      )}
                       Tài khoản
-                    </span>
+                    </div>
                   </Dropdown>
                 </li>
               ) : (
@@ -107,7 +127,7 @@ const Header = () => {
                   <NavLink
                     to="/login"
                     className={({ isActive }) =>
-                      `d-inline-flex align-items-center nav-link ${isActive ? "bg-white rounded text-dark" : "text-white"}`
+                      `d-inline-flex align-items-center nav-link ${isActive ? "bg-white rounded-xl text-primary font-medium shadow-sm" : "text-white"}`
                     }
                   >
                     <Login size="24" className="me-2" />

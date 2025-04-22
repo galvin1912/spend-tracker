@@ -1,6 +1,6 @@
 import PropTypes from "prop-types";
 import { useNavigate, useParams, createSearchParams, Link } from "react-router-dom";
-import { Select, Space, Checkbox, DatePicker, Card, Button, Alert, Radio, Divider } from "antd";
+import { Select, Space, Checkbox, DatePicker, Card, Button, Alert, Radio, Divider, Typography, Row, Col } from "antd";
 import vi_VN from "../../../locale/vi_VN";
 import dayjs from "dayjs";
 import { useState } from "react";
@@ -101,7 +101,7 @@ const TrackerFilter = ({ filter, categories, isCategoriesLoading, thisMonthExpen
     
     const incomeMessage = categorySum[category].income ? (
       <>
-        Tổng thu nhập: <strong className="text-success">{convertCurrency(categorySum[category].income)}</strong>
+        Tổng thu nhập: <Typography.Text strong className="text-success">{convertCurrency(categorySum[category].income)}</Typography.Text>
       </>
     ) : (
       ""
@@ -110,7 +110,7 @@ const TrackerFilter = ({ filter, categories, isCategoriesLoading, thisMonthExpen
     const noTransactionMessage = !categorySum[category].income && !categorySum[category].expense ? "Không có giao dịch" : "";
     const expenseMessage = categorySum[category].expense ? (
       <>
-        Tổng chi tiêu: <strong className="text-danger">{convertCurrency(categorySum[category].expense)}</strong>
+        Tổng chi tiêu: <Typography.Text strong className="text-danger">{convertCurrency(categorySum[category].expense)}</Typography.Text>
       </>
     ) : (
       ""
@@ -120,11 +120,12 @@ const TrackerFilter = ({ filter, categories, isCategoriesLoading, thisMonthExpen
       <Alert
         key={category}
         type="info"
-        className="mt-3"
+        className="mt-3 rounded-xl"
+        showIcon
         message={
-          <span>
-            Thống kê &quot;{categoryName}&quot; trong {filter.dateRange ? "khoảng" : "tháng"} {timeDisplay}: {incomeMessage} {dashIcon} {noTransactionMessage} {expenseMessage}
-          </span>
+          <Typography.Text>
+            Thống kê &quot;<Typography.Text strong>{categoryName}</Typography.Text>&quot; trong {filter.dateRange ? "khoảng" : "tháng"} {timeDisplay}: {incomeMessage} {dashIcon} {noTransactionMessage} {expenseMessage}
+          </Typography.Text>
         }
       />
     );
@@ -137,122 +138,165 @@ const TrackerFilter = ({ filter, categories, isCategoriesLoading, thisMonthExpen
 
   return (
     <>
-      <Card title="Bộ lọc chung">
-        <Space size="middle" wrap>
-          <Select
-            options={[
-              { value: "all", label: "Tất cả" },
-              { value: "income", label: "Thu nhập" },
-              { value: "expense", label: "Chi tiêu" },
-            ]}
-            value={filter.type}
-            onChange={(value) => handleFilterChange(value, "type")}
-            style={{ width: 100 }}
-          />
+      <Card title={
+        <Typography.Title level={5} style={{ margin: 0 }}>
+          Bộ lọc
+        </Typography.Title>
+      } 
+      className="shadow-hover rounded-2xl" style={{ marginBottom: 16 }}>
+        <Row gutter={[16, 16]}>
+          <Col xs={24} md={24}>
+            <Space size="middle" wrap style={{ marginBottom: 16 }}>
+              <Select
+                options={[
+                  { value: "all", label: "Tất cả" },
+                  { value: "income", label: "Thu nhập" },
+                  { value: "expense", label: "Chi tiêu" },
+                ]}
+                value={filter.type}
+                onChange={(value) => handleFilterChange(value, "type")}
+                style={{ width: 120 }}
+                className="rounded-xl"
+              />
 
-          <Select
-            options={[
-              { value: "default", label: "Mặc định", disabled: true },
-              { value: "date", label: "Ngày" },
-              { value: "amount", label: "Số tiền" },
-            ]}
-            value={filter.sortBy}
-            onChange={(value) => handleFilterChange(value, "sortBy")}
-          />
-        </Space>
+              <Select
+                options={[
+                  { value: "default", label: "Mặc định", disabled: true },
+                  { value: "date", label: "Ngày" },
+                  { value: "amount", label: "Số tiền" },
+                ]}
+                value={filter.sortBy}
+                onChange={(value) => handleFilterChange(value, "sortBy")}
+                style={{ width: 120 }}
+                className="rounded-xl"
+              />
+            </Space>
+          </Col>
+          
+          <Col xs={24}>
+            <Divider orientation="left">
+              <Typography.Text strong>Khoảng thời gian</Typography.Text>
+            </Divider>
+            
+            <div style={{ marginBottom: 16 }}>
+              <Radio.Group 
+                value={dateFilterType} 
+                onChange={handleDateFilterTypeChange}
+                buttonStyle="solid"
+                className="date-filter-tabs"
+              >
+                <Radio.Button value="month" className="rounded-l-xl">Theo tháng</Radio.Button>
+                <Radio.Button value="range" className="rounded-r-xl">Khoảng tùy chọn</Radio.Button>
+              </Radio.Group>
+            </div>
 
-        <Divider orientation="left">Khoảng thời gian</Divider>
-        
-        <div style={{ marginBottom: 16 }}>
-          <Radio.Group value={dateFilterType} onChange={handleDateFilterTypeChange}>
-            <Radio.Button value="month">Theo tháng</Radio.Button>
-            <Radio.Button value="range">Khoảng tùy chọn</Radio.Button>
-          </Radio.Group>
-        </div>
+            {dateFilterType === "month" ? (
+              <DatePicker
+                picker="month"
+                format="MM/YYYY"
+                value={filter.time ? dayjs(filter.time) : dayjs()}
+                onChange={(value) => handleFilterChange(value, "time")}
+                disabledDate={(current) => current && current > dayjs()}
+                locale={vi_VN.DataPicker}
+                allowClear={false}
+                style={{ width: '100%', maxWidth: '300px' }}
+                className="rounded-xl"
+              />
+            ) : (
+              <RangePicker
+                format="DD/MM/YYYY"
+                value={dateRangeValue}
+                onChange={handleDateRangeChange}
+                disabledDate={(current) => current && current > dayjs()}
+                locale={vi_VN.DataPicker}
+                style={{ width: '100%', maxWidth: '350px' }}
+                className="rounded-xl"
+              />
+            )}
+          </Col>
+        </Row>
 
-        {dateFilterType === "month" ? (
-          <DatePicker
-            picker="month"
-            format="MM/YYYY"
-            value={filter.time ? dayjs(filter.time) : dayjs()}
-            onChange={(value) => handleFilterChange(value, "time")}
-            disabledDate={(current) => current && current > dayjs()}
-            locale={vi_VN.DataPicker}
-            allowClear={false}
-            style={{ width: '100%', maxWidth: '300px' }}
-          />
-        ) : (
-          <RangePicker
-            format="DD/MM/YYYY"
-            value={dateRangeValue}
-            onChange={handleDateRangeChange}
-            disabledDate={(current) => current && current > dayjs()}
-            locale={vi_VN.DataPicker}
-            style={{ width: '100%', maxWidth: '350px' }}
-          />
-        )}
-
-        {thisMonthIncomeSum ? (
-          <Alert
-            type="success"
-            showIcon
-            className="mt-3"
-            message={
-              <span>
-                Tổng thu nhập {filter.dateRange ? 'trong khoảng ' : 'trong tháng '}
-                {filter.dateRange
-                  ? `${dayjs(filter.dateRangeStart).format("DD/MM/YYYY")} - ${dayjs(filter.dateRangeEnd).format("DD/MM/YYYY")}`
-                  : dayjs(filter.time).format("MM/YYYY")
-                }: <strong className="text-success">{convertCurrency(thisMonthIncomeSum)}</strong>
-              </span>
-            }
-          />
-        ) : (
-          ""
-        )}
-
-        {thisMonthExpenseSum ? (
-          <Alert
-            type="error"
-            showIcon
-            className="mt-3"
-            message={
-              <span>
-                Tổng chi tiêu {filter.dateRange ? 'trong khoảng ' : 'trong tháng '}
-                {filter.dateRange
-                  ? `${dayjs(filter.dateRangeStart).format("DD/MM/YYYY")} - ${dayjs(filter.dateRangeEnd).format("DD/MM/YYYY")}`
-                  : dayjs(filter.time).format("MM/YYYY")
-                }: <strong className="text-danger">{convertCurrency(thisMonthExpenseSum)}</strong>
-              </span>
-            }
-          />
-        ) : (
-          ""
-        )}
+        <Row gutter={[16, 16]} style={{ marginTop: 16 }}>
+          <Col xs={24} md={12}>
+            {thisMonthIncomeSum ? (
+              <Alert
+                type="success"
+                showIcon
+                className="rounded-xl"
+                message={
+                  <Typography.Text>
+                    Tổng thu nhập {filter.dateRange ? 'trong khoảng ' : 'trong tháng '}
+                    <Typography.Text strong>
+                      {filter.dateRange
+                        ? `${dayjs(filter.dateRangeStart).format("DD/MM/YYYY")} - ${dayjs(filter.dateRangeEnd).format("DD/MM/YYYY")}`
+                        : dayjs(filter.time).format("MM/YYYY")
+                      }
+                    </Typography.Text>: <Typography.Text strong className="text-success">{convertCurrency(thisMonthIncomeSum)}</Typography.Text>
+                  </Typography.Text>
+                }
+              />
+            ) : null}
+          </Col>
+          
+          <Col xs={24} md={12}>
+            {thisMonthExpenseSum ? (
+              <Alert
+                type="error"
+                showIcon
+                className="rounded-xl"
+                message={
+                  <Typography.Text>
+                    Tổng chi tiêu {filter.dateRange ? 'trong khoảng ' : 'trong tháng '}
+                    <Typography.Text strong>
+                      {filter.dateRange
+                        ? `${dayjs(filter.dateRangeStart).format("DD/MM/YYYY")} - ${dayjs(filter.dateRangeEnd).format("DD/MM/YYYY")}`
+                        : dayjs(filter.time).format("MM/YYYY")
+                      }
+                    </Typography.Text>: <Typography.Text strong className="text-danger">{convertCurrency(thisMonthExpenseSum)}</Typography.Text>
+                  </Typography.Text>
+                }
+              />
+            ) : null}
+          </Col>
+        </Row>
       </Card>
 
       <Card
-        style={{ marginTop: 12 }}
         title={
           <Link to={`/tracker/detail/${trackerID}/category/list`} className="text-dark text-decoration-none">
-            Danh mục (nhấp vào để xem danh sách)
+            <Typography.Title level={5} style={{ margin: 0 }}>
+              Danh mục 
+              <Typography.Text type="secondary" style={{ fontSize: '14px', fontWeight: 'normal', marginLeft: '8px' }}>
+                (nhấp vào để xem danh sách)
+              </Typography.Text>
+            </Typography.Title>
           </Link>
         }
         extra={
           <Link to={`/tracker/detail/${trackerID}/category/create`}>
-            <Button type="primary">Tạo danh mục</Button>
+            <Button type="primary" icon={<span className="me-1">+</span>}>Tạo danh mục</Button>
           </Link>
         }
         loading={isCategoriesLoading}
+        className="shadow-hover rounded-2xl"
       >
-        <Checkbox.Group
-          options={categories.map((category) => ({
-            label: category?.name,
-            value: category?.uid,
-          }))}
-          value={filter.categories.split(",")}
-          onChange={(value) => handleFilterChange(value.toString(), "categories")}
-        />
+        <div className="category-checkboxes">
+          <Checkbox.Group
+            options={categories.map((category) => ({
+              label: category?.name,
+              value: category?.uid,
+              style: { 
+                borderRadius: '20px', 
+                padding: '4px 12px',
+                margin: '0 8px 8px 0',
+                border: '1px solid #e2e8f0',
+                backgroundColor: category?.color ? `${category?.color}20` : undefined,
+              }
+            }))}
+            value={filter.categories ? filter.categories.split(",") : []}
+            onChange={(value) => handleFilterChange(value.toString(), "categories")}
+          />
+        </div>
 
         {categorySum && renderCategorySum}
       </Card>

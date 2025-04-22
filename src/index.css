@@ -2,14 +2,351 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  transition: background-color 0.2s, border-color 0.2s, box-shadow 0.2s;
+}
+
+:root {
+  --primary-color: #5c6ac4;
+  --secondary-color: #4e5ab7;
+  --success-color: #10b981;
+  --warning-color: #f59e0b;
+  --danger-color: #ef4444;
+  --info-color: #3b82f6;
+  --body-bg: #f8fafc;
+  --card-bg: #ffffff;
+  --text-color: #1e293b;
+  --text-muted: #64748b;
+  --border-color: #e2e8f0;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
+  --shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.08);
+  --header-bg: linear-gradient(to right, #4f46e5, #7c3aed);
 }
 
 body {
   font-family: "Raleway", sans-serif;
   font-weight: 400;
-  background-color: rgba(0, 0, 0, 0.01);
+  background-color: var(--body-bg);
+  color: var(--text-color);
+  line-height: 1.6;
 }
 
+/* Add smooth scrolling to the whole document */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Modern button styles with hover effects */
+.ant-btn {
+  transition: all 0.3s ease-in-out;
+}
+
+.ant-btn:hover {
+  transform: translateY(-2px);
+}
+
+.ant-btn-primary {
+  background: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+.ant-btn-primary:hover, .ant-btn-primary:focus {
+  background: var(--secondary-color);
+  border-color: var(--secondary-color);
+  box-shadow: 0 4px 10px rgba(92, 106, 196, 0.3);
+}
+
+/* Card hover effects */
+.ant-card {
+  transition: all 0.3s ease;
+}
+
+.ant-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-lg);
+}
+
+/* Input field focus styles */
+.ant-input:focus, .ant-input-focused,
+.ant-select-selector:focus, .ant-select-focused .ant-select-selector,
+.ant-picker:focus, .ant-picker-focused {
+  box-shadow: 0 0 0 2px rgba(92, 106, 196, 0.2);
+  border-color: var(--primary-color);
+}
+
+/* Table styles */
+.ant-table {
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.ant-table-thead > tr > th {
+  background-color: #f8fafc;
+  font-weight: 600;
+}
+
+/* Navigation styles */
+.nav-link {
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  padding: 8px 16px;
+}
+
+.nav-link:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  transform: translateY(-2px);
+}
+
+/* List item styles */
+.ant-list-item {
+  border-radius: 10px;
+  transition: all 0.3s ease;
+}
+
+.ant-list-item:hover {
+  background-color: #f1f5f9;
+  transform: scale(1.01);
+}
+
+/* Tag styles */
+.ant-tag {
+  border-radius: 16px;
+  padding: 4px 12px;
+  font-weight: 500;
+}
+
+/* Alert styles */
+.ant-alert {
+  border-radius: 10px;
+}
+
+/* Modal styles */
+.ant-modal-content {
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.ant-modal-header {
+  border-top-left-radius: 16px;
+  border-top-right-radius: 16px;
+}
+
+/* Custom classes */
+.text-success {
+  color: var(--success-color) !important;
+}
+
+.text-danger {
+  color: var(--danger-color) !important;
+}
+
+.text-info {
+  color: var(--info-color) !important;
+}
+
+.text-warning {
+  color: var(--warning-color) !important;
+}
+
+/* Utility classes */
+.shadow-hover {
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.shadow-hover:hover {
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-3px);
+}
+
+.rounded-xl {
+  border-radius: 12px;
+}
+
+.rounded-2xl {
+  border-radius: 16px;
+}
+
+/* Container with more modern padding */
+.container-fluid {
+  padding-left: 24px;
+  padding-right: 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+@media (min-width: 768px) {
+  .container-fluid {
+    padding-left: 32px;
+    padding-right: 32px;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+/* Table styles */
+.transactions-table .ant-table {
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.transactions-table .ant-table-thead > tr > th {
+  background-color: #f8fafc;
+  font-weight: 600;
+  padding: 16px;
+  border-bottom: 2px solid #f1f5f9;
+}
+
+.table-row-light {
+  background-color: #ffffff;
+}
+
+.table-row-dark {
+  background-color: #f9fafb;
+}
+
+.transactions-table .ant-table-tbody > tr:hover > td {
+  background-color: #f1f5f9 !important;
+}
+
+/* Pagination styles */
+.pagination-modern .ant-pagination-item {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.pagination-modern .ant-pagination-item-active {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+.pagination-modern .ant-pagination-item-active a {
+  color: white;
+}
+
+/* Category checkbox styles */
+.category-checkboxes .ant-checkbox-wrapper {
+  margin-right: 8px;
+  margin-bottom: 8px;
+  transition: all 0.3s;
+  border-radius: 16px;
+  padding: 4px 8px;
+}
+
+.category-checkboxes .ant-checkbox-wrapper:hover {
+  background-color: #f1f5f9;
+}
+
+.category-checkboxes .ant-checkbox-wrapper-checked {
+  background-color: rgba(92, 106, 196, 0.1);
+}
+
+/* Radio button tabs */
+.date-filter-tabs .ant-radio-button-wrapper {
+  height: 36px;
+  line-height: 34px;
+}
+
+.date-filter-tabs .ant-radio-button-wrapper:first-child {
+  border-top-left-radius: 12px;
+  border-bottom-left-radius: 12px;
+}
+
+.date-filter-tabs .ant-radio-button-wrapper:last-child {
+  border-top-right-radius: 12px;
+  border-bottom-right-radius: 12px;
+}
+
+/* Form styles */
+.ant-form-item-label > label {
+  font-weight: 500;
+}
+
+.ant-form-item {
+  margin-bottom: 24px;
+}
+
+/* Transaction item in mobile view */
+.transaction-item {
+  background-color: white;
+  padding: 12px;
+  transition: all 0.3s ease;
+}
+
+.transaction-item:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow);
+}
+
+/* Active nav link */
+.active-nav {
+  font-weight: 600;
+}
+
+/* Make sure header is on top of everything */
+header {
+  z-index: 1000;
+  position: sticky;
+  top: 0;
+}
+
+/* Add a subtle shadow to separate main content from header */
+.container-fluid {
+  padding-top: 10px;
+  position: relative;
+}
+
+.ant-typography {
+  margin-bottom: 0;
+}
+
+/* Enhance form inputs */
+.ant-input,
+.ant-select-selector,
+.ant-picker {
+  box-shadow: none;
+  transition: all 0.3s ease;
+}
+
+.ant-input:hover,
+.ant-select-selector:hover,
+.ant-picker:hover {
+  border-color: var(--primary-color);
+}
+
+/* Enhance statistic cards */
+.ant-statistic-content-value {
+  font-weight: 600;
+  font-size: 1.5rem;
+}
+
+.rounded-l-xl {
+  border-top-left-radius: 12px;
+  border-bottom-left-radius: 12px;
+}
+
+.rounded-r-xl {
+  border-top-right-radius: 12px;
+  border-bottom-right-radius: 12px;
+}
+
+/* Font declarations below this point */
 @font-face {
   font-family: "Raleway";
   src: url("/fonts/Raleway-Thin.ttf") format("truetype");
