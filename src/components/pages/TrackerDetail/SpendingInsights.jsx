@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import PropTypes from "prop-types";
+import { memo, useEffect, useState, useCallback } from 'react';
 import { Card, Typography } from 'antd';
 import { Line, Bar, Doughnut } from 'react-chartjs-2';
 import {
@@ -24,9 +25,11 @@ const SpendingInsights = ({ trackerID, categories = [] }) => {
   const [monthCompareData, setMonthCompareData] = useState({ labels: [], data: [] });
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    async function fetchData() {
-      setLoading(true);
+  const fetchData = useCallback(async () => {
+    if (!trackerID) return;
+    
+    setLoading(true);
+    try {
       // 1. Xu hướng chi tiêu theo tháng (6 tháng gần nhất)
       const now = dayjs();
       const months = [];
@@ -67,10 +70,16 @@ const SpendingInsights = ({ trackerID, categories = [] }) => {
 
       // 3. So sánh các tháng (6 tháng gần nhất)
       setMonthCompareData({ labels: trendLabels, data: trendDataArr });
+    } catch (error) {
+      console.error("Error fetching spending insights:", error);
+    } finally {
       setLoading(false);
     }
-    if (trackerID) fetchData();
   }, [trackerID, categories]);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
 
   // Filter out categories with 0 sum for chart clarity
   const filteredCatLabels = categoryData.labels.filter((_, i) => categoryData.data[i] > 0);
@@ -141,4 +150,10 @@ const SpendingInsights = ({ trackerID, categories = [] }) => {
   );
 };
 
-export default SpendingInsights;
+SpendingInsights.propTypes = {
+  trackerID: PropTypes.string.isRequired,
+  categories: PropTypes.array.isRequired,
+};
+
+const MemoizedSpendingInsights = memo(SpendingInsights);
+export default MemoizedSpendingInsights;
