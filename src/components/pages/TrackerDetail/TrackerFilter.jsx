@@ -217,8 +217,8 @@ const TrackerFilter = ({ filter, categories, isCategoriesLoading, thisMonthExpen
         </Row>
 
         <Row gutter={[16, 16]} style={{ marginTop: 16 }}>
-          <Col xs={24} md={12}>
-            {thisMonthIncomeSum ? (
+          {thisMonthIncomeSum ? (
+            <Col Col xs={24} md={12}>
               <Alert
                 type="success"
                 showIcon
@@ -235,11 +235,11 @@ const TrackerFilter = ({ filter, categories, isCategoriesLoading, thisMonthExpen
                   </Typography.Text>
                 }
               />
-            ) : null}
-          </Col>
+            </Col>
+          ) : null}
           
-          <Col xs={24} md={12}>
-            {thisMonthExpenseSum ? (
+          {thisMonthExpenseSum ? (
+            <Col xs={24} md={12}>
               <Alert
                 type="error"
                 showIcon
@@ -256,8 +256,8 @@ const TrackerFilter = ({ filter, categories, isCategoriesLoading, thisMonthExpen
                   </Typography.Text>
                 }
               />
-            ) : null}
-          </Col>
+            </Col>
+          ) : null}
         </Row>
       </Card>
 
