@@ -47,9 +47,9 @@ const Header = () => {
         key: "account",
       },
       {
-        label: "Cài đặt",
+        label: "Cài đặt tài khoản",
         key: "setting",
-        disabled: true,
+        onClick: () => navigate("/user/settings"),
       },
       {
         label: "Trợ giúp",

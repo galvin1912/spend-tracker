@@ -13,3 +13,7 @@ export const USER_LOGOUT_FAILED = "user/logoutFailed";
 export const USER_FETCH_INFO = "user/fetchInfo";
 export const USER_FETCH_INFO_SUCCESS = "user/fetchInfoSuccess";
 export const USER_FETCH_INFO_FAILED = "user/fetchInfoFailed";
+
+export const USER_UPDATE_PROFILE = "user/updateProfile";
+export const USER_UPDATE_PROFILE_SUCCESS = "user/updateProfileSuccess";
+export const USER_UPDATE_PROFILE_FAILED = "user/updateProfileFailed";

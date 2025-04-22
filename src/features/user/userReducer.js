@@ -11,6 +11,9 @@ import {
   USER_FETCH_INFO,
   USER_FETCH_INFO_SUCCESS,
   USER_FETCH_INFO_FAILED,
+  USER_UPDATE_PROFILE,
+  USER_UPDATE_PROFILE_SUCCESS,
+  USER_UPDATE_PROFILE_FAILED,
 } from "./userConstants";
 
 import { GROUP_CREATE_SUCCESS, GROUP_DELETE_OWNER_GROUP_SUCCESS } from "../group/groupConstants";
@@ -22,6 +25,7 @@ const initialState = {
   isLoggingIn: false,
   isLoggingOut: false,
   isRegistering: false,
+  isUpdatingProfile: false,
 };
 
 const userReducer = (state = initialState, action) => {
@@ -89,6 +93,25 @@ const userReducer = (state = initialState, action) => {
       return {
         ...state,
         isFetching: false,
+      };
+    case USER_UPDATE_PROFILE:
+      return {
+        ...state,
+        isUpdatingProfile: true,
+      };
+    case USER_UPDATE_PROFILE_SUCCESS:
+      return {
+        ...state,
+        user: {
+          ...state.user,
+          ...action.payload,
+        },
+        isUpdatingProfile: false,
+      };
+    case USER_UPDATE_PROFILE_FAILED:
+      return {
+        ...state,
+        isUpdatingProfile: false,
       };
     case GROUP_CREATE_SUCCESS:
       return {

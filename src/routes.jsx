@@ -14,6 +14,7 @@ const TrackerTransactionDetail = lazy(() => import("./pages/TrackerTransactionDe
 const Group = lazy(() => import("./pages/Group"));
 const GroupCreate = lazy(() => import("./pages/GroupCreate"));
 const GroupDetail = lazy(() => import("./pages/GroupDetail"));
+const UserSettings = lazy(() => import("./pages/UserSettings"));
 const Login = lazy(() => import("./pages/Login"));
 const Register = lazy(() => import("./pages/Register"));
 const Page404 = lazy(() => import("./pages/404"));
@@ -78,6 +79,14 @@ const AppRoutes = () => {
           element: (
             <Suspense fallback={<Skeleton active />}>
               <TrackerTransactionDetail />
+            </Suspense>
+          ),
+        },
+        {
+          path: "/user/settings",
+          element: (
+            <Suspense fallback={<Skeleton active />}>
+              <UserSettings />
             </Suspense>
           ),
         },

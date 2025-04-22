@@ -243,10 +243,6 @@ const GroupDetail = () => {
                 name="description"
                 rules={[
                   {
-                    required: true,
-                    message: "Vui lòng nhập mô tả nhóm",
-                  },
-                  {
                     max: 200,
                     message: "Mô tả nhóm không được dài quá 200 ký tự",
                   },

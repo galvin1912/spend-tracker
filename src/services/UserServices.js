@@ -2,6 +2,7 @@ import { createUserWithEmailAndPassword, signOut, signInWithEmailAndPassword } f
 import { Timestamp } from "firebase/firestore";
 import { auth } from "../configs/firebase";
 import { request } from "../utils/requestUtil";
+import store from "../store";
 
 class UserServices {
   static register = async (credentials) => {
@@ -59,6 +60,29 @@ class UserServices {
       email: user?.email,
       gender: user?.gender,
     };
+  };
+
+  static updateUserProfile = async (userData) => {
+    const { user } = store.getState().user;
+    
+    if (!user || !user.uid) {
+      throw new Error("Không tìm thấy thông tin người dùng!");
+    }
+
+    const updatedData = {
+      ...userData,
+      updatedAt: Timestamp.now(),
+    };
+
+    await request("/users", {
+      method: "PATCH",
+      uid: user.uid,
+      data: updatedData,
+    });
+
+    // Return the complete updated user object
+    const updatedUser = await UserServices.fetchUserInfo(user.uid);
+    return updatedUser;
   };
 }
 
