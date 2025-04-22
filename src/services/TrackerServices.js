@@ -73,6 +73,7 @@ class TrackerServices {
       time: Timestamp.fromDate(transactionData.time.toDate()),
       amount: Number(transactionData.amount) * (transactionData.type === "expense" ? -1 : 1),
       createdAt: Timestamp.now(),
+      updatedAt: Timestamp.now(),
     };
 
     const transactionRef = await request(`/trackers/${trackerID}/transactions`, {
@@ -137,34 +138,6 @@ class TrackerServices {
     return res;
   };
 
-  static createTransaction = async (trackerID, transactionData) => {
-    const { user } = store.getState().user;
-
-    const newTransaction = {
-      ...transactionData,
-      owner: user?.uid,
-      time: Timestamp.fromDate(transactionData.time.toDate()),
-      amount: Number(transactionData.amount) * (transactionData.type === "expense" ? -1 : 1),
-      createdAt: Timestamp.now(),
-      updatedAt: null,
-    };
-
-    const transactionRef = await request(`/trackers/${trackerID}/transactions`, {
-      method: "POST",
-      data: newTransaction,
-    });
-
-    const trackerDetail = await TrackerServices.getDetail(trackerID);
-
-    await request(`/trackers`, {
-      method: "PATCH",
-      uid: trackerID,
-      data: {
-        transactions: [...(trackerDetail.transactions || []), transactionRef.id],
-      },
-    });
-  };
-
   static updateTransaction = async (trackerID, transactionID, transactionData) => {
     const updateTransaction = {
       ...transactionData,
@@ -198,13 +171,28 @@ class TrackerServices {
   };
 
   static getTransactions = async (trackerID, filter) => {
-    let transactions = await request(`/trackers/${trackerID}/transactions`, {
-      method: "GET",
-      queryConstraints: [
+    let queryConstraints = [];
+
+    // Handle date filtering based on filter type
+    if (filter.timeType === "custom" && filter.timeRange) {
+      // Custom date range filtering
+      queryConstraints = [
+        where("time", ">=", Timestamp.fromDate(filter.timeRange.startDate.startOf("day").toDate())),
+        where("time", "<=", Timestamp.fromDate(filter.timeRange.endDate.endOf("day").toDate())),
+        orderBy("time", "desc"),
+      ];
+    } else {
+      // Standard month filtering
+      queryConstraints = [
         where("time", ">=", Timestamp.fromDate(filter.time.startOf("month").toDate())),
         where("time", "<=", Timestamp.fromDate(filter.time.endOf("month").toDate())),
         orderBy("time", "desc"),
-      ],
+      ];
+    }
+
+    let transactions = await request(`/trackers/${trackerID}/transactions`, {
+      method: "GET",
+      queryConstraints,
     });
 
     // filter by type
@@ -237,7 +225,13 @@ class TrackerServices {
   static getTransactionsSum = async (trackerID, filter) => {
     let queryConstraints = [];
 
-    if (filter.time && filter.timeType) {
+    // Handle date filtering
+    if (filter.timeType === "custom" && filter.timeRange) {
+      // Custom date range filtering
+      queryConstraints.push(where("time", ">=", Timestamp.fromDate(filter.timeRange.startDate.startOf("day").toDate())));
+      queryConstraints.push(where("time", "<=", Timestamp.fromDate(filter.timeRange.endDate.endOf("day").toDate())));
+    } else if (filter.time && filter.timeType) {
+      // Standard time period filtering (month, day, etc.)
       queryConstraints.push(where("time", ">=", Timestamp.fromDate(filter.time.startOf(filter.timeType).toDate())));
       queryConstraints.push(where("time", "<=", Timestamp.fromDate(filter.time.endOf(filter.timeType).toDate())));
     }

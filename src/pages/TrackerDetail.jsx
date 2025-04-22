@@ -42,6 +42,9 @@ const TrackerDetail = () => {
       sortBy: searchParams.get("sortBy") || "default",
       time: searchParams.get("time") ? dayjs(searchParams.get("time")) : dayjs(),
       categories: searchParams.get("categories") || "",
+      dateRange: searchParams.get("dateRange") === "true",
+      dateRangeStart: searchParams.get("dateRangeStart"),
+      dateRangeEnd: searchParams.get("dateRangeEnd"),
     };
   }, [searchParams]);
   
@@ -96,13 +99,28 @@ const TrackerDetail = () => {
     getCategories();
   }, [trackerID]);
 
-  // get transactions
+  // get transactions with date range support
   useEffect(() => {
     const getTransactions = async () => {
       setIsTransactionsLoading(true);
 
       try {
-        const transactions = await TrackerServices.getTransactions(trackerID, filter);
+        let queryFilter;
+        
+        if (filter.dateRange && filter.dateRangeStart && filter.dateRangeEnd) {
+          queryFilter = {
+            ...filter,
+            timeType: "custom",
+            timeRange: {
+              startDate: dayjs(filter.dateRangeStart),
+              endDate: dayjs(filter.dateRangeEnd)
+            }
+          };
+        } else {
+          queryFilter = { ...filter };
+        }
+        
+        const transactions = await TrackerServices.getTransactions(trackerID, queryFilter);
         setTransactions(transactions);
       } catch (error) {
         message.error(error.message);
@@ -129,11 +147,25 @@ const TrackerDetail = () => {
     getTodaySum();
   }, [trackerID]);
 
-  // get this month expense sum
+  // get this month expense sum with date range support
   useEffect(() => {
     const getThisMonthSum = async () => {
       try {
-        const newFilter = { time: filter.time, timeType: "month", type: "expense" };
+        let newFilter;
+        
+        if (filter.dateRange && filter.dateRangeStart && filter.dateRangeEnd) {
+          newFilter = { 
+            timeType: "custom", 
+            type: "expense",
+            timeRange: {
+              startDate: dayjs(filter.dateRangeStart),
+              endDate: dayjs(filter.dateRangeEnd)
+            }
+          };
+        } else {
+          newFilter = { time: filter.time, timeType: "month", type: "expense" };
+        }
+        
         const thisMonthSum = await TrackerServices.getTransactionsSum(trackerID, newFilter);
         setThisMonthExpenseSum(thisMonthSum);
       } catch (error) {
@@ -142,13 +174,27 @@ const TrackerDetail = () => {
     };
 
     getThisMonthSum();
-  }, [filter.time, trackerID]);
+  }, [filter.time, filter.dateRange, filter.dateRangeStart, filter.dateRangeEnd, trackerID]);
 
-  // get this month income sum
+  // get this month income sum with date range support
   useEffect(() => {
     const getThisMonthSum = async () => {
       try {
-        const newFilter = { time: filter.time, timeType: "month", type: "income" };
+        let newFilter;
+        
+        if (filter.dateRange && filter.dateRangeStart && filter.dateRangeEnd) {
+          newFilter = { 
+            timeType: "custom", 
+            type: "income",
+            timeRange: {
+              startDate: dayjs(filter.dateRangeStart),
+              endDate: dayjs(filter.dateRangeEnd)
+            }
+          };
+        } else {
+          newFilter = { time: filter.time, timeType: "month", type: "income" };
+        }
+        
         const thisMonthSum = await TrackerServices.getTransactionsSum(trackerID, newFilter);
         setThisMonthIncomeSum(thisMonthSum);
       } catch (error) {
@@ -157,7 +203,7 @@ const TrackerDetail = () => {
     };
 
     getThisMonthSum();
-  }, [filter, trackerID]);
+  }, [filter.time, filter.dateRange, filter.dateRangeStart, filter.dateRangeEnd, trackerID]);
 
   // get this month income and expense sum when categories change
   useEffect(() => {
@@ -170,9 +216,34 @@ const TrackerDetail = () => {
       try {
         const categorySumPromises = [];
         const categories = filter.categories.split(",");
+        
         categories.forEach((category) => {
-          const expenseFilter = { time: filter.time, timeType: "month", type: "expense", category };
-          const incomeFilter = { time: filter.time, timeType: "month", type: "income", category };
+          let expenseFilter, incomeFilter;
+          
+          if (filter.dateRange && filter.dateRangeStart && filter.dateRangeEnd) {
+            expenseFilter = { 
+              timeType: "custom", 
+              type: "expense", 
+              category,
+              timeRange: {
+                startDate: dayjs(filter.dateRangeStart),
+                endDate: dayjs(filter.dateRangeEnd)
+              }
+            };
+            incomeFilter = { 
+              timeType: "custom", 
+              type: "income", 
+              category,
+              timeRange: {
+                startDate: dayjs(filter.dateRangeStart),
+                endDate: dayjs(filter.dateRangeEnd)
+              }
+            };
+          } else {
+            expenseFilter = { time: filter.time, timeType: "month", type: "expense", category };
+            incomeFilter = { time: filter.time, timeType: "month", type: "income", category };
+          }
+          
           categorySumPromises.push(TrackerServices.getTransactionsSum(trackerID, expenseFilter));
           categorySumPromises.push(TrackerServices.getTransactionsSum(trackerID, incomeFilter));
         });
@@ -194,7 +265,7 @@ const TrackerDetail = () => {
     };
 
     getThisMonthSum();
-  }, [filter.categories, filter.time, trackerID]);
+  }, [filter.categories, filter.time, filter.dateRange, filter.dateRangeStart, filter.dateRangeEnd, trackerID]);
 
   // Budget warning system
   useEffect(() => {

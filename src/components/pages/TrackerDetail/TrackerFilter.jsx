@@ -1,27 +1,104 @@
 import PropTypes from "prop-types";
 import { useNavigate, useParams, createSearchParams, Link } from "react-router-dom";
-import { Select, Space, Checkbox, DatePicker, Card, Button, Alert } from "antd";
+import { Select, Space, Checkbox, DatePicker, Card, Button, Alert, Radio, Divider } from "antd";
 import vi_VN from "../../../locale/vi_VN";
 import dayjs from "dayjs";
+import { useState } from "react";
 import { convertCurrency } from "../../../utils/numberUtils";
+
+const { RangePicker } = DatePicker;
 
 const TrackerFilter = ({ filter, categories, isCategoriesLoading, thisMonthExpenseSum, thisMonthIncomeSum, categorySum }) => {
   const { trackerID } = useParams();
-
   const navigate = useNavigate();
+  const [dateFilterType, setDateFilterType] = useState(filter.dateRange ? "range" : "month");
 
   const handleFilterChange = (value, key) => {
     const newFilter = { ...filter, [key]: value };
+
+    // If using date range, remove the month filter and vice versa
+    if (key === "dateRange") {
+      delete newFilter.time;
+    } else if (key === "time") {
+      delete newFilter.dateRange;
+      delete newFilter.dateRangeStart;
+      delete newFilter.dateRangeEnd;
+    }
 
     navigate({
       search: createSearchParams(newFilter).toString(),
     });
   };
 
+  const handleDateRangeChange = (dates) => {
+    if (!dates || dates.length !== 2) {
+      return;
+    }
+    const [start, end] = dates;
+    
+    const newFilter = {
+      ...filter,
+      dateRange: true,
+      dateRangeStart: start.format('YYYY-MM-DD'),
+      dateRangeEnd: end.format('YYYY-MM-DD')
+    };
+    
+    // Remove single month filter when using date range
+    delete newFilter.time;
+    
+    navigate({
+      search: createSearchParams(newFilter).toString(),
+    });
+  };
+
+  const handleDateFilterTypeChange = (e) => {
+    const type = e.target.value;
+    setDateFilterType(type);
+    
+    // Clear the opposite filter type when switching
+    if (type === "month") {
+      const newFilter = { ...filter };
+      delete newFilter.dateRange;
+      delete newFilter.dateRangeStart;
+      delete newFilter.dateRangeEnd;
+      
+      // Set default month if not already set
+      if (!newFilter.time) {
+        newFilter.time = dayjs().format('YYYY-MM-DD');
+      }
+      
+      navigate({
+        search: createSearchParams(newFilter).toString(),
+      });
+    } else {
+      // If switching to range but no range is set yet, don't clear the month filter
+      if (!filter.dateRangeStart) {
+        return;
+      }
+      
+      const newFilter = { ...filter };
+      delete newFilter.time;
+      
+      navigate({
+        search: createSearchParams(newFilter).toString(),
+      });
+    }
+  };
+
   const renderCategorySum = Object.keys(categorySum).map((category) => {
     const categoryDetail = categories.find((categoryItem) => categoryItem.uid === category);
     const categoryName = categoryDetail?.name || "Không có danh mục";
-    const time = dayjs(filter.time).format("MM/YYYY");
+    
+    // Display date format based on filter type
+    let timeDisplay;
+    if (filter.dateRange) {
+      const start = dayjs(filter.dateRangeStart).format("DD/MM/YYYY");
+      const end = dayjs(filter.dateRangeEnd).format("DD/MM/YYYY");
+      timeDisplay = `${start} - ${end}`;
+    } else {
+      timeDisplay = dayjs(filter.time).format("MM/YYYY");
+    }
+    
     const incomeMessage = categorySum[category].income ? (
       <>
         Tổng thu nhập: <strong className="text-success">{convertCurrency(categorySum[category].income)}</strong>
@@ -46,12 +123,17 @@ const TrackerFilter = ({ filter, categories, isCategoriesLoading, thisMonthExpen
         className="mt-3"
         message={
           <span>
-            Thống kê &quot;{categoryName}&quot; trong tháng {time}: {incomeMessage} {dashIcon} {noTransactionMessage} {expenseMessage}
+            Thống kê &quot;{categoryName}&quot; trong {filter.dateRange ? "khoảng" : "tháng"} {timeDisplay}: {incomeMessage} {dashIcon} {noTransactionMessage} {expenseMessage}
           </span>
         }
       />
     );
   });
+
+  // Get date range values from filter
+  const dateRangeValue = filter.dateRangeStart && filter.dateRangeEnd 
+    ? [dayjs(filter.dateRangeStart), dayjs(filter.dateRangeEnd)] 
+    : null;
 
   return (
     <>
@@ -77,17 +159,38 @@ const TrackerFilter = ({ filter, categories, isCategoriesLoading, thisMonthExpen
             value={filter.sortBy}
             onChange={(value) => handleFilterChange(value, "sortBy")}
           />
+        </Space>
 
+        <Divider orientation="left">Khoảng thời gian</Divider>
+        
+        <div style={{ marginBottom: 16 }}>
+          <Radio.Group value={dateFilterType} onChange={handleDateFilterTypeChange}>
+            <Radio.Button value="month">Theo tháng</Radio.Button>
+            <Radio.Button value="range">Khoảng tùy chọn</Radio.Button>
+          </Radio.Group>
+        </div>
+
+        {dateFilterType === "month" ? (
           <DatePicker
             picker="month"
             format="MM/YYYY"
-            value={filter.time}
+            value={filter.time ? dayjs(filter.time) : dayjs()}
             onChange={(value) => handleFilterChange(value, "time")}
             disabledDate={(current) => current && current > dayjs()}
             locale={vi_VN.DataPicker}
             allowClear={false}
+            style={{ width: '100%', maxWidth: '300px' }}
           />
-        </Space>
+        ) : (
+          <RangePicker
+            format="DD/MM/YYYY"
+            value={dateRangeValue}
+            onChange={handleDateRangeChange}
+            disabledDate={(current) => current && current > dayjs()}
+            locale={vi_VN.DataPicker}
+            style={{ width: '100%', maxWidth: '350px' }}
+          />
+        )}
 
         {thisMonthIncomeSum ? (
           <Alert
@@ -96,8 +199,11 @@ const TrackerFilter = ({ filter, categories, isCategoriesLoading, thisMonthExpen
             className="mt-3"
             message={
               <span>
-                Tổng thu nhập trong tháng {dayjs(filter.time).format("MM/YYYY")}:{" "}
-                <strong className="text-success">{convertCurrency(thisMonthIncomeSum)}</strong>
+                Tổng thu nhập {filter.dateRange ? 'trong khoảng ' : 'trong tháng '}
+                {filter.dateRange
+                  ? `${dayjs(filter.dateRangeStart).format("DD/MM/YYYY")} - ${dayjs(filter.dateRangeEnd).format("DD/MM/YYYY")}`
+                  : dayjs(filter.time).format("MM/YYYY")
+                }: <strong className="text-success">{convertCurrency(thisMonthIncomeSum)}</strong>
               </span>
             }
           />
@@ -112,8 +218,11 @@ const TrackerFilter = ({ filter, categories, isCategoriesLoading, thisMonthExpen
             className="mt-3"
             message={
               <span>
-                Tổng chi tiêu trong tháng {dayjs(filter.time).format("MM/YYYY")}:{" "}
-                <strong className="text-danger">{convertCurrency(thisMonthExpenseSum)}</strong>
+                Tổng chi tiêu {filter.dateRange ? 'trong khoảng ' : 'trong tháng '}
+                {filter.dateRange
+                  ? `${dayjs(filter.dateRangeStart).format("DD/MM/YYYY")} - ${dayjs(filter.dateRangeEnd).format("DD/MM/YYYY")}`
+                  : dayjs(filter.time).format("MM/YYYY")
+                }: <strong className="text-danger">{convertCurrency(thisMonthExpenseSum)}</strong>
               </span>
             }
           />
