@@ -5,10 +5,12 @@ import { Helmet } from "react-helmet-async";
 import { List, Button, Card, Popconfirm } from "antd";
 import { Groups } from "@styled-icons/material";
 import { Trash } from "@styled-icons/bootstrap";
+import { useTranslation } from "react-i18next";
 import { deleteOwnerGroup, getJoinedGroups, getOwnerGroups } from "../features/group/groupActions";
 
 const Group = () => {
   const dispatch = useDispatch();
+  const { t } = useTranslation();
 
   const isOwnerGroupsLoading = useSelector((state) => state.group.isOwnerGroupsLoading);
   const isJoinedGroupsLoading = useSelector((state) => state.group.isJoinedGroupsLoading);
@@ -26,11 +28,11 @@ const Group = () => {
   return (
     <>
       <Helmet
-        title="Nhóm | GST"
+        title={`${t('groups')} | GST`}
         meta={[
           {
             name: "description",
-            content: "Quản lý nhóm của bạn.",
+            content: t('groupsDescription', 'Quản lý nhóm của bạn.'),
           },
         ]}
       />
@@ -39,28 +41,28 @@ const Group = () => {
         <div className="col-md-6">
           <Card
             className="mb-3 mb-md-0"
-            title="Nhóm của tôi"
+            title={t('myGroups')}
             bordered={false}
             loading={isOwnerGroupsLoading}
             extra={
               <Link to="/group/create">
-                <Button type="primary">Tạo nhóm</Button>
+                <Button type="primary">{t('createGroup')}</Button>
               </Link>
             }
           >
             <List
               itemLayout="horizontal"
               dataSource={ownerGroups}
-              locale={{ emptyText: "Bạn chưa sở hữu nhóm nào." }}
+              locale={{ emptyText: t('noOwnedGroups', 'Bạn chưa sở hữu nhóm nào.') }}
               renderItem={(item) => (
                 <List.Item
                   extra={
                     <Popconfirm
-                      title="Bạn có chắc muốn xóa nhóm này?"
-                      description="Hành động này không thể hoàn tác."
+                      title={t('deleteGroupConfirm')}
+                      description={t('deleteGroupWarning')}
                       onConfirm={() => dispatch(deleteOwnerGroup(item.uid))}
-                      okText="Có"
-                      cancelText="Không"
+                      okText={t('yes')}
+                      cancelText={t('no')}
                     >
                       <Button type="default" danger>
                         <Trash size={20} />
@@ -78,11 +80,11 @@ const Group = () => {
         </div>
 
         <div className="col-md-6">
-          <Card title="Nhóm tôi tham gia" bordered={false} loading={isJoinedGroupsLoading}>
+          <Card title={t('joinedGroups')} bordered={false} loading={isJoinedGroupsLoading}>
             <List
               itemLayout="horizontal"
               dataSource={joinedGroups}
-              locale={{ emptyText: "Bạn chưa tham gia nhóm nào." }}
+              locale={{ emptyText: t('noJoinedGroups', 'Bạn chưa tham gia nhóm nào.') }}
               renderItem={(item) => (
                 <List.Item>
                   <Link to={`/group/detail/${item.uid}`} className="text-decoration-none text-dark d-flex flex-fill pe-3">

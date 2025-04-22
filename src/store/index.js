@@ -4,6 +4,7 @@ import logger from "redux-logger";
 import userReducer from "../features/user/userReducer";
 import groupReducer from "../features/group/groupReducer";
 import trackerReducer from "../features/tracker/trackerReducer";
+import languageReducer from "../features/language/languageReducer";
 
 const middlewares = [thunk];
 
@@ -16,6 +17,7 @@ const store = createStore(
     user: userReducer,
     group: groupReducer,
     tracker: trackerReducer,
+    language: languageReducer
   }),
   compose(applyMiddleware(...middlewares))
 );

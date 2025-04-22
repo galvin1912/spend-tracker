@@ -3,13 +3,13 @@ import { Helmet } from "react-helmet-async";
 import { useDispatch, useSelector } from "react-redux";
 import { Form, Input, ColorPicker, Button, Row, Col, Card } from "antd";
 import { createGroup } from "../features/group/groupActions";
+import { useTranslation } from "react-i18next";
 import GroupImage from "../assets/89z_2203_w009_n001_120b_p14_120.jpg";
 
 const GroupCreate = () => {
   const navigate = useNavigate();
-
   const dispatch = useDispatch();
-
+  const { t } = useTranslation();
   const [form] = Form.useForm();
 
   const isCreatingGroup = useSelector((state) => state.group.isCreatingGroup);
@@ -27,11 +27,11 @@ const GroupCreate = () => {
   return (
     <>
       <Helmet
-        title="Tạo nhóm | GST"
+        title={`${t('createGroup')} | GST`}
         meta={[
           {
             name: "description",
-            content: "Tạo nhóm mới.",
+            content: t('createGroupDescription', 'Tạo nhóm mới.'),
           },
         ]}
       />
@@ -39,10 +39,10 @@ const GroupCreate = () => {
       <Row gutter={[24, 12]}>
         <Col span={24} md={12}>
           <Card
-            title="Tạo nhóm"
+            title={t('createGroup')}
             extra={
               <Link to="/group">
-                <Button danger>Quay lại</Button>
+                <Button danger>{t('back')}</Button>
               </Link>
             }
           >
@@ -59,46 +59,46 @@ const GroupCreate = () => {
               onFinish={onFinish}
             >
               <Form.Item
-                label="Tên nhóm"
+                label={t('groupName')}
                 name="groupName"
                 rules={[
                   {
                     required: true,
-                    message: "Vui lòng nhập tên nhóm!",
+                    message: t('required', { field: t('groupName').toLowerCase() }),
                   },
                   {
                     max: 50,
-                    message: "Tên nhóm không được dài quá 50 ký tự!",
+                    message: t('maxLength', { field: t('groupName').toLowerCase(), length: 50 }),
                   },
                   {
                     whitespace: true,
-                    message: "Tên nhóm không được để trống!",
+                    message: t('emptyField', { field: t('groupName').toLowerCase() }),
                   },
                 ]}
               >
-                <Input placeholder="Nhập tên nhóm" />
+                <Input placeholder={t('enterGroupName', 'Nhập tên nhóm')} />
               </Form.Item>
 
               <Form.Item
-                label="Mô tả"
+                label={t('description')}
                 name="description"
                 rules={[
                   {
                     max: 500,
-                    message: "Mô tả không được dài quá 500 ký tự!",
+                    message: t('maxLength', { field: t('description').toLowerCase(), length: 500 }),
                   },
                 ]}
               >
-                <Input.TextArea placeholder="Nhập mô tả" />
+                <Input.TextArea placeholder={t('enterDescription')} />
               </Form.Item>
 
               <Form.Item
-                label="Màu sắc (hiển thị trên biểu đồ)"
+                label={t('groupColor')}
                 name="color"
                 rules={[
                   {
                     required: true,
-                    message: "Vui lòng chọn màu sắc!",
+                    message: t('selectColor'),
                   },
                 ]}
               >
@@ -108,11 +108,11 @@ const GroupCreate = () => {
               <Form.Item>
                 <Link to="/group">
                   <Button className="me-2" type="default" disabled={isCreatingGroup}>
-                    Hủy
+                    {t('cancel')}
                   </Button>
                 </Link>
                 <Button type="primary" htmlType="submit" loading={isCreatingGroup}>
-                  Tạo nhóm
+                  {t('createGroup')}
                 </Button>
               </Form.Item>
             </Form>
@@ -120,7 +120,7 @@ const GroupCreate = () => {
         </Col>
 
         <Col span={24} md={12}>
-          <img src={GroupImage} alt="Group" className="img-fluid" />
+          <img src={GroupImage} alt={t('group')} className="img-fluid" />
         </Col>
       </Row>
     </>

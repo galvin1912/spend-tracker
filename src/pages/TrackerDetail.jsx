@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { useParams, useSearchParams } from "react-router-dom";
 import { Row, Col, Typography, message } from "antd";
+import { useTranslation } from "react-i18next";
 import dayjs from "dayjs";
 import TrackerFilter from "../components/pages/TrackerDetail/TrackerFilter";
 import TrackerServices from "../services/TrackerServices";
@@ -11,6 +12,7 @@ import SpendingInsightsButton from "../components/pages/TrackerDetail/SpendingIn
 import { BudgetSection, TodayExpenseCard, BudgetWarningSystem, BudgetModal } from "../components/pages/TrackerDetail/Budget";
 
 const TrackerDetail = () => {
+  const { t } = useTranslation();
   const { trackerID } = useParams();
   const [searchParams] = useSearchParams();
 
@@ -86,7 +88,7 @@ const TrackerDetail = () => {
 
       try {
         const categories = await TrackerServices.getCategories(trackerID);
-        setCategories([{ name: "Không có danh mục", uid: "uncategorized" }, ...categories]);
+        setCategories([{ name: t('noCategory'), uid: "uncategorized" }, ...categories]);
       } catch (error) {
         message.error(error.message);
       } finally {
@@ -95,7 +97,7 @@ const TrackerDetail = () => {
     };
 
     getCategories();
-  }, [trackerID]);
+  }, [trackerID, t]);
 
   // get transactions with date range support
   useEffect(() => {
@@ -282,11 +284,11 @@ const TrackerDetail = () => {
   return (
     <>
       <Helmet
-        title="Thống kê chi tiêu | GST"
+        title={`${t('expenseStats')} | GST`}
         meta={[
           {
             name: "description",
-            content: "Thống kê chi tiêu",
+            content: t('expenseStats'),
           },
         ]}
       />

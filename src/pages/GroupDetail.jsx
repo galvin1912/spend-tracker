@@ -7,11 +7,14 @@ import { PersonAdd } from "@styled-icons/evaicons-solid";
 import { PersonRemove } from "@styled-icons/material-rounded";
 import { debounce } from "lodash";
 import dayjs from "dayjs";
+import { useTranslation } from "react-i18next";
 import GroupServices from "../services/GroupServices";
 import GroupDetailImage from "../assets/4380.jpg";
 import UserServices from "../services/UserServices";
 
 const GroupDetail = () => {
+  const { t } = useTranslation();
+  
   // This is used to get groupID from URL
   const { groupID } = useParams();
 
@@ -145,7 +148,7 @@ const GroupDetail = () => {
       await GroupServices.updateGroup(groupID, {
         members: [...members, uid],
       });
-      message.success("Thêm thành viên thành công");
+      message.success(t("addMemberSuccess"));
 
       // store member uid
       setMembers([...members, uid]);
@@ -166,7 +169,7 @@ const GroupDetail = () => {
       await GroupServices.updateGroup(groupID, {
         members: members.filter((memeberUid) => memeberUid !== uid),
       });
-      message.success("Xóa thành viên thành công");
+      message.success(t("removeMemberSuccess"));
 
       // remove member uid from members
       const newMembers = members.filter((memeberUid) => memeberUid !== uid);
@@ -187,7 +190,7 @@ const GroupDetail = () => {
         description,
         color,
       });
-      message.success("Cập nhật nhóm thành công");
+      message.success(t("groupUpdateSuccess"));
       navigate("/group");
     } catch (error) {
       message.error(error.message);
@@ -197,11 +200,11 @@ const GroupDetail = () => {
   return (
     <>
       <Helmet
-        title={"Chi tiết nhóm | GST"}
+        title={`${t("groupDetail")} | GST`}
         meta={[
           {
             name: "description",
-            content: "Chi tiết nhóm",
+            content: t("groupDetailDescription"),
           },
         ]}
       />
@@ -209,29 +212,29 @@ const GroupDetail = () => {
       <Row gutter={[24, 12]}>
         <Col span={24} md={12}>
           <Card
-            title="Chi tiết nhóm"
+            title={t("groupDetail")}
             extra={
               <Link to="/group">
-                <Button danger>Quay lại</Button>
+                <Button danger>{t("back")}</Button>
               </Link>
             }
           >
             <Form form={form} name="groupDetailForm" layout="vertical" autoComplete="off" onFinish={handleUpdateGroup} disabled={!isOwnerGroup}>
               <Form.Item
-                label="Tên nhóm"
+                label={t("groupName")}
                 name="groupName"
                 rules={[
                   {
                     required: true,
-                    message: "Vui lòng nhập tên nhóm",
+                    message: t("required", { field: t("groupName").toLowerCase() }),
                   },
                   {
                     max: 50,
-                    message: "Tên nhóm không được dài quá 50 ký tự",
+                    message: t("maxLength", { field: t("groupName").toLowerCase(), length: 50 }),
                   },
                   {
                     whitespace: true,
-                    message: "Tên nhóm không được để trống",
+                    message: t("emptyField", { field: t("groupName").toLowerCase() }),
                   },
                 ]}
               >
@@ -239,16 +242,16 @@ const GroupDetail = () => {
               </Form.Item>
 
               <Form.Item
-                label="Mô tả"
+                label={t("description")}
                 name="description"
                 rules={[
                   {
                     max: 200,
-                    message: "Mô tả nhóm không được dài quá 200 ký tự",
+                    message: t("maxLength", { field: t("description").toLowerCase(), length: 200 }),
                   },
                   {
                     whitespace: true,
-                    message: "Mô tả nhóm không được để trống",
+                    message: t("emptyField", { field: t("description").toLowerCase() }),
                   },
                 ]}
               >
@@ -256,42 +259,42 @@ const GroupDetail = () => {
               </Form.Item>
 
               <Form.Item
-                label="Màu sắc (hiển thị trên biểu đồ)"
+                label={t("groupColor")}
                 name="color"
                 rules={[
                   {
                     required: true,
-                    message: "Vui lòng chọn màu sắc!",
+                    message: t("selectColor"),
                   },
                 ]}
               >
                 <ColorPicker format="hex" showText onChangeComplete={handleChangeColor} />
               </Form.Item>
 
-              <Form.Item label="Tạo vào lúc" name="createdAt">
+              <Form.Item label={t("createdAt")} name="createdAt">
                 <Input disabled />
               </Form.Item>
 
-              <Form.Item label="Cập nhật vào lúc" name="updatedAt">
+              <Form.Item label={t("updatedAt")} name="updatedAt">
                 <Input disabled />
               </Form.Item>
 
               <Form.Item>
                 <Link to="/group">
                   <Button className="me-2" type="default">
-                    Hủy
+                    {t("cancel")}
                   </Button>
                 </Link>
                 <Button type="primary" htmlType="submit">
-                  Cập nhật
+                  {t("update")}
                 </Button>
               </Form.Item>
             </Form>
           </Card>
 
-          <Card title="Thành viên" className="mt-3">
+          <Card title={t("members")} className="mt-3">
             {isOwnerGroup && (
-              <Input placeholder="Nhập email thành viên (tối thiểu 3 ký tự)" allowClear value={searchText} onChange={handleSearchMember} />
+              <Input placeholder={t("enterMemberEmail")} allowClear value={searchText} onChange={handleSearchMember} />
             )}
             {searchText.length >= 3 && (
               <List
@@ -299,7 +302,7 @@ const GroupDetail = () => {
                 className="mt-1"
                 dataSource={memberOptions}
                 loading={memberOptionsLoading}
-                locale={{ emptyText: <i>Không có kết quả phù hợp</i> }}
+                locale={{ emptyText: <i>{t("noMatchingResults")}</i> }}
                 renderItem={(memeberOption) => (
                   <List.Item style={{ cursor: "pointer" }} extra={<PersonAdd size={20} />} onClick={() => handleAddMember(memeberOption.uid)}>
                     <span>{memeberOption.label}</span>
@@ -332,7 +335,7 @@ const GroupDetail = () => {
           </Card>
         </Col>
         <Col span={24} md={12}>
-          <img src={GroupDetailImage} alt="Group Detail" className="img-fluid" />
+          <img src={GroupDetailImage} alt={t("groupDetail")} className="img-fluid" />
         </Col>
       </Row>
     </>

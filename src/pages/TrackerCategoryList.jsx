@@ -3,10 +3,12 @@ import { useParams, Link } from "react-router-dom";
 import { List, Card, Row, Col, Button, Popconfirm, Space, message } from "antd";
 import { Edit } from "@styled-icons/evaicons-solid";
 import { Trash } from "@styled-icons/bootstrap";
+import { useTranslation } from "react-i18next";
 import TrackerServices from "../services/TrackerServices";
 import CategoryImage from "../assets/Collaboration_Illustrations_Thumbnail.png";
 
 const TrackerCategoryList = () => {
+  const { t } = useTranslation();
   const { trackerID } = useParams();
 
   const [isCategoriesLoading, setIsCategoriesLoading] = useState(false);
@@ -34,10 +36,10 @@ const TrackerCategoryList = () => {
     <Row gutter={[24, 12]}>
       <Col span={24} md={12}>
         <Card
-          title="Danh sách danh mục"
+          title={t('categoryList')}
           extra={
             <Link to={`/tracker/detail/${trackerID}`}>
-              <Button danger>Quay lại</Button>
+              <Button danger>{t('back')}</Button>
             </Link>
           }
         >
@@ -52,11 +54,11 @@ const TrackerCategoryList = () => {
                       <Edit size={20} />
                     </Link>
                     <Popconfirm
-                      title="Bạn có chắc muốn xóa danh mục này?"
-                      description="Hành động này không thể hoàn tác. Các giao dịch thuộc danh mục này sẽ được chuyển sang không có danh mục."
+                      title={t('deleteCategoryConfirm')}
+                      description={t('deleteCategoryWarning')}
                       onConfirm={() => console.log("delete")}
-                      okText="Xóa"
-                      cancelText="Hủy"
+                      okText={t('delete')}
+                      cancelText={t('cancel')}
                     >
                       <Trash size={20} className="text-danger" style={{ cursor: "pointer" }} />
                     </Popconfirm>

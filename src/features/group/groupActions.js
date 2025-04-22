@@ -14,6 +14,7 @@ import {
 } from "./groupConstants";
 import { message } from "antd";
 import GroupServices from "../../services/GroupServices";
+import i18next from "i18next";
 
 export const createGroup = (groupData) => async (dispatch) => {
   dispatch({ type: GROUP_CREATE });
@@ -21,10 +22,10 @@ export const createGroup = (groupData) => async (dispatch) => {
   try {
     const groupID = await GroupServices.createGroup(groupData);
     dispatch({ type: GROUP_CREATE_SUCCESS, payload: groupID });
-    message.success("Tạo nhóm thành công!");
+    message.success(i18next.t("groupCreateSuccess"));
   } catch (error) {
     dispatch({ type: GROUP_CREATE_FAILED });
-    message.error(error.message);
+    message.error(error.message || i18next.t("groupCreateError"));
   }
 };
 
@@ -36,7 +37,7 @@ export const getOwnerGroups = () => async (dispatch) => {
     dispatch({ type: GROUP_GET_OWNER_GROUPS_SUCCESS, payload: groups });
   } catch (error) {
     dispatch({ type: GROUP_GET_OWNER_GROUPS_FAILED });
-    message.error(error.message);
+    message.error(error.message || i18next.t("errorGetGroups"));
   }
 };
 
@@ -48,7 +49,7 @@ export const getJoinedGroups = () => async (dispatch) => {
     dispatch({ type: GROUP_GET_JOINED_GROUPS_SUCCESS, payload: groups });
   } catch (error) {
     dispatch({ type: GROUP_GET_JOINED_GROUPS_FAILED });
-    message.error(error.message);
+    message.error(error.message || i18next.t("errorGetGroups"));
   }
 };
 
@@ -58,9 +59,9 @@ export const deleteOwnerGroup = (groupID) => async (dispatch) => {
   try {
     await GroupServices.deleteGroup(groupID);
     dispatch({ type: GROUP_DELETE_OWNER_GROUP_SUCCESS, payload: groupID });
-    message.success("Xóa nhóm thành công!");
+    message.success(i18next.t("groupDeleteSuccess"));
   } catch (error) {
     dispatch({ type: GROUP_DELETE_OWNER_GROUP_FAILED });
-    message.error(error.message);
+    message.error(error.message || i18next.t("groupDeleteError"));
   }
 };

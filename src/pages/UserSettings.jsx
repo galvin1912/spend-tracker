@@ -3,9 +3,11 @@ import { useSelector, useDispatch } from "react-redux";
 import { Helmet } from "react-helmet-async";
 import { Row, Col, Form, Input, Select, Button, Card, Avatar, message } from "antd";
 import { UserOutlined } from "@ant-design/icons";
+import { useTranslation } from "react-i18next";
 import { updateUserProfile } from "../features/user/userActions";
 
 const UserSettings = () => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const { user, isUpdatingProfile } = useSelector((state) => state.user);
   const [form] = Form.useForm();
@@ -23,18 +25,18 @@ const UserSettings = () => {
   return (
     <>
       <Helmet
-        title="Cài đặt tài khoản | GST"
+        title={`${t("personalInfo")} | GST`}
         meta={[
           {
             name: "description",
-            content: "Quản lý thông tin cá nhân của bạn.",
+            content: t("personalInfoDescription"),
           },
         ]}
       />
 
       <Row gutter={[24, 24]}>
         <Col span={24} md={16}>
-          <Card title="Thông tin cá nhân">
+          <Card title={t("updateProfile")}>
             <Form
               form={form}
               layout="vertical"
@@ -46,16 +48,16 @@ const UserSettings = () => {
               }}
             >
               <Form.Item
-                label="Email"
+                label={t("email")}
                 name="email"
                 rules={[
                   {
                     required: true,
-                    message: "Vui lòng nhập email!",
+                    message: t("required", { field: t("email").toLowerCase() }),
                   },
                   {
                     type: "email",
-                    message: "Email không hợp lệ!",
+                    message: t("invalidEmail"),
                   },
                 ]}
               >
@@ -63,16 +65,16 @@ const UserSettings = () => {
               </Form.Item>
 
               <Form.Item
-                label="Họ và tên"
+                label={t("fullName")}
                 name="fullName"
                 rules={[
                   {
                     required: true,
-                    message: "Vui lòng nhập họ và tên!",
+                    message: t("required", { field: t("fullName").toLowerCase() }),
                   },
                   {
                     max: 50,
-                    message: "Họ và tên không được vượt quá 50 ký tự!",
+                    message: t("maxLength", { field: t("fullName").toLowerCase(), length: 50 }),
                   },
                 ]}
               >
@@ -80,27 +82,27 @@ const UserSettings = () => {
               </Form.Item>
 
               <Form.Item
-                label="Giới tính"
+                label={t("gender")}
                 name="gender"
                 rules={[
                   {
                     required: true,
-                    message: "Vui lòng chọn giới tính!",
+                    message: t("required", { field: t("gender").toLowerCase() }),
                   },
                 ]}
               >
                 <Select
                   options={[
-                    { value: "male", label: "Nam" },
-                    { value: "female", label: "Nữ" },
-                    { value: "other", label: "Khác" },
+                    { value: "male", label: t("male") },
+                    { value: "female", label: t("female") },
+                    { value: "other", label: t("other") },
                   ]}
                 />
               </Form.Item>
 
               <Form.Item>
                 <Button type="primary" htmlType="submit" loading={isUpdatingProfile}>
-                  Cập nhật thông tin
+                  {t("updateProfile")}
                 </Button>
               </Form.Item>
             </Form>
@@ -108,25 +110,25 @@ const UserSettings = () => {
         </Col>
 
         <Col span={24} md={8}>
-          <Card title="Thông tin tài khoản">
+          <Card title={t("personalInfo")}>
             <div className="text-center mb-4">
               <Avatar size={100} icon={<UserOutlined />} src={user?.avatarUrl} />
             </div>
             <div>
               <p>
-                <strong>Email:</strong> {user?.email}
+                <strong>{t("email")}:</strong> {user?.email}
               </p>
               <p>
-                <strong>Họ và tên:</strong> {user?.fullName}
+                <strong>{t("fullName")}:</strong> {user?.fullName}
               </p>
               <p>
-                <strong>Giới tính:</strong> {user?.gender === "male" ? "Nam" : user?.gender === "female" ? "Nữ" : "Khác"}
+                <strong>{t("gender")}:</strong> {user?.gender === "male" ? t('male') : user?.gender === "female" ? t("female") : t("other")}
               </p>
             </div>
 
             <div className="mt-4">
-              <Card type="inner" title="Đổi mật khẩu">
-                <Button onClick={() => message.info("Tính năng đổi mật khẩu sẽ được cập nhật trong thời gian tới.")}>Đổi mật khẩu</Button>
+              <Card type="inner" title={t("changePassword")}>
+                <Button onClick={() => message.info(t("changePasswordMessage"))}>{t("changePassword")}</Button>
               </Card>
             </div>
           </Card>

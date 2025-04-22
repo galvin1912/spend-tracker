@@ -1,15 +1,18 @@
 import { Link } from "react-router-dom";
 import { Button, Result } from "antd";
+import { useTranslation } from "react-i18next";
 
 const Page404 = () => {
+  const { t } = useTranslation();
+  
   return (
     <Result
       status="404"
       title="404"
-      subTitle="Xin lỗi, trang bạn truy cập không tồn tại."
+      subTitle={t("pageNotFound")}
       extra={
         <Link to="/">
-          <Button type="primary">Về trang chủ</Button>
+          <Button type="primary">{t("backToHome")}</Button>
         </Link>
       }
     />

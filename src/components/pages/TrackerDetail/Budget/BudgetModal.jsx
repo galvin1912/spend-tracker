@@ -1,16 +1,11 @@
 import PropTypes from "prop-types";
 import { useState, useEffect, memo } from "react";
 import { Modal, Typography, InputNumber, message } from "antd";
+import { useTranslation } from "react-i18next";
 import GroupServices from "../../../../services/GroupServices";
 
-const BudgetModal = ({ 
-  visible, 
-  initialBudget, 
-  trackerID, 
-  groupDetail, 
-  onCancel, 
-  onSuccess 
-}) => {
+const BudgetModal = ({ visible, initialBudget, trackerID, groupDetail, onCancel, onSuccess }) => {
+  const { t } = useTranslation();
   const [budgetAmount, setBudgetAmount] = useState(null);
   const [isSavingBudget, setIsSavingBudget] = useState(false);
 
@@ -24,14 +19,14 @@ const BudgetModal = ({
   // Handle budget save
   const handleSaveBudget = async () => {
     if (!budgetAmount || budgetAmount <= 0) {
-      message.error('Vui lòng nhập số tiền hợp lệ');
+      message.error(t("validBudgetError"));
       return;
     }
 
     setIsSavingBudget(true);
     try {
       await GroupServices.updateGroup(trackerID, { budget: budgetAmount });
-      message.success('Cập nhật ngân sách thành công');
+      message.success(t("budgetUpdateSuccess"));
       onSuccess(budgetAmount);
     } catch (error) {
       message.error(error.message);
@@ -44,58 +39,56 @@ const BudgetModal = ({
     <Modal
       title={
         <Typography.Title level={4} style={{ margin: 0 }}>
-          {groupDetail?.budget ? 'Thay đổi ngân sách' : 'Đặt ngân sách cho nhóm'}
+          {groupDetail?.budget ? t("changeBudget") : t("setGroupBudget")}
         </Typography.Title>
       }
       open={visible}
       onOk={handleSaveBudget}
       onCancel={onCancel}
       confirmLoading={isSavingBudget}
-      okText="Lưu ngân sách"
-      cancelText="Hủy"
+      okText={t("saveBudget")}
+      cancelText={t("cancel")}
       okButtonProps={{
         className: "rounded-xl",
-        style: { 
+        style: {
           fontWeight: 500,
-          paddingLeft: '16px',
-          paddingRight: '16px'
-        }
+          paddingLeft: "16px",
+          paddingRight: "16px",
+        },
       }}
       cancelButtonProps={{
         className: "rounded-xl",
-        style: { 
+        style: {
           fontWeight: 500,
-          paddingLeft: '16px',
-          paddingRight: '16px'
-        }
+          paddingLeft: "16px",
+          paddingRight: "16px",
+        },
       }}
       className="budget-modal"
-      style={{ borderRadius: '16px' }}
+      style={{ borderRadius: "16px" }}
     >
-      <div style={{ marginBottom: '20px' }}>
-        <Typography.Text style={{ fontSize: '15px', display: 'block', marginBottom: '12px' }}>
-          Nhập ngân sách tháng cho nhóm:
-        </Typography.Text>
+      <div style={{ marginBottom: "20px" }}>
+        <Typography.Text style={{ fontSize: "15px", display: "block", marginBottom: "12px" }}>{t("enterBudget")}</Typography.Text>
         <InputNumber
-          style={{ 
-            width: '100%',
-            height: '46px',
-            fontSize: '16px',
-            borderRadius: '12px'
+          style={{
+            width: "100%",
+            height: "46px",
+            fontSize: "16px",
+            borderRadius: "12px",
           }}
           value={budgetAmount}
           onChange={(value) => setBudgetAmount(value)}
-          formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-          parser={(value) => value.replace(/\$\s?|(,*)/g, '')}
+          formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+          parser={(value) => value.replace(/\$\s?|(,*)/g, "")}
           min={1}
           prefix="₫"
-          placeholder="Nhập số tiền ngân sách"
+          placeholder={t("enterBudgetPlaceholder")}
           size="large"
           className="budget-input"
         />
       </div>
-      <Typography.Text type="secondary" style={{ fontSize: '13px' }}>
-        Ngân sách giúp bạn theo dõi và kiểm soát chi tiêu hàng tháng của nhóm.
+      <Typography.Text type="secondary" style={{ fontSize: "13px" }}>
+        {t("budgetHelp")}
       </Typography.Text>
     </Modal>
   );

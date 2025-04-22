@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { Row, Col, Form, Input, ColorPicker, Button, Card, message } from "antd";
+import { useTranslation } from "react-i18next";
 import TrackerServices from "../services/TrackerServices";
 import EditImage from "../assets/write-edit.webp";
 
 const TrackerCategoryDetail = () => {
   const navigate = useNavigate();
-
+  const { t } = useTranslation();
   const { trackerID, categoryID } = useParams();
 
   const [form] = Form.useForm();
@@ -40,7 +41,7 @@ const TrackerCategoryDetail = () => {
 
     try {
       await TrackerServices.updateCategory(trackerID, categoryID, values);
-      message.success("Cập nhật danh mục thành công!");
+      message.success(t('categoryUpdateSuccess'));
       navigate(`/tracker/detail/${trackerID}/category/list`);
     } catch (error) {
       message.error(error.message);
@@ -53,42 +54,42 @@ const TrackerCategoryDetail = () => {
     <Row gutter={[24, 12]}>
       <Col span={24} md={12}>
         <Card
-          title="Cập nhật danh mục"
+          title={t('updateCategory')}
           extra={
             <Link to={`/tracker/detail/${trackerID}/category/list`}>
-              <Button danger>Quay lại</Button>
+              <Button danger>{t('back')}</Button>
             </Link>
           }
         >
           <Form name="categoryDetailForm" form={form} layout="vertical" autoComplete="off" onFinish={onFinish}>
             <Form.Item
-              label="Tên danh mục"
+              label={t('categoryName')}
               name="name"
               rules={[
                 {
                   required: true,
-                  message: "Vui lòng nhập tên danh mục",
+                  message: t('required', { field: t('categoryName').toLowerCase() }),
                 },
                 {
                   max: 20,
-                  message: "Tên danh mục không được vượt quá 20 ký tự",
+                  message: t('maxLength', { field: t('categoryName').toLowerCase(), length: 20 }),
                 },
                 {
                   whitespace: true,
-                  message: "Tên danh mục không được để trống",
+                  message: t('emptyField', { field: t('categoryName').toLowerCase() }),
                 },
               ]}
             >
-              <Input placeholder="Nhập tên danh mục" />
+              <Input placeholder={t('enterCategoryName')} />
             </Form.Item>
 
             <Form.Item
-              label="Màu sắc (hiển thị trên biểu đồ)"
+              label={t('categoryColor')}
               name="color"
               rules={[
                 {
                   required: true,
-                  message: "Vui lòng chọn màu sắc!",
+                  message: t('selectColor'),
                 },
               ]}
             >
@@ -98,11 +99,11 @@ const TrackerCategoryDetail = () => {
             <Form.Item>
               <Link to={`/tracker/detail/${trackerID}/category/list`}>
                 <Button className="me-2" disabled={isSubmitting}>
-                  Hủy
+                  {t('cancel')}
                 </Button>
               </Link>
               <Button type="primary" htmlType="submit" loading={isSubmitting}>
-                Cập nhật
+                {t('update')}
               </Button>
             </Form.Item>
           </Form>
