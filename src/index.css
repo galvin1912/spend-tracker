@@ -50,7 +50,8 @@ html {
   border-color: var(--primary-color);
 }
 
-.ant-btn-primary:hover, .ant-btn-primary:focus {
+.ant-btn-primary:hover,
+.ant-btn-primary:focus {
   background: var(--secondary-color);
   border-color: var(--secondary-color);
   box-shadow: 0 4px 10px rgba(92, 106, 196, 0.3);
@@ -67,9 +68,12 @@ html {
 }
 
 /* Input field focus styles */
-.ant-input:focus, .ant-input-focused,
-.ant-select-selector:focus, .ant-select-focused .ant-select-selector,
-.ant-picker:focus, .ant-picker-focused {
+.ant-input:focus,
+.ant-input-focused,
+.ant-select-selector:focus,
+.ant-select-focused .ant-select-selector,
+.ant-picker:focus,
+.ant-picker-focused {
   box-shadow: 0 0 0 2px rgba(92, 106, 196, 0.2);
   border-color: var(--primary-color);
 }
@@ -344,6 +348,15 @@ header {
 .rounded-r-xl {
   border-top-right-radius: 12px;
   border-bottom-right-radius: 12px;
+}
+
+.budget-warning-modal .ant-modal-content {
+  padding: 0;
+  background-color: transparent;
+}
+
+.budget-warning-modal .ant-modal-confirm-paragraph {
+  max-width: 100%;
 }
 
 /* Font declarations below this point */

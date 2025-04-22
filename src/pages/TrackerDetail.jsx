@@ -5,7 +5,6 @@ import { Row, Col, Typography, message, Button, Modal, InputNumber } from "antd"
 import dayjs from "dayjs";
 import TrackerFilter from "../components/pages/TrackerDetail/TrackerFilter";
 import SpendingInsights from '../components/pages/TrackerDetail/SpendingInsights';
-import BudgetTimeline from '../components/pages/TrackerDetail/BudgetTimeline/BudgetTimeline';
 import { convertCurrency } from "../utils/numberUtils";
 import TrackerServices from "../services/TrackerServices";
 import GroupServices from "../services/GroupServices";
@@ -48,17 +47,6 @@ const TrackerDetail = () => {
       dateRangeEnd: searchParams.get("dateRangeEnd"),
     };
   }, [searchParams]);
-  
-  // Create a date range object for the BudgetTimeline component
-  const dateRangeForBudget = useMemo(() => {
-    if (filter.dateRange && filter.dateRangeStart && filter.dateRangeEnd) {
-      return {
-        startDate: dayjs(filter.dateRangeStart),
-        endDate: dayjs(filter.dateRangeEnd)
-      };
-    }
-    return null;
-  }, [filter.dateRange, filter.dateRangeStart, filter.dateRangeEnd]);
   
   // Calculate remaining days in the month
   const remainingDays = useMemo(() => {
@@ -285,29 +273,122 @@ const TrackerDetail = () => {
     if (groupDetail?.budget && thisMonthExpenseSum < 0 && !warningShown) {
       const budgetUsedPercentage = Math.abs(thisMonthExpenseSum) / groupDetail.budget * 100;
       
+      // Define warning colors and styles based on severity
+      let warningStyle = {};
+      let iconType = '⚠️';
+      let badgeColor = '';
+      let buttonStyle = {};
+      
       if (budgetUsedPercentage >= 80) {
-        // Red warning (80% or more of the budget)
-        Modal.warning({
-          title: 'Cảnh báo ngân sách',
-          content: (
-            <div style={{ color: 'red' }}>
-              Còn {remainingDays} ngày nữa mới hết tháng mà đã chi hết {convertCurrency(Math.abs(thisMonthExpenseSum))}/{convertCurrency(groupDetail.budget)}
-            </div>
-          ),
-          onOk: () => setWarningShown(true)
-        });
+        // Critical warning (80% or more of the budget)
+        warningStyle = {
+          background: 'linear-gradient(to right, #fef2f2, #fee2e2)',
+          border: '1px solid #fecaca',
+          borderRadius: '12px',
+          padding: '16px 20px',
+        };
+        badgeColor = '#ef4444';
+        iconType = '🚨';
+        buttonStyle = {
+          background: '#ef4444',
+          borderColor: '#ef4444'
+        };
       } else if (budgetUsedPercentage >= 60) {
-        // Yellow warning (60% or more of the budget)
-        Modal.warning({
-          title: 'Cảnh báo ngân sách',
-          content: (
-            <div style={{ color: '#ffc107' }}>
-              Còn {remainingDays} ngày nữa mới hết tháng mà đã chi hết {convertCurrency(Math.abs(thisMonthExpenseSum))}/{convertCurrency(groupDetail.budget)}
-            </div>
-          ),
-          onOk: () => setWarningShown(true)
-        });
+        // Warning (60% or more of the budget)
+        warningStyle = {
+          background: 'linear-gradient(to right, #fffbeb, #fef3c7)',
+          border: '1px solid #fde68a',
+          borderRadius: '12px',
+          padding: '16px 20px',
+        };
+        badgeColor = '#f59e0b';
+        iconType = '⚠️';
+        buttonStyle = {
+          background: '#f59e0b',
+          borderColor: '#f59e0b'
+        };
       }
+      
+      // Store modal reference so we can close it
+      let warningModal;
+      
+      // Handle close modal
+      const handleCloseWarning = () => {
+        setWarningShown(true);
+        warningModal.destroy();
+      };
+      
+      // Configure the modal options with modern styling
+      const modalConfig = {
+        title: null, // Remove default title
+        className: 'budget-warning-modal',
+        centered: true,
+        width: 420,
+        icon: null,
+        footer: null,
+        maskClosable: false,
+        closable: false,
+        content: (
+          <div style={warningStyle}>
+            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '16px' }}>
+              <div style={{ fontSize: '28px', lineHeight: '1' }}>
+                {iconType}
+              </div>
+              <div style={{ flex: 1 }}>
+                <Typography.Title level={4} style={{ margin: '0 0 8px 0' }}>
+                  Cảnh báo ngân sách
+                </Typography.Title>
+                
+                <div style={{ marginBottom: '16px' }}>
+                  <Typography.Text>
+                    Còn <Typography.Text strong>{remainingDays} ngày</Typography.Text> nữa mới hết tháng mà đã chi:
+                  </Typography.Text>
+                  
+                  <div style={{ 
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    background: 'rgba(255, 255, 255, 0.6)',
+                    borderRadius: '8px',
+                    padding: '8px 12px',
+                    marginTop: '12px'
+                  }}>
+                    <Typography.Text style={{ fontWeight: 500 }}>
+                      {convertCurrency(Math.abs(thisMonthExpenseSum))}/{convertCurrency(groupDetail.budget)}
+                    </Typography.Text>
+                    <Typography.Text style={{ 
+                      fontWeight: 600,
+                      color: badgeColor,
+                      background: 'rgba(255, 255, 255, 0.8)',
+                      borderRadius: '20px',
+                      padding: '2px 10px',
+                    }}>
+                      {budgetUsedPercentage.toFixed(0)}%
+                    </Typography.Text>
+                  </div>
+                </div>
+                
+                <Button 
+                  type="primary" 
+                  block 
+                  onClick={handleCloseWarning}
+                  className="rounded-xl"
+                  style={{ 
+                    ...buttonStyle,
+                    fontWeight: 500,
+                    height: '38px'
+                  }}
+                >
+                  Đã hiểu
+                </Button>
+              </div>
+            </div>
+          </div>
+        ),
+      };
+      
+      // Show the styled modal and store the reference
+      warningModal = Modal.info(modalConfig);
     }
   }, [groupDetail, thisMonthExpenseSum, remainingDays, warningShown]);
 
@@ -358,20 +439,6 @@ const TrackerDetail = () => {
             {trackerDetail?.groupName}
           </Typography.Title>
 
-          <div style={{ display: 'flex', alignItems: 'center', marginBottom: '15px' }}>
-            <Button 
-              type="primary"
-              onClick={showBudgetModal}
-            >
-              {groupDetail?.budget ? 'Thay đổi ngân sách' : 'Đặt ngân sách'}
-            </Button>
-            {groupDetail?.budget && (
-              <Typography.Title level={4} style={{ marginLeft: '16px' }}>
-                Ngân sách: <strong>{convertCurrency(groupDetail.budget)}</strong>
-              </Typography.Title>
-            )}
-          </div>
-          
           {/* Button to open Spending Insights Modal */}
           <Button type="default" onClick={() => setIsInsightsModalVisible(true)} style={{ marginBottom: 16 }}>
             Xem báo cáo chi tiêu
@@ -386,22 +453,90 @@ const TrackerDetail = () => {
           >
             <SpendingInsights trackerID={trackerID} categories={categories} />
           </Modal>
-          
-          {/* Budget Timeline Component */}
-          {groupDetail?.budget && thisMonthExpenseSum !== 0 && (
-            <BudgetTimeline 
-              totalExpense={thisMonthExpenseSum} 
-              budget={groupDetail.budget} 
-              dateRange={dateRangeForBudget}
-            />
-          )}
+
+          <div className="rounded-2xl shadow-hover" style={{ 
+            marginBottom: '20px', 
+            padding: '16px 20px',
+            background: 'linear-gradient(to right, #f0f9ff, #e0f2fe)',
+            border: '1px solid #bae6fd',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '12px'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <Typography.Text style={{ fontSize: '16px', fontWeight: 500 }}>
+                Ngân sách tháng
+              </Typography.Text>
+              <Button 
+                type="primary"
+                onClick={showBudgetModal}
+                className="rounded-xl"
+                style={{
+                  background: groupDetail?.budget ? 'var(--primary-color)' : '#3b82f6',
+                  borderColor: groupDetail?.budget ? 'var(--primary-color)' : '#3b82f6',
+                  fontWeight: 500,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '4px'
+                }}
+                icon={<span style={{ fontSize: '16px' }}>{groupDetail?.budget ? '✏️' : '+'}</span>}
+              >
+                {groupDetail?.budget ? 'Thay đổi' : 'Đặt ngân sách'}
+              </Button>
+            </div>
+            
+            {groupDetail?.budget && (
+              <div style={{ 
+                display: 'flex', 
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: '12px',
+                background: 'rgba(255, 255, 255, 0.7)',
+                borderRadius: '12px'
+              }}>
+                <Typography.Title 
+                  level={3} 
+                  style={{ 
+                    margin: 0,
+                    color: '#0369a1',
+                    fontWeight: 600
+                  }}
+                >
+                  {convertCurrency(groupDetail.budget)}
+                </Typography.Title>
+              </div>
+            )}
+          </div>
           
           {todaySum ? (
-            <p className="lead">
-              <mark>
-                Hôm nay đã chi tiêu <strong className="text-danger">{convertCurrency(todaySum)}</strong>
-              </mark>
-            </p>
+            <div 
+              className="shadow-hover rounded-xl" 
+              style={{
+                padding: '12px 16px',
+                background: 'linear-gradient(to right, #fef2f2, #ffe4e6)',
+                border: '1px solid #fecdd3',
+                marginBottom: '16px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between'
+              }}
+            >
+              <Typography.Text style={{ fontSize: '16px' }}>
+                <Typography.Text strong>Hôm nay</Typography.Text> đã chi tiêu:
+              </Typography.Text>
+              <Typography.Text 
+                strong 
+                className="text-danger"
+                style={{ 
+                  fontSize: '18px',
+                  background: 'rgba(255, 255, 255, 0.6)',
+                  padding: '4px 12px',
+                  borderRadius: '16px'
+                }}
+              >
+                {convertCurrency(todaySum)}
+              </Typography.Text>
+            </div>
           ) : null}
           
           <TrackerFilter
@@ -426,21 +561,61 @@ const TrackerDetail = () => {
       
       {/* Budget Modal */}
       <Modal
-        title="Đặt ngân sách cho nhóm"
+        title={
+          <Typography.Title level={4} style={{ margin: 0 }}>
+            {groupDetail?.budget ? 'Thay đổi ngân sách' : 'Đặt ngân sách cho nhóm'}
+          </Typography.Title>
+        }
         open={isBudgetModalVisible}
         onOk={handleSaveBudget}
         onCancel={() => setIsBudgetModalVisible(false)}
         confirmLoading={isSavingBudget}
+        okText="Lưu ngân sách"
+        cancelText="Hủy"
+        okButtonProps={{
+          className: "rounded-xl",
+          style: { 
+            fontWeight: 500,
+            paddingLeft: '16px',
+            paddingRight: '16px'
+          }
+        }}
+        cancelButtonProps={{
+          className: "rounded-xl",
+          style: { 
+            fontWeight: 500,
+            paddingLeft: '16px',
+            paddingRight: '16px'
+          }
+        }}
+        className="budget-modal"
+        style={{ borderRadius: '16px' }}
       >
-        <p>Nhập ngân sách tháng cho nhóm (VND):</p>
-        <InputNumber
-          style={{ width: '100%' }}
-          value={budgetAmount}
-          onChange={(value) => setBudgetAmount(value)}
-          formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-          parser={(value) => value.replace(/\$\s?|(,*)/g, '')}
-          min={1}
-        />
+        <div style={{ marginBottom: '20px' }}>
+          <Typography.Text style={{ fontSize: '15px', display: 'block', marginBottom: '12px' }}>
+            Nhập ngân sách tháng cho nhóm:
+          </Typography.Text>
+          <InputNumber
+            style={{ 
+              width: '100%',
+              height: '46px',
+              fontSize: '16px',
+              borderRadius: '12px'
+            }}
+            value={budgetAmount}
+            onChange={(value) => setBudgetAmount(value)}
+            formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+            parser={(value) => value.replace(/\$\s?|(,*)/g, '')}
+            min={1}
+            prefix="₫"
+            placeholder="Nhập số tiền ngân sách"
+            size="large"
+            className="budget-input"
+          />
+        </div>
+        <Typography.Text type="secondary" style={{ fontSize: '13px' }}>
+          Ngân sách giúp bạn theo dõi và kiểm soát chi tiêu hàng tháng của nhóm.
+        </Typography.Text>
       </Modal>
     </>
   );
