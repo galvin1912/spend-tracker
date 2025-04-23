@@ -223,4 +223,23 @@ export default {
   trackersDescription: 'View and manage your expense trackers',
   noTrackers: 'No trackers found',
   noTrackersDescription: 'You have no trackers yet. Create a group to get started.',
+
+  // Chat interface
+  chat: 'AI Assistant',
+  chatDescription: 'Chat with AI assistant to quickly add transactions',
+  enterMessage: 'Enter a message...',
+  send: 'Send',
+  aiAssistant: 'AI Assistant',
+  you: 'You',
+  confirmTransaction: 'Confirm Transaction',
+  addThisTransaction: 'Add this transaction',
+  rejectTransaction: 'No thanks',
+  transactionAdded: 'Transaction added successfully!',
+  transactionRejected: 'Transaction not added.',
+  aiError: 'Error connecting to AI assistant. Please try again.',
+  welcomeMessage: 'Hello! I\'m your expense tracking assistant. You can tell me about your expenses, and I\'ll help you add them to your tracker. For example, try saying "I spent 30,000 on breakfast today".',
+  noChatAccess: 'You need to create or join a group to use the chat feature.',
+  unknownTracker: 'Unknown Group',
+  noCategoryMatch: 'No matching category was found. Using uncategorized.',
+  noTrackerMatch: 'No matching group was found. Using the first available group.'
 };

@@ -223,4 +223,23 @@ export default {
   trackersDescription: 'Xem và quản lý các chi tiêu của bạn',
   noTrackers: 'Không tìm thấy quản lý chi tiêu nào',
   noTrackersDescription: 'Bạn chưa có quản lý chi tiêu nào. Hãy tạo nhóm để bắt đầu.',
+
+  // Chat interface
+  chat: 'Trợ lý AI',
+  chatDescription: 'Chat với trợ lý AI để nhanh chóng thêm giao dịch',
+  enterMessage: 'Nhập tin nhắn...',
+  send: 'Gửi',
+  aiAssistant: 'Trợ lý AI',
+  you: 'Bạn',
+  confirmTransaction: 'Xác nhận giao dịch',
+  addThisTransaction: 'Thêm giao dịch này',
+  rejectTransaction: 'Không, cảm ơn',
+  transactionAdded: 'Thêm giao dịch thành công!',
+  transactionRejected: 'Giao dịch không được thêm.',
+  aiError: 'Có lỗi xảy ra khi kết nối với trợ lý AI. Vui lòng thử lại.',
+  welcomeMessage: 'Xin chào! Tôi là trợ lý theo dõi chi tiêu của bạn. Bạn có thể cho tôi biết về các khoản chi tiêu của bạn, và tôi sẽ giúp bạn thêm chúng vào trình theo dõi. Ví dụ, hãy thử nói "Tôi chi 30.000 cho bữa sáng hôm nay".',
+  noChatAccess: 'Bạn cần tạo hoặc tham gia một nhóm để sử dụng tính năng chat.',
+  unknownTracker: 'Nhóm không xác định',
+  noCategoryMatch: 'Không tìm thấy danh mục phù hợp. Sử dụng danh mục không xác định.',
+  noTrackerMatch: 'Không tìm thấy nhóm phù hợp. Sử dụng nhóm đầu tiên có sẵn.'
 };

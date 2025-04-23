@@ -18,6 +18,7 @@ const UserSettings = lazy(() => import("./pages/UserSettings"));
 const Login = lazy(() => import("./pages/Login"));
 const Register = lazy(() => import("./pages/Register"));
 const Page404 = lazy(() => import("./pages/404"));
+const Chat = lazy(() => import("./pages/Chat"));
 
 const AppRoutes = () => {
   const routes = useRoutes([
@@ -79,6 +80,14 @@ const AppRoutes = () => {
           element: (
             <Suspense fallback={<Skeleton active />}>
               <TrackerTransactionDetail />
+            </Suspense>
+          ),
+        },
+        {
+          path: "/chat",
+          element: (
+            <Suspense fallback={<Skeleton active />}>
+              <Chat />
             </Suspense>
           ),
         },

@@ -6,7 +6,7 @@ import { Gsc } from "@styled-icons/crypto";
 import { UserCircle } from "@styled-icons/boxicons-regular";
 import { Translate } from "styled-icons/material";
 import { PeopleMoney } from "@styled-icons/fluentui-system-filled";
-import { UserGroup } from "@styled-icons/fa-solid";
+import { UserGroup, Robot } from "@styled-icons/fa-solid";
 import { Login } from "@styled-icons/material-sharp";
 import { logout } from "../../features/user/userActions";
 import { setLanguage } from "../../features/language/languageActions";
@@ -47,6 +47,12 @@ const Header = () => {
         key: "group",
         icon: <UserGroup size="24" className="me-2" />,
         url: "/group",
+      },
+      {
+        label: t('chat'),
+        key: "chat",
+        icon: <Robot size="24" className="me-2" />,
+        url: "/chat",
       },
     ],
     [t]
