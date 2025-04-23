@@ -77,6 +77,7 @@ export default {
   updateProfile: 'Cập nhật thông tin',
   profileUpdateSuccess: 'Cập nhật thông tin thành công',
   settingsDescription: 'Quản lý cài đặt và tùy chọn tài khoản của bạn',
+  help: 'Trợ giúp',
 
   // Trackers
   budget: 'Ngân sách tháng',
@@ -118,6 +119,8 @@ export default {
   understandWarning: 'Đã hiểu',
   understood: 'Đã hiểu',
   spentToday: 'đã chi tiêu:',
+  budgetReport: 'Báo cáo ngân sách',
+  incomeVsExpense: 'Thu nhập và Chi tiêu',
   
   // Transaction related
   transactionDetail: 'Chi tiết giao dịch',

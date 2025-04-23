@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { onAuthStateChanged } from "firebase/auth";
 import { HelmetProvider } from "react-helmet-async";
+import { App as AntdApp } from "antd";
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from "chart.js";
 import { auth } from "./configs/firebase";
 import { fetchUserInfo } from "./features/user/userActions";
@@ -24,7 +25,9 @@ function App() {
 
   return (
     <HelmetProvider>
-      <AppRoutes />
+      <AntdApp>
+        <AppRoutes />
+      </AntdApp>
     </HelmetProvider>
   );
 }

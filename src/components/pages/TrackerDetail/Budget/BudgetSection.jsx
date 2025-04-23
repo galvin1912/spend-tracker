@@ -68,7 +68,7 @@ const BudgetSection = ({ groupDetail, onBudgetClick }) => {
 };
 
 BudgetSection.propTypes = {
-  groupDetail: PropTypes.object.isRequired,
+  groupDetail: PropTypes.object,
   onBudgetClick: PropTypes.func.isRequired,
 };
 

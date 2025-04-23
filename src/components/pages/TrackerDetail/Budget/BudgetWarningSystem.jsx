@@ -1,12 +1,16 @@
 import PropTypes from "prop-types";
-import { useEffect, useState } from "react";
-import { Typography, Button, Modal } from "antd";
+import { useEffect, useState, useRef } from "react";
+import { Typography, Button, App } from "antd";
 import { useTranslation } from "react-i18next";
 import { convertCurrency } from "../../../../utils/numberUtils";
 
-const BudgetWarningSystem = ({ groupDetail, thisMonthExpenseSum, remainingDays }) => {
+const BudgetWarningSystem = ({ isCurrentMonth, isUsingDateRange, groupDetail, thisMonthExpenseSum, remainingDays }) => {
   const { t } = useTranslation();
   const [warningShown, setWarningShown] = useState(false);
+  // Get notification API from App context to show modal
+  const { modal } = App.useApp();
+  // Store the current modal instance
+  const modalInstanceRef = useRef(null);
 
   // Reset warning shown when groupDetail or expense sum changes
   useEffect(() => {
@@ -14,6 +18,10 @@ const BudgetWarningSystem = ({ groupDetail, thisMonthExpenseSum, remainingDays }
   }, [groupDetail?.budget]);
 
   useEffect(() => {
+    if (!(isCurrentMonth && !isUsingDateRange && groupDetail?.budget)) {
+      return;
+    }
+
     // Check if budget exists and warning hasn't been shown yet
     if (groupDetail?.budget && thisMonthExpenseSum < 0 && !warningShown) {
       const budgetUsedPercentage = (Math.abs(thisMonthExpenseSum) / groupDetail.budget) * 100;
@@ -57,17 +65,18 @@ const BudgetWarningSystem = ({ groupDetail, thisMonthExpenseSum, remainingDays }
         };
       }
 
-      // Store modal reference so we can close it
-      let warningModal;
-
       // Handle close modal
       const handleCloseWarning = () => {
         setWarningShown(true);
-        warningModal.destroy();
+        // Close the modal instance
+        if (modalInstanceRef.current) {
+          modalInstanceRef.current.destroy();
+          modalInstanceRef.current = null;
+        }
       };
 
       // Configure the modal options with modern styling
-      const modalConfig = {
+      const instance = modal.info({
         title: null,
         className: "budget-warning-modal",
         icon: null,
@@ -133,18 +142,28 @@ const BudgetWarningSystem = ({ groupDetail, thisMonthExpenseSum, remainingDays }
             </div>
           </div>
         ),
-      };
-
-      // Show the styled modal and store the reference
-      warningModal = Modal.info(modalConfig);
+      });
+      
+      // Store the reference to current modal instance
+      modalInstanceRef.current = instance;
     }
-  }, [groupDetail, thisMonthExpenseSum, remainingDays, warningShown, t]);
+    
+    // Clean up function to close any open modal when component unmounts
+    return () => {
+      if (modalInstanceRef.current) {
+        modalInstanceRef.current.destroy();
+        modalInstanceRef.current = null;
+      }
+    };
+  }, [groupDetail, thisMonthExpenseSum, remainingDays, warningShown, t, isCurrentMonth, isUsingDateRange, modal]);
 
   // This is a utility component that renders nothing to the DOM
   return null;
 };
 
 BudgetWarningSystem.propTypes = {
+  isCurrentMonth: PropTypes.bool.isRequired,
+  isUsingDateRange: PropTypes.bool.isRequired,
   groupDetail: PropTypes.object.isRequired,
   thisMonthExpenseSum: PropTypes.number.isRequired,
   remainingDays: PropTypes.number.isRequired,

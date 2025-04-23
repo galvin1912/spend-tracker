@@ -77,6 +77,7 @@ export default {
   updateProfile: 'Update Profile',
   profileUpdateSuccess: 'Profile updated successfully',
   settingsDescription: 'Manage your account settings and preferences',
+  help: 'Help',
 
   // Trackers
   budget: 'Monthly Budget',
@@ -118,6 +119,8 @@ export default {
   understandWarning: 'I understand',
   understood: 'I understand',
   spentToday: 'spent today:',
+  budgetReport: 'Budget Report',
+  incomeVsExpense: 'Income vs Expense',
   
   // Transaction related
   transactionDetail: 'Transaction Details',

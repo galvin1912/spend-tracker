@@ -9,7 +9,7 @@ import TrackerServices from "../services/TrackerServices";
 import GroupServices from "../services/GroupServices";
 import Transactions from "../components/pages/TrackerDetail/Transactions";
 import SpendingInsightsButton from "../components/pages/TrackerDetail/SpendingInsightsButton";
-import { BudgetSection, TodayExpenseCard, BudgetWarningSystem, BudgetModal } from "../components/pages/TrackerDetail/Budget";
+import { BudgetSection, TodayExpenseCard, BudgetWarningSystem, BudgetModal, BudgetReport } from "../components/pages/TrackerDetail/Budget";
 
 const TrackerDetail = () => {
   const { t } = useTranslation();
@@ -58,6 +58,18 @@ const TrackerDetail = () => {
     return endOfMonth.diff(currentDate, "day");
   }, []);
 
+  // Check if the filter month is the current month
+  const isCurrentMonth = useMemo(() => {
+    const currentDate = dayjs();
+    const filterDate = filter.time;
+    return filterDate.month() === currentDate.month() && filterDate.year() === currentDate.year();
+  }, [filter.time]);
+
+  // Check if using date range
+  const isUsingDateRange = useMemo(() => {
+    return filter.dateRange && filter.dateRangeStart && filter.dateRangeEnd;
+  }, [filter.dateRange, filter.dateRangeStart, filter.dateRangeEnd]);
+
   /** Effect **/
   // get tracker detail
   useEffect(() => {
@@ -88,7 +100,7 @@ const TrackerDetail = () => {
 
       try {
         const categories = await TrackerServices.getCategories(trackerID);
-        setCategories([{ name: t('noCategory'), uid: "uncategorized" }, ...categories]);
+        setCategories([{ name: t("noCategory"), uid: "uncategorized" }, ...categories]);
       } catch (error) {
         message.error(error.message);
       } finally {
@@ -284,17 +296,25 @@ const TrackerDetail = () => {
   return (
     <>
       <Helmet
-        title={`${t('expenseStats')} | GST`}
+        title={`${t("expenseStats")} | GST`}
         meta={[
           {
             name: "description",
-            content: t('expenseStats'),
+            content: t("expenseStats"),
           },
         ]}
       />
 
-      {/* Budget warning component that handles displaying warnings */}
-      <BudgetWarningSystem groupDetail={groupDetail} thisMonthExpenseSum={thisMonthExpenseSum} remainingDays={remainingDays} />
+      {/* Show budget warning only for current month, not for date ranges */}
+      {isCurrentMonth && !isUsingDateRange && groupDetail?.budget && (
+        <BudgetWarningSystem
+          isCurrentMonth={isCurrentMonth}
+          isUsingDateRange={isUsingDateRange}
+          groupDetail={groupDetail}
+          thisMonthExpenseSum={thisMonthExpenseSum}
+          remainingDays={remainingDays}
+        />
+      )}
 
       <Row gutter={[24, 12]}>
         <Col span={24}>
@@ -306,8 +326,21 @@ const TrackerDetail = () => {
           {/* Budget section component */}
           <BudgetSection groupDetail={groupDetail} onBudgetClick={showBudgetModal} />
 
-          {/* Today's expense summary */}
-          <TodayExpenseCard todaySum={todaySum} />
+          {/* Show budget report for previous months or date ranges */}
+          {(!isCurrentMonth || isUsingDateRange) && groupDetail?.budget && (
+            <BudgetReport
+              groupDetail={groupDetail}
+              thisMonthExpenseSum={thisMonthExpenseSum}
+              thisMonthIncomeSum={thisMonthIncomeSum}
+              selectedMonth={filter.time}
+              isDateRange={isUsingDateRange}
+              dateRangeStart={filter.dateRangeStart ? dayjs(filter.dateRangeStart) : null}
+              dateRangeEnd={filter.dateRangeEnd ? dayjs(filter.dateRangeEnd) : null}
+            />
+          )}
+
+          {/* Today's expense summary - only show for current month */}
+          {isCurrentMonth && !isUsingDateRange && <TodayExpenseCard todaySum={todaySum} />}
 
           <TrackerFilter
             filter={filter}

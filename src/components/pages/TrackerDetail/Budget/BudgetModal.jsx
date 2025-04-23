@@ -102,7 +102,7 @@ BudgetModal.propTypes = {
   visible: PropTypes.bool.isRequired,
   initialBudget: PropTypes.number,
   trackerID: PropTypes.string.isRequired,
-  groupDetail: PropTypes.object.isRequired,
+  groupDetail: PropTypes.object,
   onCancel: PropTypes.func.isRequired,
   onSuccess: PropTypes.func.isRequired,
 };
