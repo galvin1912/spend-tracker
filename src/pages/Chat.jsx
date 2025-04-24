@@ -331,7 +331,7 @@ const Chat = () => {
                 </p>
                 
                 <Row gutter={[16, 16]} style={{ marginTop: '16px' }}>
-                  <Col span={12}>
+                  <Col span={24} md={12}>
                     <Button 
                       type="primary" 
                       block
@@ -340,7 +340,7 @@ const Chat = () => {
                       {t('addThisTransaction')}
                     </Button>
                   </Col>
-                  <Col span={12}>
+                  <Col span={24} md={12}>
                     <Button 
                       danger
                       block
