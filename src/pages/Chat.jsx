@@ -16,11 +16,12 @@ import {
   App
 } from "antd";
 import { useTranslation } from "react-i18next";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import dayjs from "dayjs";
 import styled from "styled-components";
 import AIServices from "../services/AIServices";
 import { InfoCircleOutlined } from '@ant-design/icons';
+import { getJoinedGroups, getOwnerGroups } from "../features/group/groupActions";
 
 const { Text } = Typography;
 
@@ -85,6 +86,8 @@ const Chat = () => {
   const messagesEndRef = useRef(null);
   const { message } = App.useApp();
   
+  const dispatch = useDispatch();
+
   const [messages, setMessages] = useState([]);
   const [inputMessage, setInputMessage] = useState("");
   const [loading, setLoading] = useState(false);
@@ -93,11 +96,20 @@ const Chat = () => {
 
   const { user } = useSelector((state) => state.user);
   const { ownerGroups, joinedGroups } = useSelector((state) => state.group);
+
+  useEffect(() => {
+    dispatch(getOwnerGroups());
+  }, [dispatch]);
+
+  useEffect(() => {
+    dispatch(getJoinedGroups());
+  }, [dispatch]);
   
   // Check if user has access to chat (has groups)
   useEffect(() => {
     const checkAccess = async () => {
       const hasGroups = (user?.groups?.length > 0) || (ownerGroups?.length > 0) || (joinedGroups?.length > 0);
+      console.log(user?.groups?.length, ownerGroups?.length, joinedGroups?.length);
       setHasAccess(hasGroups);
       
       if (hasGroups && messages.length === 0) {
