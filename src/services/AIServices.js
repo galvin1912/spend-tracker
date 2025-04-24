@@ -78,7 +78,6 @@ class AIServices {
         - If the message is a greeting or general question, respond naturally without asking for transaction details
         - Your responses should be helpful, conversational, and concise (1-3 sentences maximum)
 
-        If the user asks for a insight, respond this feature is not available yet.
         If the user asks for information, respond user info like email, full name, and gender.
       `;
       const response = await this.fetchGeminiResponse(message);
