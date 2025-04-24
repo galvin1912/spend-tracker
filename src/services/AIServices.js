@@ -166,7 +166,7 @@ class AIServices {
         - trackerName (if not found, respond with first trackerName and explain it is the first tracker because no match was found)
         - categoryId (if not found in any tracker, respond with "uncategorized")
         - categoryName
-        - amount (respond with the amount in number like 30000, 50000, 100000, 500000, etc..., if not found, respond with "unknown")
+        - amount (respond with the amount in positive number like 30000, 50000, 100000, 500000, etc..., if not found, respond with "unknown")
         - type (respond with "income" or "expense" based on the transaction type)
         - description (respond with the description of the transaction minimum 10 characters explaining the transaction)
         - name (respond with the name of the transaction with max length 55 characters)
