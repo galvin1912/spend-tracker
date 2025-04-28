@@ -210,7 +210,7 @@ class AIServices {
       const { trackerId, type, amount, name, time, description, category } = transactionData;
       const finalTransactionData = {
         type,
-        amount: type === "income" ? amount : -amount, // Make amount negative for expenses
+        amount: amount,
         name,
         time,
         description,
