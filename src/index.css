@@ -277,6 +277,10 @@ html {
   border-bottom-right-radius: 12px;
 }
 
+.date-filter-tabs .ant-radio-button-wrapper:nth-child(2) {
+  border-radius: 0;
+}
+
 /* Form styles */
 .ant-form-item-label > label {
   font-weight: 500;

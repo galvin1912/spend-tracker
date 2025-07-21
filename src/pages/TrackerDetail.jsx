@@ -3,7 +3,7 @@ import { Helmet } from "react-helmet-async";
 import { useParams, useSearchParams } from "react-router-dom";
 import { Row, Col, Typography, message } from "antd";
 import { useTranslation } from "react-i18next";
-import dayjs from "dayjs";
+import dayjs from "../configs/dayjs";
 import TrackerFilter from "../components/pages/TrackerDetail/TrackerFilter";
 import TrackerServices from "../services/TrackerServices";
 import GroupServices from "../services/GroupServices";
@@ -44,6 +44,7 @@ const TrackerDetail = () => {
       type: searchParams.get("type") || "all",
       sortBy: searchParams.get("sortBy") || "default",
       time: searchParams.get("time") ? dayjs(searchParams.get("time")) : dayjs(),
+      timeType: searchParams.get("timeType") || "month",
       categories: searchParams.get("categories") || "",
       dateRange: searchParams.get("dateRange") === "true",
       dateRangeStart: searchParams.get("dateRangeStart"),
@@ -69,6 +70,8 @@ const TrackerDetail = () => {
   const isUsingDateRange = useMemo(() => {
     return filter.dateRange && filter.dateRangeStart && filter.dateRangeEnd;
   }, [filter.dateRange, filter.dateRangeStart, filter.dateRangeEnd]);
+
+
 
   /** Effect **/
   // get tracker detail
@@ -111,7 +114,7 @@ const TrackerDetail = () => {
     getCategories();
   }, [trackerID, t]);
 
-  // get transactions with date range support
+  // get transactions with date range and week support
   useEffect(() => {
     const getTransactions = async () => {
       setIsTransactionsLoading(true);
@@ -127,6 +130,11 @@ const TrackerDetail = () => {
               startDate: dayjs(filter.dateRangeStart),
               endDate: dayjs(filter.dateRangeEnd),
             },
+          };
+        } else if (filter.timeType === "week") {
+          queryFilter = {
+            ...filter,
+            timeType: "week",
           };
         } else {
           queryFilter = { ...filter };
@@ -159,7 +167,7 @@ const TrackerDetail = () => {
     getTodaySum();
   }, [trackerID]);
 
-  // get this month expense sum with date range support
+  // get this month expense sum with date range and week support
   useEffect(() => {
     const getThisMonthSum = async () => {
       try {
@@ -174,6 +182,8 @@ const TrackerDetail = () => {
               endDate: dayjs(filter.dateRangeEnd),
             },
           };
+        } else if (filter.timeType === "week") {
+          newFilter = { time: filter.time, timeType: "week", type: "expense" };
         } else {
           newFilter = { time: filter.time, timeType: "month", type: "expense" };
         }
@@ -186,9 +196,9 @@ const TrackerDetail = () => {
     };
 
     getThisMonthSum();
-  }, [filter.time, filter.dateRange, filter.dateRangeStart, filter.dateRangeEnd, trackerID]);
+  }, [filter.time, filter.timeType, filter.dateRange, filter.dateRangeStart, filter.dateRangeEnd, trackerID]);
 
-  // get this month income sum with date range support
+  // get this month income sum with date range and week support
   useEffect(() => {
     const getThisMonthSum = async () => {
       try {
@@ -203,6 +213,8 @@ const TrackerDetail = () => {
               endDate: dayjs(filter.dateRangeEnd),
             },
           };
+        } else if (filter.timeType === "week") {
+          newFilter = { time: filter.time, timeType: "week", type: "income" };
         } else {
           newFilter = { time: filter.time, timeType: "month", type: "income" };
         }
@@ -215,7 +227,7 @@ const TrackerDetail = () => {
     };
 
     getThisMonthSum();
-  }, [filter.time, filter.dateRange, filter.dateRangeStart, filter.dateRangeEnd, trackerID]);
+  }, [filter.time, filter.timeType, filter.dateRange, filter.dateRangeStart, filter.dateRangeEnd, trackerID]);
 
   // get this month income and expense sum when categories change
   useEffect(() => {
@@ -251,6 +263,9 @@ const TrackerDetail = () => {
                 endDate: dayjs(filter.dateRangeEnd),
               },
             };
+          } else if (filter.timeType === "week") {
+            expenseFilter = { time: filter.time, timeType: "week", type: "expense", category };
+            incomeFilter = { time: filter.time, timeType: "week", type: "income", category };
           } else {
             expenseFilter = { time: filter.time, timeType: "month", type: "expense", category };
             incomeFilter = { time: filter.time, timeType: "month", type: "income", category };
@@ -277,7 +292,7 @@ const TrackerDetail = () => {
     };
 
     getThisMonthSum();
-  }, [filter.categories, filter.time, filter.dateRange, filter.dateRangeStart, filter.dateRangeEnd, trackerID]);
+  }, [filter.categories, filter.time, filter.timeType, filter.dateRange, filter.dateRangeStart, filter.dateRangeEnd, trackerID]);
 
   // Show budget modal
   const showBudgetModal = () => {
@@ -326,8 +341,8 @@ const TrackerDetail = () => {
           {/* Budget section component */}
           <BudgetSection groupDetail={groupDetail} onBudgetClick={showBudgetModal} />
 
-          {/* Show budget report for previous months or date ranges */}
-          {(!isCurrentMonth || isUsingDateRange) && groupDetail?.budget && (
+          {/* Show budget report for previous months */}
+          {!isCurrentMonth && groupDetail?.budget && (
             <BudgetReport
               groupDetail={groupDetail}
               thisMonthExpenseSum={thisMonthExpenseSum}
@@ -336,6 +351,7 @@ const TrackerDetail = () => {
               isDateRange={isUsingDateRange}
               dateRangeStart={filter.dateRangeStart ? dayjs(filter.dateRangeStart) : null}
               dateRangeEnd={filter.dateRangeEnd ? dayjs(filter.dateRangeEnd) : null}
+              isWeekFilter={filter.timeType === "week"}
             />
           )}
 

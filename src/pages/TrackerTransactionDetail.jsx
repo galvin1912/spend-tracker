@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import { Row, Col, Form, Input, InputNumber, Button, DatePicker, Card, Select, Popconfirm, message } from "antd";
 import { useTranslation } from "react-i18next";
-import dayjs from "dayjs";
+import dayjs from "../configs/dayjs";
 import TransactionBg from "../assets/aaaaa.webp";
 import TrackerServices from "../services/TrackerServices";
 

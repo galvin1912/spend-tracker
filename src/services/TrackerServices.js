@@ -181,6 +181,13 @@ class TrackerServices {
         where("time", "<=", Timestamp.fromDate(filter.timeRange.endDate.endOf("day").toDate())),
         orderBy("time", "desc"),
       ];
+    } else if (filter.timeType === "week") {
+      // Week filtering (Monday to Sunday)
+      queryConstraints = [
+        where("time", ">=", Timestamp.fromDate(filter.time.startOf("week").toDate())),
+        where("time", "<=", Timestamp.fromDate(filter.time.endOf("week").toDate())),
+        orderBy("time", "desc"),
+      ];
     } else {
       // Standard month filtering
       queryConstraints = [
@@ -231,7 +238,7 @@ class TrackerServices {
       queryConstraints.push(where("time", ">=", Timestamp.fromDate(filter.timeRange.startDate.startOf("day").toDate())));
       queryConstraints.push(where("time", "<=", Timestamp.fromDate(filter.timeRange.endDate.endOf("day").toDate())));
     } else if (filter.time && filter.timeType) {
-      // Standard time period filtering (month, day, etc.)
+      // Standard time period filtering (month, day, week, etc.)
       queryConstraints.push(where("time", ">=", Timestamp.fromDate(filter.time.startOf(filter.timeType).toDate())));
       queryConstraints.push(where("time", "<=", Timestamp.fromDate(filter.time.endOf(filter.timeType).toDate())));
     }

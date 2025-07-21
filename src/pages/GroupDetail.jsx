@@ -6,7 +6,7 @@ import { Row, Col, Form, Input, ColorPicker, List, Button, Avatar, Card, message
 import { PersonAdd } from "@styled-icons/evaicons-solid";
 import { PersonRemove } from "@styled-icons/material-rounded";
 import { debounce } from "lodash";
-import dayjs from "dayjs";
+import dayjs from "../configs/dayjs";
 import { useTranslation } from "react-i18next";
 import GroupServices from "../services/GroupServices";
 import GroupDetailImage from "../assets/4380.jpg";

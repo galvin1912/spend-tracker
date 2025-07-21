@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import { Row, Col, Form, Input, InputNumber, Button, DatePicker, Card, Select, message } from "antd";
-import dayjs from "dayjs";
+import dayjs from "../configs/dayjs";
 import { useTranslation } from "react-i18next";
 import TransactionBg from "../assets/transaction-bg.jpg";
 import TrackerServices from "../services/TrackerServices";

@@ -4,7 +4,7 @@ import PropTypes from "prop-types";
 import { Bar } from "react-chartjs-2";
 import { useTranslation } from "react-i18next";
 import { convertCurrency, convertShorterCurrency } from "../../../utils/numberUtils";
-import dayjs from "dayjs";
+import dayjs from "../../../configs/dayjs";
 import vi_VN from "../../../locale/vi_VN";
 import TrackerServices from "../../../services/TrackerServices";
 

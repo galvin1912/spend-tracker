@@ -10,7 +10,8 @@ const BudgetReport = ({
   selectedMonth,
   isDateRange,
   dateRangeStart,
-  dateRangeEnd
+  dateRangeEnd,
+  isWeekFilter
 }) => {
   const { t } = useTranslation();
   
@@ -27,10 +28,15 @@ const BudgetReport = ({
     return "#10b981";  // Green for healthy budget
   };
   
-  // Format date range or month for display
+  // Format date range, week, or month for display
   const getDateDisplay = () => {
     if (isDateRange && dateRangeStart && dateRangeEnd) {
       return `${dateRangeStart.format('DD/MM/YYYY')} - ${dateRangeEnd.format('DD/MM/YYYY')}`;
+    }
+    if (isWeekFilter) {
+      const weekStart = selectedMonth.startOf('week').format('DD/MM/YYYY');
+      const weekEnd = selectedMonth.endOf('week').format('DD/MM/YYYY');
+      return `${weekStart} - ${weekEnd}`;
     }
     return selectedMonth.format('MMMM YYYY');
   };
@@ -117,7 +123,8 @@ BudgetReport.propTypes = {
   selectedMonth: PropTypes.object.isRequired,
   isDateRange: PropTypes.bool.isRequired,
   dateRangeStart: PropTypes.object,
-  dateRangeEnd: PropTypes.object
+  dateRangeEnd: PropTypes.object,
+  isWeekFilter: PropTypes.bool
 };
 
 export default BudgetReport;

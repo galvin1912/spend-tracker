@@ -5,7 +5,7 @@ import { Line, Bar, Doughnut } from "react-chartjs-2";
 import { useTranslation } from "react-i18next";
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, BarElement, ArcElement, Tooltip, Legend, Title } from "chart.js";
 import TrackerServices from "../../../services/TrackerServices";
-import dayjs from "dayjs";
+import dayjs from "../../../configs/dayjs";
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, ArcElement, Tooltip, Legend, Title);
 

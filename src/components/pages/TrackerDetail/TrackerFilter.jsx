@@ -3,7 +3,7 @@ import { useNavigate, useParams, createSearchParams, Link } from "react-router-d
 import { Select, Space, Checkbox, DatePicker, Card, Button, Alert, Radio, Divider, Typography, Row, Col } from "antd";
 import { useTranslation } from "react-i18next";
 import vi_VN from "../../../locale/vi_VN";
-import dayjs from "dayjs";
+import dayjs from "../../../configs/dayjs";
 import { useState } from "react";
 import { convertCurrency } from "../../../utils/numberUtils";
 
@@ -13,7 +13,7 @@ const TrackerFilter = ({ filter, categories, isCategoriesLoading, thisMonthExpen
   const { t } = useTranslation();
   const { trackerID } = useParams();
   const navigate = useNavigate();
-  const [dateFilterType, setDateFilterType] = useState(filter.dateRange ? "range" : "month");
+  const [dateFilterType, setDateFilterType] = useState(filter.dateRange ? "range" : filter.timeType === "week" ? "week" : "month");
 
   const handleFilterChange = (value, key) => {
     const newFilter = { ...filter, [key]: value };
@@ -63,7 +63,20 @@ const TrackerFilter = ({ filter, categories, isCategoriesLoading, thisMonthExpen
       delete newFilter.dateRange;
       delete newFilter.dateRangeStart;
       delete newFilter.dateRangeEnd;
+      delete newFilter.timeType;
       newFilter.time = dayjs().format("YYYY-MM-DD");
+
+      navigate({
+        search: createSearchParams(newFilter).toString(),
+      });
+    } else if (type === "week") {
+      const newFilter = { ...filter };
+      delete newFilter.dateRange;
+      delete newFilter.dateRangeStart;
+      delete newFilter.dateRangeEnd;
+      delete newFilter.timeType;
+      newFilter.time = dayjs().format("YYYY-MM-DD");
+      newFilter.timeType = "week";
 
       navigate({
         search: createSearchParams(newFilter).toString(),
@@ -81,6 +94,10 @@ const TrackerFilter = ({ filter, categories, isCategoriesLoading, thisMonthExpen
       const start = dayjs(filter.dateRangeStart).format("DD/MM/YYYY");
       const end = dayjs(filter.dateRangeEnd).format("DD/MM/YYYY");
       timeDisplay = `${start} - ${end}`;
+    } else if (filter.timeType === "week") {
+      const weekStart = dayjs(filter.time).startOf("week").format("DD/MM/YYYY");
+      const weekEnd = dayjs(filter.time).endOf("week").format("DD/MM/YYYY");
+      timeDisplay = `${weekStart} - ${weekEnd}`;
     } else {
       timeDisplay = dayjs(filter.time).format("MM/YYYY");
     }
@@ -116,7 +133,7 @@ const TrackerFilter = ({ filter, categories, isCategoriesLoading, thisMonthExpen
         showIcon
         message={
           <Typography.Text>
-            {t("statistics")} &quot;<Typography.Text strong>{categoryName}</Typography.Text>&quot; {filter.dateRange ? t("inRange") : t("inMonth")}{" "}
+            {t("statistics")} &quot;<Typography.Text strong>{categoryName}</Typography.Text>&quot; {filter.dateRange ? t("inRange") : filter.timeType === "week" ? t("inWeek") : t("inMonth")}{" "}
             {timeDisplay}: {incomeMessage} {dashIcon} {noTransactionMessage} {expenseMessage}
           </Typography.Text>
         }
@@ -177,6 +194,9 @@ const TrackerFilter = ({ filter, categories, isCategoriesLoading, thisMonthExpen
                 <Radio.Button value="month" className="rounded-l-xl">
                   {t("byMonth")}
                 </Radio.Button>
+                <Radio.Button value="week">
+                  {t("byWeek")}
+                </Radio.Button>
                 <Radio.Button value="range" className="rounded-r-xl">
                   {t("customRange")}
                 </Radio.Button>
@@ -189,6 +209,26 @@ const TrackerFilter = ({ filter, categories, isCategoriesLoading, thisMonthExpen
                 format="MM/YYYY"
                 value={filter.time ? dayjs(filter.time) : dayjs()}
                 onChange={(value) => handleFilterChange(value, "time")}
+                disabledDate={(current) => current && current > dayjs()}
+                locale={vi_VN.DataPicker}
+                allowClear={false}
+                style={{ width: "100%", maxWidth: "300px" }}
+                className="rounded-xl"
+              />
+            ) : dateFilterType === "week" ? (
+              <DatePicker
+                picker="week"
+                format="YYYY-[W]WW"
+                value={filter.time ? dayjs(filter.time) : dayjs()}
+                onChange={(value) => {
+                  const newFilter = { ...filter, time: value, timeType: "week" };
+                  delete newFilter.dateRange;
+                  delete newFilter.dateRangeStart;
+                  delete newFilter.dateRangeEnd;
+                  navigate({
+                    search: createSearchParams(newFilter).toString(),
+                  });
+                }}
                 disabledDate={(current) => current && current > dayjs()}
                 locale={vi_VN.DataPicker}
                 allowClear={false}
@@ -218,10 +258,12 @@ const TrackerFilter = ({ filter, categories, isCategoriesLoading, thisMonthExpen
                 className="rounded-xl"
                 message={
                   <Typography.Text>
-                    {t("totalIncome")} {filter.dateRange ? t("inRange") : t("inMonth")}
+                    {t("totalIncome")} {filter.dateRange ? t("inRange") : filter.timeType === "week" ? t("inWeek") : t("inMonth")}
                     <Typography.Text strong>
                       {filter.dateRange
                         ? `${dayjs(filter.dateRangeStart).format("DD/MM/YYYY")} - ${dayjs(filter.dateRangeEnd).format("DD/MM/YYYY")}`
+                        : filter.timeType === "week"
+                        ? `${dayjs(filter.time).startOf("week").format("DD/MM/YYYY")} - ${dayjs(filter.time).endOf("week").format("DD/MM/YYYY")}`
                         : dayjs(filter.time).format("MM/YYYY")}
                     </Typography.Text>
                     :{" "}
@@ -242,10 +284,12 @@ const TrackerFilter = ({ filter, categories, isCategoriesLoading, thisMonthExpen
                 className="rounded-xl"
                 message={
                   <Typography.Text>
-                    {t("totalExpense")} {filter.dateRange ? t("inRange") : t("inMonth")}
+                    {t("totalExpense")} {filter.dateRange ? t("inRange") : filter.timeType === "week" ? t("inWeek") : t("inMonth")}
                     <Typography.Text strong>
                       {filter.dateRange
                         ? `${dayjs(filter.dateRangeStart).format("DD/MM/YYYY")} - ${dayjs(filter.dateRangeEnd).format("DD/MM/YYYY")}`
+                        : filter.timeType === "week"
+                        ? `${dayjs(filter.time).startOf("week").format("DD/MM/YYYY")} - ${dayjs(filter.time).endOf("week").format("DD/MM/YYYY")}`
                         : dayjs(filter.time).format("MM/YYYY")}
                     </Typography.Text>
                     :{" "}

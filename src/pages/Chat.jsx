@@ -17,7 +17,7 @@ import {
 } from "antd";
 import { useTranslation } from "react-i18next";
 import { useSelector, useDispatch } from "react-redux";
-import dayjs from "dayjs";
+import dayjs from "../configs/dayjs";
 import styled from "styled-components";
 import AIServices from "../services/AIServices";
 import { InfoCircleOutlined } from '@ant-design/icons';

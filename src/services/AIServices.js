@@ -1,7 +1,7 @@
 import store from "../store";
 import i18next from "i18next";
 import TrackerServices from "./TrackerServices";
-import dayjs from "dayjs";
+import dayjs from "../configs/dayjs";
 
 /**
  * Service class for handling AI assistant functionality using the Gemini API

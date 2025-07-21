@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import { Link, useParams } from "react-router-dom";
 import { Card, Button, Table, Tag, List, Descriptions, Badge, Typography } from "antd";
 import { useTranslation } from "react-i18next";
-import dayjs from "dayjs";
+import dayjs from "../../../configs/dayjs";
 import useMediaQuery from "../../../hooks/useMediaQuery";
 import { convertCurrency } from "../../../utils/numberUtils";
 
