@@ -16,10 +16,12 @@ const BudgetReport = ({
   const { t } = useTranslation();
   
   // Calculate budget usage percentage
-  const budgetUsedPercentage = Math.min(
-    Math.abs(thisMonthExpenseSum) / groupDetail.budget * 100, 
-    100
-  );
+  const budgetUsedPercentage = groupDetail?.budget && Number(groupDetail.budget) > 0
+    ? Math.min(
+        Math.abs(thisMonthExpenseSum) / groupDetail.budget * 100, 
+        100
+      )
+    : 0;
   
   // Determine status color based on percentage
   const getStatusColor = (percentage) => {
@@ -75,7 +77,7 @@ const BudgetReport = ({
                 color: getStatusColor(budgetUsedPercentage)
               }}
             >
-              {budgetUsedPercentage.toFixed(0)}%
+              {Number.isFinite(budgetUsedPercentage) ? budgetUsedPercentage.toFixed(0) : 0}%
             </Typography.Text>
           </div>
           <Progress 

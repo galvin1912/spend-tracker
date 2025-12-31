@@ -24,7 +24,9 @@ const BudgetWarningSystem = ({ isCurrentMonth, isUsingDateRange, groupDetail, th
 
     // Check if budget exists and warning hasn't been shown yet
     if (groupDetail?.budget && thisMonthExpenseSum < 0 && !warningShown) {
-      const budgetUsedPercentage = (Math.abs(thisMonthExpenseSum) / groupDetail.budget) * 100;
+      const budgetUsedPercentage = groupDetail.budget > 0
+        ? (Math.abs(thisMonthExpenseSum) / groupDetail.budget) * 100
+        : 0;
 
       // Only show warning if we've spent more than 60% of budget
       if (budgetUsedPercentage < 60) return;
@@ -120,7 +122,7 @@ const BudgetWarningSystem = ({ isCurrentMonth, isUsingDateRange, groupDetail, th
                         padding: "2px 10px",
                       }}
                     >
-                      {budgetUsedPercentage.toFixed(0)}%
+                      {Number.isFinite(budgetUsedPercentage) ? budgetUsedPercentage.toFixed(0) : 0}%
                     </Typography.Text>
                   </div>
                 </div>
