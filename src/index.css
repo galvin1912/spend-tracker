@@ -2,38 +2,94 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+}
+
+*:not(svg, svg *) {
   transition: background-color 0.2s, border-color 0.2s, box-shadow 0.2s;
 }
 
 :root {
-  --primary-color: #5c6ac4;
-  --secondary-color: #4e5ab7;
-  --success-color: #10b981;
-  --warning-color: #f59e0b;
-  --danger-color: #ef4444;
-  --info-color: #3b82f6;
-  --body-bg: #f8fafc;
-  --card-bg: #ffffff;
-  --text-color: #1e293b;
-  --text-muted: #64748b;
-  --border-color: #e2e8f0;
+  /* Base surfaces */
+  --background: #F6F1EC;
+  --foreground: #4A2E2A; /* body text */
+
+  --card: #FFFFFF;
+  --card-foreground: #2A1411; /* heading trên card */
+
+  --popover: #FFFFFF;
+  --popover-foreground: #2A1411;
+
+  /* Brand */
+  --primary: #3F221D;
+  --primary-foreground: #F6F1EC;
+
+  /* Secondary surfaces */
+  --secondary: #EDE2D8;              /* nhẹ hơn border, dùng cho section/soft bg */
+  --secondary-foreground: #2A1411;
+
+  /* Muted text */
+  --muted: #EFE5DC;
+  --muted-foreground: #7A5A55;       /* text phụ/hint */
+
+  /* Accent (gold) */
+  --accent: #C9A24D;
+  --accent-foreground: #2A1411;
+
+  /* Borders / inputs / rings */
+  --border: #E2D6CC;
+  --input: #E2D6CC;
+  --ring: #3F221D;
+
+  /* Status */
+  --success: #6F8F72;
+  --warning: #C98A4A;
+  --destructive: #A84E3B;
+  --destructive-foreground: #F6F1EC;
+
+  /* Radius (fintech warm minimal) */
+  --radius: 14px;
+
+  /* Legacy support - map old variables to new */
+  --primary-color: var(--primary);
+  --secondary-color: var(--secondary);
+  --success-color: var(--success);
+  --warning-color: var(--warning);
+  --danger-color: var(--destructive);
+  --info-color: var(--accent);
+  --body-bg: var(--background);
+  --card-bg: var(--card);
+  --text-color: var(--foreground);
+  --text-muted: var(--muted-foreground);
+  --border-color: var(--border);
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
   --shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
   --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.08);
-  --header-bg: linear-gradient(to right, #4f46e5, #7c3aed);
+  --header-bg: var(--primary);
+}
+
+html {
+  margin: 0 !important;
+  padding: 0 !important;
 }
 
 body {
-  font-family: "Raleway", sans-serif;
+  margin: 0 !important;
+  padding: 0 !important;
+  font-family: "Be Vietnam Pro", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   font-weight: 400;
-  background-color: var(--body-bg);
-  color: var(--text-color);
+  background-color: var(--background);
+  color: var(--foreground);
   line-height: 1.6;
+  min-height: 100vh;
+  width: 100%;
+  overflow-x: hidden;
 }
 
 /* Add smooth scrolling to the whole document */
 html {
   scroll-behavior: smooth;
+  margin: 0 !important;
+  padding: 0 !important;
 }
 
 /* Modern button styles with hover effects */
@@ -46,15 +102,17 @@ html {
 }
 
 .ant-btn-primary {
-  background: var(--primary-color);
-  border-color: var(--primary-color);
+  background: var(--primary);
+  border-color: var(--primary);
+  color: var(--primary-foreground);
 }
 
 .ant-btn-primary:hover,
 .ant-btn-primary:focus {
-  background: var(--secondary-color);
-  border-color: var(--secondary-color);
-  box-shadow: 0 4px 10px rgba(92, 106, 196, 0.3);
+  background: var(--primary);
+  border-color: var(--primary);
+  opacity: 0.9;
+  box-shadow: 0 4px 10px rgba(63, 34, 29, 0.3);
 }
 
 /* Card hover effects */
@@ -74,8 +132,8 @@ html {
 .ant-select-focused .ant-select-selector,
 .ant-picker:focus,
 .ant-picker-focused {
-  box-shadow: 0 0 0 2px rgba(92, 106, 196, 0.2);
-  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px rgba(63, 34, 29, 0.2);
+  border-color: var(--ring);
 }
 
 /* Table styles */
@@ -85,8 +143,18 @@ html {
 }
 
 .ant-table-thead > tr > th {
-  background-color: #f8fafc;
+  background-color: var(--muted);
   font-weight: 600;
+  color: var(--foreground);
+}
+
+.ant-table-tbody > tr > td {
+  color: var(--foreground);
+  border-color: var(--border);
+}
+
+.ant-table {
+  background-color: var(--card);
 }
 
 /* Navigation styles */
@@ -101,15 +169,28 @@ html {
   transform: translateY(-2px);
 }
 
+.nav-link.active-nav {
+  background-color: var(--accent);
+  color: var(--accent-foreground);
+}
+
 /* List item styles */
 .ant-list-item {
-  border-radius: 10px;
+  border-radius: calc(var(--radius) / 2);
   transition: all 0.3s ease;
+  border-color: var(--border);
 }
 
 .ant-list-item:hover {
-  background-color: #f1f5f9;
-  transform: scale(1.01);
+  background-color: var(--secondary);
+}
+
+.ant-list-item-meta-title {
+  color: var(--foreground);
+}
+
+.ant-list-item-meta-description {
+  color: var(--muted-foreground);
 }
 
 /* Tag styles */
@@ -121,35 +202,70 @@ html {
 
 /* Alert styles */
 .ant-alert {
-  border-radius: 10px;
+  border-radius: calc(var(--radius) / 2);
+  border-color: var(--border);
+}
+
+.ant-alert-success {
+  background-color: rgba(111, 143, 114, 0.1);
+  border-color: var(--success);
+  color: var(--success);
+}
+
+.ant-alert-warning {
+  background-color: rgba(201, 138, 74, 0.1);
+  border-color: var(--warning);
+  color: var(--warning);
+}
+
+.ant-alert-error {
+  background-color: rgba(168, 78, 59, 0.1);
+  border-color: var(--destructive);
+  color: var(--destructive);
 }
 
 /* Modal styles */
 .ant-modal-content {
-  border-radius: 16px;
+  border-radius: var(--radius);
   overflow: hidden;
+  background-color: var(--card);
+  color: var(--foreground);
 }
 
 .ant-modal-header {
-  border-top-left-radius: 16px;
-  border-top-right-radius: 16px;
+  border-top-left-radius: var(--radius);
+  border-top-right-radius: var(--radius);
+  border-bottom-color: var(--border);
+  background-color: var(--card);
+}
+
+.ant-modal-title {
+  color: var(--card-foreground);
+}
+
+.ant-modal-body {
+  color: var(--foreground);
+}
+
+.ant-modal-footer {
+  border-top-color: var(--border);
 }
 
 /* Custom classes */
 .text-success {
-  color: var(--success-color) !important;
+  color: var(--success) !important;
 }
 
 .text-danger {
-  color: var(--danger-color) !important;
+  color: var(--destructive) !important;
 }
 
 .text-info {
-  color: var(--info-color) !important;
+  color: var(--accent) !important;
 }
 
 .text-warning {
-  color: var(--warning-color) !important;
+  color: var(--warning) !important;
 }
 
 /* Utility classes */
@@ -163,19 +279,22 @@ html {
 }
 
 .rounded-xl {
-  border-radius: 12px;
+  border-radius: var(--radius);
 }
 
 .rounded-2xl {
-  border-radius: 16px;
+  border-radius: calc(var(--radius) + 2px);
 }
 
 /* Container with more modern padding */
 .container-fluid {
   padding-left: 24px;
   padding-right: 24px;
+  padding-top: 10px;
   max-width: 1400px;
   margin: 0 auto;
+  background-color: var(--background);
+  min-height: calc(100vh - 80px);
 }
 
 @media (min-width: 768px) {
@@ -191,17 +310,17 @@ html {
 }
 
 ::-webkit-scrollbar-track {
-  background: #f1f1f1;
+  background: var(--muted);
   border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #c1c1c1;
+  background: var(--border);
   border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #a8a8a8;
+  background: var(--muted-foreground);
 }
 
 /* Table styles */
@@ -211,22 +330,22 @@ html {
 }
 
 .transactions-table .ant-table-thead > tr > th {
-  background-color: #f8fafc;
+  background-color: var(--muted);
   font-weight: 600;
   padding: 16px;
-  border-bottom: 2px solid #f1f5f9;
+  border-bottom: 2px solid var(--border);
 }
 
 .table-row-light {
-  background-color: #ffffff;
+  background-color: var(--card);
 }
 
 .table-row-dark {
-  background-color: #f9fafb;
+  background-color: var(--secondary);
 }
 
 .transactions-table .ant-table-tbody > tr:hover > td {
-  background-color: #f1f5f9 !important;
+  background-color: var(--secondary) !important;
 }
 
 /* Pagination styles */
@@ -236,12 +355,12 @@ html {
 }
 
 .pagination-modern .ant-pagination-item-active {
-  background-color: var(--primary-color);
-  border-color: var(--primary-color);
+  background-color: var(--primary);
+  border-color: var(--primary);
 }
 
 .pagination-modern .ant-pagination-item-active a {
-  color: white;
+  color: var(--primary-foreground);
 }
 
 /* Category checkbox styles */
@@ -254,11 +373,11 @@ html {
 }
 
 .category-checkboxes .ant-checkbox-wrapper:hover {
-  background-color: #f1f5f9;
+  background-color: var(--secondary);
 }
 
 .category-checkboxes .ant-checkbox-wrapper-checked {
-  background-color: rgba(92, 106, 196, 0.1);
+  background-color: var(--muted);
 }
 
 /* Radio button tabs */
@@ -292,7 +411,7 @@ html {
 
 /* Transaction item in mobile view */
 .transaction-item {
-  background-color: white;
+  background-color: var(--card);
   padding: 12px;
   transition: all 0.3s ease;
 }
@@ -307,17 +426,262 @@ html {
   font-weight: 600;
 }
 
-/* Make sure header is on top of everything */
-header {
-  z-index: 1000;
+/* Header Styles - Mobile First */
+.header {
   position: sticky;
   top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  width: 100%;
+  background-color: var(--primary);
+  border-radius: 0 0 var(--radius) var(--radius);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 1rem;
+  overflow: hidden;
 }
 
-/* Add a subtle shadow to separate main content from header */
-.container-fluid {
-  padding-top: 10px;
-  position: relative;
+.header-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+@media (min-width: 768px) {
+  .header-container {
+    padding: 0 2rem;
+  }
+}
+
+.header-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 0;
+  min-height: 64px;
+  width: 100%;
+  flex-wrap: nowrap;
+}
+
+.header-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-decoration: none;
+  color: var(--primary-foreground);
+  font-weight: 600;
+  font-size: 1.25rem;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.header-logo-img {
+  height: 32px !important;
+  width: auto !important;
+  max-width: 32px !important;
+  max-height: 32px !important;
+  object-fit: contain;
+  display: block;
+  flex-shrink: 0;
+}
+
+.header-logo-text {
+  color: var(--primary-foreground);
+}
+
+.header-nav-desktop {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.header-menu-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  color: var(--primary-foreground);
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: calc(var(--radius) / 2);
+  transition: background-color 0.2s;
+}
+
+.header-menu-button:hover {
+  background-color: rgba(246, 241, 236, 0.1);
+}
+
+.header-nav-desktop .nav-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  color: var(--primary-foreground);
+  text-decoration: none;
+  border-radius: calc(var(--radius) / 2);
+  transition: all 0.2s;
+  font-weight: 500;
+}
+
+.header-nav-desktop .nav-link svg {
+  flex-shrink: 0;
+}
+
+.header-nav-desktop .nav-link:hover {
+  background-color: rgba(246, 241, 236, 0.1);
+}
+
+.header-nav-desktop .nav-link.active-nav {
+  background-color: var(--accent);
+  color: var(--accent-foreground);
+  font-weight: 600;
+}
+
+/* Responsive improvements for Group page and others */
+@media (max-width: 767px) {
+  .row {
+    margin: 0;
+  }
+  
+  .col-md-6 {
+    padding: 0;
+    margin-bottom: 1rem;
+  }
+  
+  .col-md-6:last-child {
+    margin-bottom: 0;
+  }
+}
+
+/* Mobile Navigation Styles */
+.header-nav-mobile {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.mobile-nav-link {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  color: var(--foreground);
+  text-decoration: none;
+  border-radius: calc(var(--radius) / 2);
+  transition: all 0.2s;
+  font-weight: 500;
+  width: 100%;
+}
+
+.mobile-nav-link:hover {
+  background-color: var(--secondary);
+}
+
+.mobile-nav-link.active-nav {
+  background-color: var(--accent);
+  color: var(--accent-foreground);
+  font-weight: 600;
+}
+
+.mobile-nav-link svg {
+  flex-shrink: 0;
+}
+
+.mobile-nav-link span {
+  flex: 1;
+}
+
+.mobile-nav-divider {
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 0.5rem;
+  padding-bottom: 1rem !important;
+  cursor: default;
+}
+
+.mobile-nav-user-name {
+  font-weight: 600;
+  color: var(--foreground);
+}
+
+.mobile-nav-logout {
+  color: var(--destructive);
+  cursor: pointer;
+}
+
+.mobile-nav-logout:hover {
+  background-color: rgba(168, 78, 59, 0.1);
+  color: var(--destructive);
+}
+
+.drawer-header {
+  display: flex;
+  align-items: center;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.drawer-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-decoration: none;
+  color: var(--foreground);
+  font-weight: 600;
+  font-size: 1.25rem;
+}
+
+.drawer-logo-img {
+  height: 28px !important;
+  width: auto !important;
+  max-width: 28px !important;
+  max-height: 28px !important;
+  object-fit: contain;
+  display: block;
+  flex-shrink: 0;
+}
+
+.drawer-logo-text {
+  color: var(--foreground);
+}
+
+.mobile-menu-drawer .ant-drawer-header {
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.mobile-menu-drawer .ant-drawer-body {
+  padding: 1rem 1.5rem;
+}
+
+.mobile-menu-drawer .ant-drawer-close {
+  color: var(--foreground);
+}
+
+.mobile-menu-drawer .ant-drawer-close:hover {
+  color: var(--destructive);
+}
+
+/* Legacy nav-link styles for backward compatibility */
+.nav-link {
+  border-radius: calc(var(--radius) / 2);
+  transition: all 0.3s ease;
+}
+
+/* Card styles with new color scheme */
+.ant-card {
+  background-color: var(--card);
+  color: var(--card-foreground);
+  border-color: var(--border);
+}
+
+.ant-card-head {
+  border-bottom-color: var(--border);
+}
+
+.ant-card-head-title {
+  color: var(--card-foreground);
+  font-weight: 600;
 }
 
 .ant-typography {
@@ -330,12 +694,20 @@ header {
 .ant-picker {
   box-shadow: none;
   transition: all 0.3s ease;
+  border-color: var(--input);
+  background-color: var(--card);
+  color: var(--foreground);
+}
+
+.ant-input::placeholder,
+.ant-select-selection-placeholder {
+  color: var(--muted-foreground);
 }
 
 .ant-input:hover,
 .ant-select-selector:hover,
 .ant-picker:hover {
-  border-color: var(--primary-color);
+  border-color: var(--ring);
 }
 
 /* Enhance statistic cards */
@@ -363,147 +735,33 @@ header {
   max-width: 100%;
 }
 
-/* Font declarations below this point */
-@font-face {
-  font-family: "Raleway";
-  src: url("/fonts/Raleway-Thin.ttf") format("truetype");
-  font-weight: 100;
-  font-style: normal;
-  font-display: swap;
-}
+/* Dark mode support */
+.dark {
+  --background: #1A0F0D;
+  --foreground: #F6F1EC;
 
-@font-face {
-  font-family: "Raleway";
-  src: url("/fonts/Raleway-ThinItalic.ttf") format("truetype");
-  font-weight: 100;
-  font-style: italic;
-  font-display: swap;
-}
+  --card: #221413;
+  --card-foreground: #F6F1EC;
 
-@font-face {
-  font-family: "Raleway";
-  src: url("/fonts/Raleway-ExtraLight.ttf") format("truetype");
-  font-weight: 200;
-  font-style: normal;
-  font-display: swap;
-}
+  --popover: #221413;
+  --popover-foreground: #F6F1EC;
 
-@font-face {
-  font-family: "Raleway";
-  src: url("/fonts/Raleway-ExtraLightItalic.ttf") format("truetype");
-  font-weight: 200;
-  font-style: italic;
-  font-display: swap;
-}
+  --primary: #C9A24D;
+  --primary-foreground: #1A0F0D;
 
-@font-face {
-  font-family: "Raleway";
-  src: url("/fonts/Raleway-Light.ttf") format("truetype");
-  font-weight: 300;
-  font-style: normal;
-  font-display: swap;
-}
+  --secondary: #2A1A17;
+  --secondary-foreground: #F6F1EC;
 
-@font-face {
-  font-family: "Raleway";
-  src: url("/fonts/Raleway-LightItalic.ttf") format("truetype");
-  font-weight: 300;
-  font-style: italic;
-  font-display: swap;
-}
+  --muted: #2A1A17;
+  --muted-foreground: #BFAFA8;
 
-@font-face {
-  font-family: "Raleway";
-  src: url("/fonts/Raleway-Regular.ttf") format("truetype");
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
+  --accent: #C9A24D;
+  --accent-foreground: #1A0F0D;
 
-@font-face {
-  font-family: "Raleway";
-  src: url("/fonts/Raleway-Italic.ttf") format("truetype");
-  font-weight: 400;
-  font-style: italic;
-  font-display: swap;
-}
+  --border: #3A2723;
+  --input: #3A2723;
+  --ring: #C9A24D;
 
-@font-face {
-  font-family: "Raleway";
-  src: url("/fonts/Raleway-Medium.ttf") format("truetype");
-  font-weight: 500;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Raleway";
-  src: url("/fonts/Raleway-MediumItalic.ttf") format("truetype");
-  font-weight: 500;
-  font-style: italic;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Raleway";
-  src: url("/fonts/Raleway-SemiBold.ttf") format("truetype");
-  font-weight: 600;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Raleway";
-  src: url("/fonts/Raleway-SemiBoldItalic.ttf") format("truetype");
-  font-weight: 600;
-  font-style: italic;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Raleway";
-  src: url("/fonts/Raleway-Bold.ttf") format("truetype");
-  font-weight: 700;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Raleway";
-  src: url("/fonts/Raleway-BoldItalic.ttf") format("truetype");
-  font-weight: 700;
-  font-style: italic;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Raleway";
-  src: url("/fonts/Raleway-ExtraBold.ttf") format("truetype");
-  font-weight: 800;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Raleway";
-  src: url("/fonts/Raleway-ExtraBoldItalic.ttf") format("truetype");
-  font-weight: 800;
-  font-style: italic;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Raleway";
-  src: url("/fonts/Raleway-Black.ttf") format("truetype");
-  font-weight: 900;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Raleway";
-  src: url("/fonts/Raleway-BlackItalic.ttf") format("truetype");
-  font-weight: 900;
-  font-style: italic;
-  font-display: swap;
+  --destructive: #A84E3B;
+  --destructive-foreground: #F6F1EC;
 }

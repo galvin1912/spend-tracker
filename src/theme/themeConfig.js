@@ -1,18 +1,18 @@
-// Modern theme configuration for Ant Design
+// Modern theme configuration for Ant Design - Warm Fintech Theme
 const themeConfig = {
   token: {
-    // Color system
-    colorPrimary: '#5c6ac4', // Modern indigo as primary color
-    colorSuccess: '#10b981', // Modern green
-    colorWarning: '#f59e0b', // Modern amber
-    colorError: '#ef4444',   // Modern red
-    colorInfo: '#3b82f6',    // Modern blue
+    // Color system - Warm Fintech Palette
+    colorPrimary: '#3F221D', // Primary dark brown
+    colorSuccess: '#6F8F72', // Success green
+    colorWarning: '#C98A4A', // Warning amber
+    colorError: '#A84E3B',   // Destructive red
+    colorInfo: '#C9A24D',     // Accent gold
     
     // Border radius
-    borderRadius: 10, // Increased border radius for more rounded look
+    borderRadius: 14, // Match --radius variable
     
-    // Font family
-    fontFamily: '"Raleway", sans-serif',
+    // Font family - Be Vietnam Pro for Vietnamese support
+    fontFamily: '"Be Vietnam Pro", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
     
     // Sizing and spacing
     sizeUnit: 4,
@@ -61,7 +61,7 @@ const themeConfig = {
       borderRadius: 12,
     },
     Tabs: {
-      inkBarColor: '#5c6ac4',
+      inkBarColor: '#3F221D',
     },
   },
 };
