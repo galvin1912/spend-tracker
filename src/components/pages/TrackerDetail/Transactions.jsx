@@ -2,20 +2,18 @@ import { useMemo } from "react";
 import PropTypes from "prop-types";
 import { Link, useParams } from "react-router-dom";
 import { Card, Button, Table, Tag, List, Descriptions, Badge, Typography } from "antd";
-import { useTranslation } from "react-i18next";
 import dayjs from "../../../configs/dayjs";
 import useMediaQuery from "../../../hooks/useMediaQuery";
 import { convertCurrency } from "../../../utils/numberUtils";
 
 const Transactions = ({ transactions, isTransactionsLoading, categories, transactionPageSize }) => {
-  const { t } = useTranslation();
   const { trackerID } = useParams();
   const isNotMobile = useMediaQuery("(min-width: 768px)");
 
   const columns = useMemo(
     () => [
       {
-        title: t("date"),
+        title: "Ngày",
         width: 150,
         dataIndex: "time",
         key: "time",
@@ -34,14 +32,14 @@ const Transactions = ({ transactions, isTransactionsLoading, categories, transac
         },
       },
       {
-        title: t("transactionName"),
+        title: "Tên giao dịch",
         dataIndex: "name",
         key: "name",
         width: 250,
         render: (name) => <Typography.Text strong>{name}</Typography.Text>,
       },
       {
-        title: t("amount"),
+        title: "Số tiền",
         dataIndex: "amount",
         key: "amount",
         render: (amount, transaction) => (
@@ -52,24 +50,24 @@ const Transactions = ({ transactions, isTransactionsLoading, categories, transac
         ),
       },
       {
-        title: t("description"),
+        title: "Mô tả",
         dataIndex: "description",
         key: "description",
         width: 300,
         render: (description) =>
           description || (
             <Typography.Text type="secondary" italic>
-              {t("noDescription")}
+              Chưa có mô tả
             </Typography.Text>
           ),
       },
       {
-        title: t("category"),
+        title: "Danh mục",
         dataIndex: "category",
         key: "category",
         render: (category) => {
           const categoryDetail = categories.find((categoryItem) => categoryItem.uid === category);
-          if (!categoryDetail) return <Tag className="rounded-xl">{t("noCategory")}</Tag>;
+          if (!categoryDetail) return <Tag className="rounded-xl">Không có danh mục</Tag>;
           return (
             <Tag color={categoryDetail?.color} className="rounded-xl py-1 px-3" style={{ fontWeight: 500 }}>
               {categoryDetail?.name}
@@ -78,7 +76,7 @@ const Transactions = ({ transactions, isTransactionsLoading, categories, transac
         },
       },
       {
-        title: t("transactionType"),
+        title: "Loại giao dịch",
         dataIndex: "type",
         key: "type",
         render: (type) => (
@@ -86,28 +84,28 @@ const Transactions = ({ transactions, isTransactionsLoading, categories, transac
             status={type === "income" ? "success" : "error"}
             text={
               <Typography.Text strong type={type === "income" ? "success" : "danger"}>
-                {type === "income" ? t("income") : t("expense")}
+                {type === "income" ? "Thu nhập" : "Chi tiêu"}
               </Typography.Text>
             }
           />
         ),
       },
       {
-        title: t("createdAt"),
+        title: "Tạo lúc",
         dataIndex: "createdAt",
         key: "createdAt",
         width: 150,
         render: (createdAt) => dayjs(createdAt.toDate()).format("DD/MM/YYYY"),
       },
       {
-        title: t("updatedAt"),
+        title: "Cập nhật lúc",
         dataIndex: "updatedAt",
         key: "updatedAt",
         width: 150,
         render: (updatedAt) => (updatedAt ? dayjs(updatedAt.toDate()).format("DD/MM/YYYY") : "--"),
       },
       {
-        title: t("actions"),
+        title: "Hành động",
         dataIndex: "action",
         key: "action",
         width: 150,
@@ -116,29 +114,29 @@ const Transactions = ({ transactions, isTransactionsLoading, categories, transac
         render: (_, transaction) => (
           <Link to={`/tracker/detail/${trackerID}/transaction/detail/${transaction?.uid}`}>
             <Button type="primary" size="small" className="rounded-xl">
-              {t("viewDetail")}
+              Xem chi tiết
             </Button>
           </Link>
         ),
       },
     ],
-    [categories, trackerID, t]
+    [categories, trackerID]
   );
 
   return (
     <Card
       title={
         <div style={{ display: "flex", alignItems: "center" }}>
-          <span style={{ fontSize: "18px", fontWeight: 600 }}>{t("transactions")}</span>
+          <span style={{ fontSize: "18px", fontWeight: 600 }}>Giao dịch</span>
           <span style={{ marginLeft: "10px", fontSize: "14px", color: "#666" }}>
-            ({transactions.length} {t("transactions").toLowerCase()})
+            ({transactions.length} giao dịch)
           </span>
         </div>
       }
       extra={
         <Link to={`/tracker/detail/${trackerID}/transaction/create`}>
           <Button type="primary" icon={<span className="me-1">+</span>}>
-            {t("addTransaction")}
+            Thêm giao dịch
           </Button>
         </Link>
       }
@@ -152,7 +150,7 @@ const Transactions = ({ transactions, isTransactionsLoading, categories, transac
           dataSource={transactions}
           rowKey={(transaction) => transaction?.uid}
           scroll={{ x: 2000 }}
-          locale={{ emptyText: t("noTransactionsFound") }}
+          locale={{ emptyText: "Không tìm thấy giao dịch" }}
           pagination={{
             pageSize: transactionPageSize,
             hideOnSinglePage: transactions.length <= transactionPageSize,
@@ -166,7 +164,7 @@ const Transactions = ({ transactions, isTransactionsLoading, categories, transac
           loading={isTransactionsLoading}
           dataSource={transactions}
           rowKey={(transaction) => transaction?.uid}
-          locale={{ emptyText: t("noTransactionsFound") }}
+          locale={{ emptyText: "Không tìm thấy giao dịch" }}
           pagination={{
             pageSize: transactionPageSize,
             hideOnSinglePage: transactions.length <= transactionPageSize,
@@ -190,26 +188,26 @@ const Transactions = ({ transactions, isTransactionsLoading, categories, transac
                         {dayjs(transaction?.time.toDate()).format("DD/MM/YYYY")}
                       </Typography.Text>
                       <Tag color={transaction?.type === "income" ? "green" : "red"} className="rounded-xl">
-                        {transaction?.type === "income" ? t("income") : t("expense")}
+                        {transaction?.type === "income" ? "Thu nhập" : "Chi tiêu"}
                       </Tag>
                     </div>
                   }
                   extra={
                     <Link to={`/tracker/detail/${trackerID}/transaction/detail/${transaction?.uid}`}>
                       <Button type="primary" size="small" className="rounded-xl">
-                        {t("detail")}
+                        Chi tiết
                       </Button>
                     </Link>
                   }
                   items={[
                     {
                       key: "name",
-                      label: t("transactionName"),
+                      label: "Tên giao dịch",
                       children: <Typography.Text strong>{transaction?.name}</Typography.Text>,
                     },
                     {
                       key: "amount",
-                      label: t("amount"),
+                      label: "Số tiền",
                       children: (
                         <Typography.Text
                           strong
@@ -223,21 +221,21 @@ const Transactions = ({ transactions, isTransactionsLoading, categories, transac
                     },
                     {
                       key: "category",
-                      label: t("category"),
+                      label: "Danh mục",
                       children: categoryDetail ? (
                         <Tag color={categoryDetail?.color} className="rounded-xl py-1 px-3" style={{ fontWeight: 500 }}>
                           {categoryDetail?.name}
                         </Tag>
                       ) : (
-                        <Tag className="rounded-xl">{t("noCategory")}</Tag>
+                        <Tag className="rounded-xl">Không có danh mục</Tag>
                       ),
                     },
                     {
                       key: "description",
-                      label: t("description"),
+                      label: "Mô tả",
                       children: transaction?.description || (
                         <Typography.Text type="secondary" italic>
-                          {t("noDescription")}
+                          Chưa có mô tả
                         </Typography.Text>
                       ),
                     },

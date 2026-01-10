@@ -1,11 +1,9 @@
 import PropTypes from "prop-types";
 import { memo } from "react";
 import { Typography } from "antd";
-import { useTranslation } from "react-i18next";
 import { convertCurrency } from "../../../../utils/numberUtils";
 
 const TodayExpenseCard = ({ todaySum }) => {
-  const { t } = useTranslation();
 
   if (!todaySum) return null;
 
@@ -23,7 +21,7 @@ const TodayExpenseCard = ({ todaySum }) => {
       }}
     >
       <Typography.Text style={{ fontSize: "16px" }}>
-        <Typography.Text strong>{t("today")}</Typography.Text> {t("spentToday")}
+        <Typography.Text strong>Hôm nay</Typography.Text> đã chi tiêu:
       </Typography.Text>
       <Typography.Text
         strong

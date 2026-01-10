@@ -9,7 +9,6 @@ A collaborative expense tracking application built with React, Firebase, and Ant
 - **Transaction Tracking**: Record and categorize income and expenses
 - **Budgeting**: Set and monitor monthly budgets for groups
 - **Analytics**: Visualize spending patterns with charts and statistics
-- **Internationalization**: Full support for English and Vietnamese
 
 ## Development Setup
 
@@ -106,13 +105,9 @@ spend-tracker/
     ├── configs/             # Configuration files
     ├── features/            # Redux feature modules
     │   ├── group/           # Group-related redux
-    │   ├── language/        # Language-related redux
     │   ├── tracker/         # Tracker-related redux
     │   └── user/            # User-related redux
     ├── hooks/               # Custom React hooks
-    ├── i18n/                # Internationalization
-    │   ├── index.js         # i18n setup
-    │   └── locales/         # Translation files
     ├── locale/              # Ant Design localization
     ├── pages/               # Page components
     ├── services/            # Firebase service interactions
@@ -165,11 +160,6 @@ spend-tracker/
 - Use Redux for global state management
 - Use React hooks (`useState`, `useReducer`) for local component state
 - Follow the Redux Toolkit pattern: actions, reducers, and selectors
-
-### Internationalization
-- All user-facing strings must be internationalized using the `t()` function
-- Add new strings to both English and Vietnamese translation files
-- Use interpolation for dynamic content: `t('welcomeMessage', { name: user.name })`
 
 ### Styling
 - Use CSS-in-JS via Ant Design's styling system for component styles

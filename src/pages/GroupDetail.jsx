@@ -7,13 +7,12 @@ import { PersonAdd } from "@styled-icons/evaicons-solid";
 import { PersonRemove } from "@styled-icons/material-rounded";
 import { debounce } from "lodash";
 import dayjs from "../configs/dayjs";
-import { useTranslation } from "react-i18next";
 import GroupServices from "../services/GroupServices";
 import GroupDetailImage from "../assets/4380.jpg";
 import UserServices from "../services/UserServices";
+import { translateError } from "../utils/errorTranslator";
 
 const GroupDetail = () => {
-  const { t } = useTranslation();
   
   // This is used to get groupID from URL
   const { groupID } = useParams();
@@ -54,7 +53,7 @@ const GroupDetail = () => {
           updatedAt: group?.updatedAt ? dayjs(group.updatedAt.toDate()).format("DD/MM/YYYY HH:mm") : "",
         });
       } catch (error) {
-        message.error(error.message);
+        message.error(translateError(error));
       }
     };
 
@@ -70,7 +69,7 @@ const GroupDetail = () => {
         const members = await GroupServices.getMembers(groupID);
         setMembers(members.map((member) => member.uid));
       } catch (error) {
-        message.error(error.message);
+        message.error(translateError(error));
       }
     };
 
@@ -91,7 +90,7 @@ const GroupDetail = () => {
         );
         setMemberInfos(memberInfos);
       } catch (error) {
-        message.error(error.message);
+        message.error(translateError(error));
       }
     };
 
@@ -131,7 +130,7 @@ const GroupDetail = () => {
 
         setMemberOptions(filterOptions);
       } catch (error) {
-        message.error(error.message);
+        message.error(translateError(error));
       } finally {
         setMemberOptionsLoading(false);
       }
@@ -148,7 +147,7 @@ const GroupDetail = () => {
       await GroupServices.updateGroup(groupID, {
         members: [...members, uid],
       });
-      message.success(t("addMemberSuccess"));
+      message.success("Thêm thành viên thành công");
 
       // store member uid
       setMembers([...members, uid]);
@@ -157,7 +156,7 @@ const GroupDetail = () => {
       setMemberOptions([]);
       setSearchText("");
     } catch (error) {
-      message.error(error.message);
+      message.error(translateError(error));
     }
   };
 
@@ -169,13 +168,13 @@ const GroupDetail = () => {
       await GroupServices.updateGroup(groupID, {
         members: members.filter((memeberUid) => memeberUid !== uid),
       });
-      message.success(t("removeMemberSuccess"));
+      message.success("Xóa thành viên thành công");
 
       // remove member uid from members
       const newMembers = members.filter((memeberUid) => memeberUid !== uid);
       setMembers(newMembers);
     } catch (error) {
-      message.error(error.message);
+      message.error(translateError(error));
     }
   };
 
@@ -190,21 +189,21 @@ const GroupDetail = () => {
         description,
         color,
       });
-      message.success(t("groupUpdateSuccess"));
+      message.success("Cập nhật nhóm thành công");
       navigate("/group");
     } catch (error) {
-      message.error(error.message);
+      message.error(translateError(error));
     }
   };
 
   return (
     <>
       <Helmet
-        title={`${t("groupDetail")} | GST`}
+        title="Chi tiết nhóm | GST"
         meta={[
           {
             name: "description",
-            content: t("groupDetailDescription"),
+            content: "Xem và quản lý chi tiết nhóm.",
           },
         ]}
       />
@@ -212,29 +211,29 @@ const GroupDetail = () => {
       <Row gutter={[24, 12]}>
         <Col span={24} md={12}>
           <Card
-            title={t("groupDetail")}
+            title="Chi tiết nhóm"
             extra={
               <Link to="/group">
-                <Button danger>{t("back")}</Button>
+                <Button danger>Quay lại</Button>
               </Link>
             }
           >
             <Form form={form} name="groupDetailForm" layout="vertical" autoComplete="off" onFinish={handleUpdateGroup} disabled={!isOwnerGroup}>
               <Form.Item
-                label={t("groupName")}
+                label="Tên nhóm"
                 name="groupName"
                 rules={[
                   {
                     required: true,
-                    message: t("required", { field: t("groupName").toLowerCase() }),
+                    message: "Vui lòng nhập tên nhóm!",
                   },
                   {
                     max: 50,
-                    message: t("maxLength", { field: t("groupName").toLowerCase(), length: 50 }),
+                    message: "Tên nhóm không được vượt quá 50 ký tự!",
                   },
                   {
                     whitespace: true,
-                    message: t("emptyField", { field: t("groupName").toLowerCase() }),
+                    message: "Tên nhóm không được để trống",
                   },
                 ]}
               >
@@ -242,16 +241,16 @@ const GroupDetail = () => {
               </Form.Item>
 
               <Form.Item
-                label={t("description")}
+                label="Mô tả"
                 name="description"
                 rules={[
                   {
                     max: 200,
-                    message: t("maxLength", { field: t("description").toLowerCase(), length: 200 }),
+                    message: "Mô tả không được vượt quá 200 ký tự!",
                   },
                   {
                     whitespace: true,
-                    message: t("emptyField", { field: t("description").toLowerCase() }),
+                    message: "Mô tả không được để trống",
                   },
                 ]}
               >
@@ -259,42 +258,42 @@ const GroupDetail = () => {
               </Form.Item>
 
               <Form.Item
-                label={t("groupColor")}
+                label="Màu sắc (hiển thị trên biểu đồ)"
                 name="color"
                 rules={[
                   {
                     required: true,
-                    message: t("selectColor"),
+                    message: "Vui lòng chọn màu sắc!",
                   },
                 ]}
               >
                 <ColorPicker format="hex" showText onChangeComplete={handleChangeColor} />
               </Form.Item>
 
-              <Form.Item label={t("createdAt")} name="createdAt">
+              <Form.Item label="Tạo lúc" name="createdAt">
                 <Input disabled />
               </Form.Item>
 
-              <Form.Item label={t("updatedAt")} name="updatedAt">
+              <Form.Item label="Cập nhật lúc" name="updatedAt">
                 <Input disabled />
               </Form.Item>
 
               <Form.Item>
                 <Link to="/group">
                   <Button className="me-2" type="default">
-                    {t("cancel")}
+                    Hủy
                   </Button>
                 </Link>
                 <Button type="primary" htmlType="submit">
-                  {t("update")}
+                  Cập nhật
                 </Button>
               </Form.Item>
             </Form>
           </Card>
 
-          <Card title={t("members")} className="mt-3">
+          <Card title="Thành viên" className="mt-3">
             {isOwnerGroup && (
-              <Input placeholder={t("enterMemberEmail")} allowClear value={searchText} onChange={handleSearchMember} />
+              <Input placeholder="Tìm thành viên theo email" allowClear value={searchText} onChange={handleSearchMember} />
             )}
             {searchText.length >= 3 && (
               <List
@@ -302,7 +301,7 @@ const GroupDetail = () => {
                 className="mt-1"
                 dataSource={memberOptions}
                 loading={memberOptionsLoading}
-                locale={{ emptyText: <i>{t("noMatchingResults")}</i> }}
+                locale={{ emptyText: <i>Không có kết quả phù hợp</i> }}
                 renderItem={(memeberOption) => (
                   <List.Item style={{ cursor: "pointer" }} extra={<PersonAdd size={20} />} onClick={() => handleAddMember(memeberOption.uid)}>
                     <span>{memeberOption.label}</span>
@@ -335,7 +334,7 @@ const GroupDetail = () => {
           </Card>
         </Col>
         <Col span={24} md={12}>
-          <img src={GroupDetailImage} alt={t("groupDetail")} className="img-fluid" />
+          <img src={GroupDetailImage} alt="Chi tiết nhóm" className="img-fluid" />
         </Col>
       </Row>
     </>

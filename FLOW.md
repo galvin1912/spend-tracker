@@ -11,7 +11,6 @@ This document outlines the structure, code flow, and naming conventions for the 
 5. [Page Structure](#page-structure)
 6. [Redux Setup](#redux-setup)
 7. [Service Layer](#service-layer)
-8. [Internationalization](#internationalization)
 
 ## Project Structure
 
@@ -27,12 +26,9 @@ src/
 ├── configs/            # Configuration files (Firebase, etc.)
 ├── features/           # Redux state management organized by feature
 │   ├── group/          # Group feature state
-│   ├── language/       # Language/i18n state
 │   ├── tracker/        # Tracker feature state
 │   └── user/           # User/auth state
 ├── hooks/              # Custom React hooks
-├── i18n/               # Internationalization setup
-│   └── locales/        # Translation files
 ├── pages/              # Page components (one per route)
 ├── services/           # API and business logic services
 ├── store/              # Redux store configuration
@@ -88,13 +84,9 @@ src/
 2. Implement smaller UI components in `components/pages/NewFeature/`
 3. Define routes in `routes.jsx`
 
-#### Internationalization
-1. Add new strings to translation files in both languages (en.js and vi.js)
-
 ### 3. Testing
 - Test feature functionality
 - Verify responsive design works across device sizes
-- Check internationalization (both English and Vietnamese)
 
 ### 4. Deployment
 - Merge feature branch to main/development branch
@@ -169,14 +161,10 @@ For new components, use this basic structure:
 ```jsx
 import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { useTranslation } from "react-i18next";
 import { Card, Button, Typography } from "antd";
 import PropTypes from "prop-types";
 
 const FeatureComponent = ({ propName, anotherProp }) => {
-  // Translation hook
-  const { t } = useTranslation();
-  
   // Redux
   const dispatch = useDispatch();
   const stateData = useSelector(state => state.feature.data);
@@ -196,9 +184,9 @@ const FeatureComponent = ({ propName, anotherProp }) => {
   
   // Rendering logic
   return (
-    <Card title={t("featureTitle")}>
-      <Typography.Text>{t("featureDescription")}</Typography.Text>
-      <Button onClick={handleAction}>{t("actionButton")}</Button>
+    <Card title="Tiêu đề tính năng">
+      <Typography.Text>Mô tả tính năng</Typography.Text>
+      <Button onClick={handleAction}>Thực hiện</Button>
     </Card>
   );
 };
@@ -219,14 +207,11 @@ For new pages, follow this structure:
 ```jsx
 import { useState, useEffect } from "react";
 import { Helmet } from "react-helmet-async";
-import { useTranslation } from "react-i18next";
 import { Row, Col, Typography, message } from "antd";
 import FeatureComponent from "../components/pages/Feature/FeatureComponent";
 import FeatureServices from "../services/FeatureServices";
 
 const FeaturePage = () => {
-  const { t } = useTranslation();
-  
   // State management
   const [data, setData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -239,7 +224,7 @@ const FeaturePage = () => {
         const response = await FeatureServices.getData();
         setData(response);
       } catch (error) {
-        message.error(error.message || t("errorMessage"));
+        message.error(error.message || "Có lỗi xảy ra");
       } finally {
         setIsLoading(false);
       }
@@ -251,13 +236,13 @@ const FeaturePage = () => {
   return (
     <>
       <Helmet
-        title={`${t("featurePageTitle")} | GST`}
-        meta={[{ name: "description", content: t("featurePageDescription") }]}
+        title="Tiêu đề trang | GST"
+        meta={[{ name: "description", content: "Mô tả trang" }]}
       />
       
       <Row gutter={[24, 24]}>
         <Col span={24}>
-          <Typography.Title level={2}>{t("featurePageTitle")}</Typography.Title>
+          <Typography.Title level={2}>Tiêu đề trang</Typography.Title>
         </Col>
         
         <Col span={24}>
@@ -293,7 +278,6 @@ import {
 } from "./newFeatureConstants";
 import FeatureServices from "../../services/FeatureServices";
 import { message } from "antd";
-import i18next from "i18next";
 
 export const performAction = (data) => async (dispatch) => {
   dispatch({ type: FEATURE_ACTION });
@@ -301,11 +285,11 @@ export const performAction = (data) => async (dispatch) => {
   try {
     const result = await FeatureServices.someMethod(data);
     dispatch({ type: FEATURE_ACTION_SUCCESS, payload: result });
-    message.success(i18next.t("actionSuccessMessage"));
+    message.success("Thực hiện thành công");
     return result;
   } catch (error) {
     dispatch({ type: FEATURE_ACTION_FAILED });
-    message.error(error.message || i18next.t("actionErrorMessage"));
+    message.error(error.message || "Không thể thực hiện");
     throw error;
   }
 };
@@ -402,28 +386,4 @@ class FeatureServices {
 }
 
 export default FeatureServices;
-```
-
-## Internationalization
-
-Always add new strings to both language files:
-
-```js
-// src/i18n/locales/en.js
-{
-  "featureTitle": "Feature Title",
-  "featureDescription": "Feature description in English",
-  "actionButton": "Perform Action",
-  "actionSuccessMessage": "Action performed successfully",
-  "actionErrorMessage": "Failed to perform action"
-}
-
-// src/i18n/locales/vi.js
-{
-  "featureTitle": "Tiêu đề tính năng",
-  "featureDescription": "Mô tả tính năng bằng tiếng Việt",
-  "actionButton": "Thực hiện",
-  "actionSuccessMessage": "Thực hiện thành công",
-  "actionErrorMessage": "Không thể thực hiện"
-}
 ```

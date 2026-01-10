@@ -1,14 +1,13 @@
 import { useState, useEffect } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import { Row, Col, Form, Input, InputNumber, Button, DatePicker, Card, Select, Popconfirm, message } from "antd";
-import { useTranslation } from "react-i18next";
 import dayjs from "../configs/dayjs";
 import TransactionBg from "../assets/aaaaa.webp";
 import TrackerServices from "../services/TrackerServices";
+import { translateError } from "../utils/errorTranslator";
 
 const TrackerTransactionDetail = () => {
   const navigate = useNavigate();
-  const { t } = useTranslation();
   const { trackerID, transactionID } = useParams();
 
   const [form] = Form.useForm();
@@ -22,14 +21,14 @@ const TrackerTransactionDetail = () => {
     const getCategories = async () => {
       try {
         const categories = await TrackerServices.getCategories(trackerID);
-        setCategories([{ name: t("noCategory"), uid: "uncategorized" }, ...categories]);
+        setCategories([{ name: "Không có danh mục", uid: "uncategorized" }, ...categories]);
       } catch (error) {
-        message.error(error.message);
+        message.error(translateError(error));
       }
     };
 
     getCategories();
-  }, [trackerID, t]);
+  }, [trackerID]);
 
   // get transaction detail
   useEffect(() => {
@@ -42,7 +41,7 @@ const TrackerTransactionDetail = () => {
           amount: Math.abs(transactionDetail.amount),
         });
       } catch (error) {
-        message.error(error.message);
+        message.error(translateError(error));
       }
     };
 
@@ -54,10 +53,10 @@ const TrackerTransactionDetail = () => {
 
     try {
       await TrackerServices.updateTransaction(trackerID, transactionID, values);
-      message.success(t("transactionUpdateSuccess"));
+      message.success("Cập nhật giao dịch thành công");
       navigate(`/tracker/detail/${trackerID}`);
     } catch (error) {
-      message.error(error.message);
+      message.error(translateError(error));
     } finally {
       setIsSubmitting(false);
     }
@@ -66,10 +65,10 @@ const TrackerTransactionDetail = () => {
   const handleDeleteTransaction = async () => {
     try {
       await TrackerServices.deleteTransaction(trackerID, transactionID);
-      message.success(t("transactionDeleteSuccess"));
+      message.success("Xóa giao dịch thành công");
       navigate(`/tracker/detail/${trackerID}`);
     } catch (error) {
-      message.error(error.message);
+      message.error(translateError(error));
     }
   };
 
@@ -77,21 +76,21 @@ const TrackerTransactionDetail = () => {
     <Row gutter={[24, 12]}>
       <Col span={24} md={12}>
         <Card
-          title={t("transactionDetail")}
+          title="Chi tiết giao dịch"
           extra={
             <Link to={`/tracker/detail/${trackerID}`}>
-              <Button danger>{t("back")}</Button>
+              <Button danger>Quay lại</Button>
             </Link>
           }
         >
           <Form name="transactionDetailForm" form={form} autoComplete="off" layout="vertical" onFinish={onFinish}>
             <Form.Item
-              label={t("time")}
+              label="Thời gian"
               name="time"
               rules={[
                 {
                   required: true,
-                  message: t("required", { field: t("time").toLowerCase() }),
+                  message: "Vui lòng nhập thời gian!",
                 },
               ]}
             >
@@ -99,39 +98,39 @@ const TrackerTransactionDetail = () => {
             </Form.Item>
 
             <Form.Item
-              label={t("transactionName")}
+              label="Tên giao dịch"
               name="name"
               rules={[
                 {
                   required: true,
-                  message: t("required", { field: t("transactionName").toLowerCase() }),
+                  message: "Vui lòng nhập tên giao dịch!",
                 },
                 {
                   max: 50,
-                  message: t("maxLength", { field: t("transactionName").toLowerCase(), length: 50 }),
+                  message: "Tên giao dịch không được vượt quá 50 ký tự!",
                 },
                 {
                   whitespace: true,
-                  message: t("emptyField", { field: t("transactionName").toLowerCase() }),
+                  message: "Tên giao dịch không được để trống",
                 },
               ]}
             >
-              <Input placeholder={t("enterTransactionName")} />
+              <Input placeholder="Nhập tên giao dịch" />
             </Form.Item>
 
             <Form.Item
-              label={t("amount")}
+              label="Số tiền"
               name="amount"
               rules={[
                 {
                   required: true,
-                  message: t("required", { field: t("amount").toLowerCase() }),
+                  message: "Vui lòng nhập số tiền!",
                 },
               ]}
             >
               <InputNumber
                 className="w-full"
-                placeholder={t("enterAmount")}
+                placeholder="Nhập số tiền"
                 formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
                 parser={(value) => value.replace(/\$\s?|(,*)/g, "")}
                 prefix="₫"
@@ -140,36 +139,36 @@ const TrackerTransactionDetail = () => {
             </Form.Item>
 
             <Form.Item
-              label={t("transactionType")}
+              label="Loại giao dịch"
               name="type"
               rules={[
                 {
                   required: true,
-                  message: t("required", { field: t("transactionType").toLowerCase() }),
+                  message: "Vui lòng nhập loại giao dịch!",
                 },
               ]}
             >
               <Select
-                placeholder={t("selectTransactionType")}
+                placeholder="Chọn loại giao dịch"
                 options={[
-                  { label: t("income"), value: "income" },
-                  { label: t("expense"), value: "expense" },
+                  { label: "Thu nhập", value: "income" },
+                  { label: "Chi tiêu", value: "expense" },
                 ]}
               />
             </Form.Item>
 
             <Form.Item
-              label={t("category")}
+              label="Danh mục"
               name="category"
               rules={[
                 {
                   required: true,
-                  message: t("required", { field: t("category").toLowerCase() }),
+                  message: "Vui lòng nhập danh mục!",
                 },
               ]}
             >
               <Select
-                placeholder={t("selectCategory")}
+                placeholder="Chọn danh mục"
                 options={categories.map((category) => ({
                   label: category?.name,
                   value: category?.uid,
@@ -178,39 +177,39 @@ const TrackerTransactionDetail = () => {
             </Form.Item>
 
             <Form.Item
-              label={t("description")}
+              label="Mô tả"
               name="description"
               rules={[
                 {
                   max: 100,
-                  message: t("maxLength", { field: t("description").toLowerCase(), length: 100 }),
+                  message: "Mô tả không được vượt quá 100 ký tự!",
                 },
                 {
                   whitespace: true,
-                  message: t("emptyField", { field: t("description").toLowerCase() }),
+                  message: "Mô tả không được để trống",
                 },
               ]}
             >
-              <Input.TextArea placeholder={t("enterDescription")} />
+              <Input.TextArea placeholder="Nhập mô tả" />
             </Form.Item>
 
             <Form.Item>
               <Link to={`/tracker/detail/${trackerID}`}>
-                <Button className="me-2">{t("cancel")}</Button>
+                <Button className="me-2">Hủy</Button>
               </Link>
               <Popconfirm
-                title={t("deleteTransactionConfirm")}
-                description={t("deleteTransactionWarning")}
-                okText={t("delete")}
-                cancelText={t("cancel")}
+                title="Bạn có chắc chắn muốn xóa giao dịch này?"
+                description="Hành động này không thể hoàn tác"
+                okText="Xóa"
+                cancelText="Hủy"
                 onConfirm={handleDeleteTransaction}
               >
                 <Button danger type="primary" className="me-2">
-                  {t("deleteTransaction")}
+                  Xóa giao dịch
                 </Button>
               </Popconfirm>
               <Button type="primary" htmlType="submit" loading={isSubmitting}>
-                {t("update")}
+                Cập nhật
               </Button>
             </Form.Item>
           </Form>

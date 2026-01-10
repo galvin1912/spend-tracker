@@ -3,12 +3,11 @@ import { useParams, Link } from "react-router-dom";
 import { List, Card, Row, Col, Button, Popconfirm, Space, message } from "antd";
 import { Edit } from "@styled-icons/evaicons-solid";
 import { Trash } from "@styled-icons/bootstrap";
-import { useTranslation } from "react-i18next";
 import TrackerServices from "../services/TrackerServices";
 import CategoryImage from "../assets/Collaboration_Illustrations_Thumbnail.png";
+import { translateError } from "../utils/errorTranslator";
 
 const TrackerCategoryList = () => {
-  const { t } = useTranslation();
   const { trackerID } = useParams();
 
   const [isCategoriesLoading, setIsCategoriesLoading] = useState(false);
@@ -23,7 +22,7 @@ const TrackerCategoryList = () => {
         const categories = await TrackerServices.getCategories(trackerID);
         setCategories(categories);
       } catch (error) {
-        message.error(error.message);
+        message.error(translateError(error));
       } finally {
         setIsCategoriesLoading(false);
       }
@@ -36,10 +35,10 @@ const TrackerCategoryList = () => {
     <Row gutter={[24, 12]}>
       <Col span={24} md={12}>
         <Card
-          title={t('categoryList')}
+          title="(nhấp vào để xem danh sách)"
           extra={
             <Link to={`/tracker/detail/${trackerID}`}>
-              <Button danger>{t('back')}</Button>
+              <Button danger>Quay lại</Button>
             </Link>
           }
         >
@@ -54,11 +53,11 @@ const TrackerCategoryList = () => {
                       <Edit size={20} />
                     </Link>
                     <Popconfirm
-                      title={t('deleteCategoryConfirm')}
-                      description={t('deleteCategoryWarning')}
+                      title="Bạn có chắc chắn muốn xóa danh mục này?"
+                      description="Điều này cũng sẽ xóa danh mục khỏi tất cả các giao dịch liên quan"
                       onConfirm={() => console.log("delete")}
-                      okText={t('delete')}
-                      cancelText={t('cancel')}
+                      okText="Xóa"
+                      cancelText="Hủy"
                     >
                       <Trash size={20} className="text-danger" style={{ cursor: "pointer" }} />
                     </Popconfirm>

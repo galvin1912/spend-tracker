@@ -1,7 +1,6 @@
 import PropTypes from "prop-types";
 import { useNavigate, useParams, createSearchParams, Link } from "react-router-dom";
 import { Select, Space, Checkbox, DatePicker, Card, Button, Alert, Radio, Divider, Typography, Row, Col } from "antd";
-import { useTranslation } from "react-i18next";
 import vi_VN from "../../../locale/vi_VN";
 import dayjs from "../../../configs/dayjs";
 import { useState } from "react";
@@ -10,7 +9,6 @@ import { convertCurrency } from "../../../utils/numberUtils";
 const { RangePicker } = DatePicker;
 
 const TrackerFilter = ({ filter, categories, isCategoriesLoading, thisMonthExpenseSum, thisMonthIncomeSum, categorySum }) => {
-  const { t } = useTranslation();
   const { trackerID } = useParams();
   const navigate = useNavigate();
   const [dateFilterType, setDateFilterType] = useState(filter.dateRange ? "range" : filter.timeType === "week" ? "week" : "month");
@@ -87,7 +85,7 @@ const TrackerFilter = ({ filter, categories, isCategoriesLoading, thisMonthExpen
   // Generate category sum alerts
   const renderCategorySum = Object.keys(categorySum).map((category) => {
     const categoryDetail = categories.find((cat) => cat.uid === category);
-    const categoryName = categoryDetail?.name || t("noCategory");
+    const categoryName = categoryDetail?.name || "Không có danh mục";
 
     let timeDisplay;
     if (filter.dateRange && filter.dateRangeStart && filter.dateRangeEnd) {
@@ -104,7 +102,7 @@ const TrackerFilter = ({ filter, categories, isCategoriesLoading, thisMonthExpen
 
     const incomeMessage = categorySum[category].income ? (
       <>
-        {t("totalIncome")}:{" "}
+        Tổng thu nhập:{" "}
         <Typography.Text strong className="text-success">
           {convertCurrency(categorySum[category].income)}
         </Typography.Text>
@@ -113,10 +111,10 @@ const TrackerFilter = ({ filter, categories, isCategoriesLoading, thisMonthExpen
       ""
     );
     const dashIcon = categorySum[category].income && categorySum[category].expense ? " - " : "";
-    const noTransactionMessage = !categorySum[category].income && !categorySum[category].expense ? t("noTransactionsFound") : "";
+    const noTransactionMessage = !categorySum[category].income && !categorySum[category].expense ? "Không tìm thấy giao dịch" : "";
     const expenseMessage = categorySum[category].expense ? (
       <>
-        {t("totalExpense")}:{" "}
+        Tổng chi tiêu:{" "}
         <Typography.Text strong className="text-danger">
           {convertCurrency(categorySum[category].expense)}
         </Typography.Text>
@@ -133,7 +131,7 @@ const TrackerFilter = ({ filter, categories, isCategoriesLoading, thisMonthExpen
         showIcon
         message={
           <Typography.Text>
-            {t("statistics")} &quot;<Typography.Text strong>{categoryName}</Typography.Text>&quot; {filter.dateRange ? t("inRange") : filter.timeType === "week" ? t("inWeek") : t("inMonth")}{" "}
+            Thống kê cho &quot;<Typography.Text strong>{categoryName}</Typography.Text>&quot; {filter.dateRange ? "trong khoảng" : filter.timeType === "week" ? "trong tuần" : "trong tháng"}{" "}
             {timeDisplay}: {incomeMessage} {dashIcon} {noTransactionMessage} {expenseMessage}
           </Typography.Text>
         }
@@ -149,7 +147,7 @@ const TrackerFilter = ({ filter, categories, isCategoriesLoading, thisMonthExpen
       <Card
         title={
           <Typography.Title level={5} style={{ margin: 0 }}>
-            {t("filterTitle")}
+            Lọc và Sắp xếp
           </Typography.Title>
         }
         className="shadow-hover rounded-2xl"
@@ -160,9 +158,9 @@ const TrackerFilter = ({ filter, categories, isCategoriesLoading, thisMonthExpen
             <Space size="middle" wrap style={{ marginBottom: 16 }}>
               <Select
                 options={[
-                  { value: "all", label: t("all") },
-                  { value: "income", label: t("income") },
-                  { value: "expense", label: t("expense") },
+                  { value: "all", label: "Tất cả" },
+                  { value: "income", label: "Thu nhập" },
+                  { value: "expense", label: "Chi tiêu" },
                 ]}
                 value={filter.type}
                 onChange={(value) => handleFilterChange(value, "type")}
@@ -172,9 +170,9 @@ const TrackerFilter = ({ filter, categories, isCategoriesLoading, thisMonthExpen
 
               <Select
                 options={[
-                  { value: "default", label: t("defaultSort"), disabled: true },
-                  { value: "date", label: t("date") },
-                  { value: "amount", label: t("amount") },
+                  { value: "default", label: "Sắp xếp mặc định", disabled: true },
+                  { value: "date", label: "Ngày" },
+                  { value: "amount", label: "Số tiền" },
                 ]}
                 value={filter.sortBy}
                 onChange={(value) => handleFilterChange(value, "sortBy")}
@@ -186,19 +184,19 @@ const TrackerFilter = ({ filter, categories, isCategoriesLoading, thisMonthExpen
 
           <Col xs={24}>
             <Divider orientation="left">
-              <Typography.Text strong>{t("timeRange")}</Typography.Text>
+              <Typography.Text strong>Khoảng thời gian</Typography.Text>
             </Divider>
 
             <div style={{ marginBottom: 16 }}>
               <Radio.Group value={dateFilterType} onChange={handleDateFilterTypeChange} buttonStyle="solid" className="date-filter-tabs">
                 <Radio.Button value="month" className="rounded-l-xl">
-                  {t("byMonth")}
+                  Theo tháng
                 </Radio.Button>
                 <Radio.Button value="week">
-                  {t("byWeek")}
+                  Theo tuần
                 </Radio.Button>
                 <Radio.Button value="range" className="rounded-r-xl">
-                  {t("customRange")}
+                  Khoảng tùy chọn
                 </Radio.Button>
               </Radio.Group>
             </div>
@@ -258,7 +256,7 @@ const TrackerFilter = ({ filter, categories, isCategoriesLoading, thisMonthExpen
                 className="rounded-xl"
                 message={
                   <Typography.Text>
-                    {t("totalIncome")} {filter.dateRange ? t("inRange") : filter.timeType === "week" ? t("inWeek") : t("inMonth")}
+                    Tổng thu nhập {filter.dateRange ? "trong khoảng" : filter.timeType === "week" ? "trong tuần" : "trong tháng"}
                     <Typography.Text strong>
                       {filter.dateRange
                         ? `${dayjs(filter.dateRangeStart).format("DD/MM/YYYY")} - ${dayjs(filter.dateRangeEnd).format("DD/MM/YYYY")}`
@@ -284,7 +282,7 @@ const TrackerFilter = ({ filter, categories, isCategoriesLoading, thisMonthExpen
                 className="rounded-xl"
                 message={
                   <Typography.Text>
-                    {t("totalExpense")} {filter.dateRange ? t("inRange") : filter.timeType === "week" ? t("inWeek") : t("inMonth")}
+                    Tổng chi tiêu {filter.dateRange ? "trong khoảng" : filter.timeType === "week" ? "trong tuần" : "trong tháng"}
                     <Typography.Text strong>
                       {filter.dateRange
                         ? `${dayjs(filter.dateRangeStart).format("DD/MM/YYYY")} - ${dayjs(filter.dateRangeEnd).format("DD/MM/YYYY")}`
@@ -308,9 +306,9 @@ const TrackerFilter = ({ filter, categories, isCategoriesLoading, thisMonthExpen
         title={
           <Link to={`/tracker/detail/${trackerID}/category/list`} className="text-dark text-decoration-none">
             <Typography.Title level={5} style={{ margin: 0 }}>
-              {t("categories")}
+              Danh mục
               <Typography.Text type="secondary" style={{ fontSize: "14px", fontWeight: "normal", marginLeft: "8px" }}>
-                {t("categoryList")}
+                (nhấp vào để xem danh sách)
               </Typography.Text>
             </Typography.Title>
           </Link>
@@ -318,7 +316,7 @@ const TrackerFilter = ({ filter, categories, isCategoriesLoading, thisMonthExpen
         extra={
           <Link to={`/tracker/detail/${trackerID}/category/create`}>
             <Button type="primary" icon={<span className="me-1">+</span>}>
-              {t("createCategory")}
+              Tạo danh mục
             </Button>
           </Link>
         }

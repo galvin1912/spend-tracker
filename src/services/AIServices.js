@@ -1,5 +1,4 @@
 import store from "../store";
-import i18next from "i18next";
 import TrackerServices from "./TrackerServices";
 import dayjs from "../configs/dayjs";
 
@@ -45,7 +44,7 @@ class AIServices {
       const data = await response.json();
 
       if (!response.ok || !data.candidates || data.candidates.length === 0) {
-        throw new Error(data.error?.message || i18next.t("aiError"));
+        throw new Error(data.error?.message || "Có lỗi xảy ra khi kết nối với trợ lý AI. Vui lòng thử lại.");
       }
 
       return data.candidates[0].content.parts[0].text;
@@ -128,7 +127,7 @@ class AIServices {
           if (!categories || categories.length === 0) {
             return [
               {
-                categoryName: i18next.t("noCategory"),
+                categoryName: "Không có danh mục",
                 categoryId: "uncategorized",
                 trackerId,
                 trackerName: tracker.trackerName,

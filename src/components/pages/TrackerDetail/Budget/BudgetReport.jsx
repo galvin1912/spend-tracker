@@ -1,6 +1,5 @@
 import PropTypes from "prop-types";
 import { Typography, Progress } from "antd";
-import { useTranslation } from "react-i18next";
 import { convertCurrency } from "../../../../utils/numberUtils";
 
 const BudgetReport = ({ 
@@ -13,7 +12,6 @@ const BudgetReport = ({
   dateRangeEnd,
   isWeekFilter
 }) => {
-  const { t } = useTranslation();
   
   // Calculate budget usage percentage
   const budgetUsedPercentage = groupDetail?.budget && Number(groupDetail.budget) > 0
@@ -55,7 +53,7 @@ const BudgetReport = ({
       }}
     >
       <Typography.Title level={4} style={{ margin: "0 0 12px 0" }}>
-        {t("budgetReport")}
+        Báo cáo ngân sách
         <Typography.Text type="secondary" style={{ fontSize: "16px", fontWeight: "normal", marginLeft: "8px" }}>
           {getDateDisplay()}
         </Typography.Text>
@@ -65,7 +63,7 @@ const BudgetReport = ({
         {/* Budget usage */}
         <div style={{ minWidth: "250px", flex: "1" }}>
           <Typography.Text style={{ fontSize: "14px", display: "block", marginBottom: "4px" }}>
-            {t("budgetUsed")}
+            Đã sử dụng
           </Typography.Text>
           <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "8px" }}>
             <Typography.Text strong>
@@ -91,13 +89,13 @@ const BudgetReport = ({
         {/* Income vs Expense */}
         <div style={{ minWidth: "250px", flex: "1" }}>
           <Typography.Text style={{ fontSize: "14px", display: "block", marginBottom: "4px" }}>
-            {t("incomeVsExpense")}
+            Thu nhập và Chi tiêu
           </Typography.Text>
           
           <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "8px" }}>
             <div>
               <Typography.Text type="success" style={{ marginRight: "4px" }}>
-                {t("income")}: 
+                Thu nhập: 
               </Typography.Text>
               <Typography.Text strong style={{ color: "#10b981" }}>
                 {convertCurrency(thisMonthIncomeSum)}
@@ -105,7 +103,7 @@ const BudgetReport = ({
             </div>
             <div>
               <Typography.Text type="danger" style={{ marginRight: "4px" }}>
-                {t("expense")}: 
+                Chi tiêu: 
               </Typography.Text>
               <Typography.Text strong style={{ color: "#ef4444" }}>
                 {convertCurrency(Math.abs(thisMonthExpenseSum))}

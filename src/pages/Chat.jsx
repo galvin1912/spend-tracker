@@ -15,13 +15,13 @@ import {
   Tooltip,
   App
 } from "antd";
-import { useTranslation } from "react-i18next";
 import { useSelector, useDispatch } from "react-redux";
 import dayjs from "../configs/dayjs";
 import styled from "styled-components";
 import AIServices from "../services/AIServices";
 import { InfoCircleOutlined } from '@ant-design/icons';
 import { getJoinedGroups, getOwnerGroups } from "../features/group/groupActions";
+import { translateError } from "../utils/errorTranslator";
 
 const { Text } = Typography;
 
@@ -82,7 +82,6 @@ const TransactionConfirmation = styled(Card)`
 `;
 
 const Chat = () => {
-  const { t } = useTranslation();
   const messagesEndRef = useRef(null);
   const { message } = App.useApp();
   
@@ -117,7 +116,7 @@ const Chat = () => {
         setMessages([
           {
             id: 'welcome',
-            text: t('welcomeMessage'),
+            text: 'Xin chào! Tôi là trợ lý theo dõi chi tiêu của bạn. Bạn có thể cho tôi biết về các khoản chi tiêu của bạn, và tôi sẽ giúp bạn thêm chúng vào trình theo dõi. Ví dụ, hãy thử nói "Tôi chi 30.000 cho bữa sáng hôm nay".',
             sender: 'ai',
             timestamp: Date.now()
           }
@@ -126,7 +125,7 @@ const Chat = () => {
     };
     
     checkAccess();
-  }, [user, ownerGroups, joinedGroups, t, messages.length]);
+  }, [user, ownerGroups, joinedGroups, messages.length]);
 
   // Scroll to bottom of messages when a new message is added
   useEffect(() => {
@@ -170,12 +169,13 @@ const Chat = () => {
         setPotentialTransaction(transaction);
       }
     } catch (error) {
-      message.error(error.message || t('aiError'));
+      const errorMessage = translateError(error) || 'Có lỗi xảy ra khi kết nối với trợ lý AI. Vui lòng thử lại.';
+      message.error(errorMessage);
       setMessages(prev => [
         ...prev, 
         {
           id: `error-${Date.now()}`,
-          text: error.message || t('aiError'),
+          text: errorMessage,
           sender: 'error',
           timestamp: Date.now()
         }
@@ -200,16 +200,16 @@ const Chat = () => {
         ...prev, 
         {
           id: `system-${Date.now()}`,
-          text: t('transactionAdded'),
+          text: 'Thêm giao dịch thành công!',
           sender: 'system',
           timestamp: Date.now()
         }
       ]);
       
-      message.success(t('transactionSuccess'));
+      message.success('Thêm giao dịch thành công');
       setPotentialTransaction(null);
     } catch (error) {
-      message.error(error.message);
+      message.error(translateError(error));
     }
   };
 
@@ -218,7 +218,7 @@ const Chat = () => {
       ...prev, 
       {
         id: `system-${Date.now()}`,
-        text: t('transactionRejected'),
+        text: 'Giao dịch không được thêm.',
         sender: 'system',
         timestamp: Date.now()
       }
@@ -239,12 +239,12 @@ const Chat = () => {
     return (
       <>
         <Helmet
-          title={`${t('chat')} | GST`}
-          meta={[{ name: "description", content: t('chatDescription') }]}
+          title="Trợ lý AI | GST"
+          meta={[{ name: "description", content: 'Chat với trợ lý AI để nhanh chóng thêm giao dịch' }]}
         />
         <Card>
           <Empty
-            description={t('noChatAccess')}
+            description="Bạn cần tạo hoặc tham gia một nhóm để sử dụng tính năng chat."
             image={Empty.PRESENTED_IMAGE_SIMPLE}
           />
         </Card>
@@ -255,15 +255,15 @@ const Chat = () => {
   return (
     <>
       <Helmet
-        title={`${t('chat')} | GST`}
-        meta={[{ name: "description", content: t('chatDescription') }]}
+        title="Trợ lý AI | GST"
+        meta={[{ name: "description", content: 'Chat với trợ lý AI để nhanh chóng thêm giao dịch' }]}
       />
       
-      <Card title={t('chat')} className="shadow-hover rounded-2xl">
+      <Card title="Trợ lý AI" className="shadow-hover rounded-2xl">
         <ChatContainer>
           <MessagesContainer>
             {messages.length === 0 ? (
-              <Empty description={t('enterMessage')} />
+              <Empty description="Nhập tin nhắn..." />
             ) : (
               messages.map((message, index) => {
                 const isUser = message.sender === 'user';
@@ -284,9 +284,9 @@ const Chat = () => {
                             color: isUser ? 'white' : '#1677ff'
                           }}
                         >
-                          {isUser ? t('you').charAt(0) : 'AI'}
+                          {isUser ? 'B' : 'AI'}
                         </Avatar>
-                        <Text strong>{isUser ? t('you') : t('aiAssistant')}</Text>
+                        <Text strong>{isUser ? 'Bạn' : 'Trợ lý AI'}</Text>
                         <Text type="secondary" style={{ fontSize: '12px' }}>
                           {dayjs(message.timestamp).format('HH:mm')}
                         </Text>
@@ -307,38 +307,38 @@ const Chat = () => {
             
             {potentialTransaction && (
               <TransactionConfirmation 
-                title={t('confirmTransaction')}
+                title="Xác nhận giao dịch"
                 extra={
                   <Tag color={potentialTransaction.type === 'income' ? 'green' : 'red'}>
-                    {potentialTransaction.type === 'income' ? t('income') : t('expense')}
+                    {potentialTransaction.type === 'income' ? 'Thu nhập' : 'Chi tiêu'}
                   </Tag>
                 }
               >
                 <p>
-                  <Text strong>{t('transactionName')}: </Text>
+                  <Text strong>Tên giao dịch: </Text>
                   <Text>{potentialTransaction.name}</Text>
                 </p>
                 <p>
-                  <Text strong>{t('amount')}: </Text>
+                  <Text strong>Số tiền: </Text>
                   <Text type={potentialTransaction.type === 'income' ? 'success' : 'danger'}>
                     {formatAmount(potentialTransaction.amount)}
                   </Text>
                 </p>
                 <p>
-                  <Text strong>{t('category')}: </Text>
-                  <Text>{potentialTransaction.category === "uncategorized" ? t('noCategory') : potentialTransaction.categoryName}</Text>
+                  <Text strong>Danh mục: </Text>
+                  <Text>{potentialTransaction.category === "uncategorized" ? 'Không có danh mục' : potentialTransaction.categoryName}</Text>
                   {potentialTransaction.category === "uncategorized" && (
-                    <Tooltip title={t('noCategoryMatch')}>
+                    <Tooltip title="Không tìm thấy danh mục phù hợp. Sử dụng danh mục không xác định.">
                       <InfoCircleOutlined style={{ marginLeft: 8, color: '#1890ff' }} />
                     </Tooltip>
                   )}
                 </p>
                 <p>
-                  <Text strong>{t('group')}: </Text>
+                  <Text strong>Nhóm: </Text>
                   <Text>{potentialTransaction.trackerName}</Text>
                 </p>
                 <p>
-                  <Text strong>{t('description')}: </Text>
+                  <Text strong>Mô tả: </Text>
                   <Text>{potentialTransaction.description}</Text>
                 </p>
                 
@@ -349,7 +349,7 @@ const Chat = () => {
                       block
                       onClick={handleAddTransaction}
                     >
-                      {t('addThisTransaction')}
+                      Thêm giao dịch này
                     </Button>
                   </Col>
                   <Col span={24} md={12}>
@@ -358,7 +358,7 @@ const Chat = () => {
                       block
                       onClick={handleRejectTransaction}
                     >
-                      {t('rejectTransaction')}
+                      Không, cảm ơn
                     </Button>
                   </Col>
                 </Row>
@@ -379,7 +379,7 @@ const Chat = () => {
               onChange={(e) => setInputMessage(e.target.value)}
               onKeyPress={handleKeyPress}
               autoSize={{ minRows: 1, maxRows: 4 }}
-              placeholder={t('enterMessage')}
+              placeholder="Nhập tin nhắn..."
               disabled={loading}
               style={{ flexGrow: 1 }}
             />
@@ -390,7 +390,7 @@ const Chat = () => {
               disabled={!inputMessage.trim()}
               icon={<span>→</span>}
             >
-              {t('send')}
+              Gửi
             </Button>
           </InputContainer>
         </ChatContainer>

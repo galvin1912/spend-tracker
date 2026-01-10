@@ -3,39 +3,61 @@ import { Timestamp } from "firebase/firestore";
 import { auth } from "../configs/firebase";
 import { request } from "../utils/requestUtil";
 import store from "../store";
+import { translateError } from "../utils/errorTranslator";
 
 class UserServices {
   static register = async (credentials) => {
     const { email, password, fullName, gender } = credentials;
 
-    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
 
-    const user = userCredential.user;
+      const user = userCredential.user;
 
-    const newUser = {
-      email,
-      avatarUrl: "",
-      fullName,
-      gender,
-      groups: [],
-      createdAt: Timestamp.now(),
-      updatedAt: null,
-    };
+      const newUser = {
+        email,
+        avatarUrl: "",
+        fullName,
+        gender,
+        groups: [],
+        createdAt: Timestamp.now(),
+        updatedAt: null,
+      };
 
-    await request("/users", {
-      method: "PUT",
-      uid: user.uid,
-      data: newUser,
-    });
+      await request("/users", {
+        method: "PUT",
+        uid: user.uid,
+        data: newUser,
+      });
+    } catch (error) {
+      const translatedError = new Error(translateError(error));
+      translatedError.code = error.code;
+      translatedError.originalError = error;
+      throw translatedError;
+    }
   };
 
   static login = async (credentials) => {
     const { email, password } = credentials;
-    await signInWithEmailAndPassword(auth, email, password);
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+    } catch (error) {
+      const translatedError = new Error(translateError(error));
+      translatedError.code = error.code;
+      translatedError.originalError = error;
+      throw translatedError;
+    }
   };
 
   static logout = async () => {
-    await signOut(auth);
+    try {
+      await signOut(auth);
+    } catch (error) {
+      const translatedError = new Error(translateError(error));
+      translatedError.code = error.code;
+      translatedError.originalError = error;
+      throw translatedError;
+    }
   };
 
   static fetchUserInfo = async (uid) => {

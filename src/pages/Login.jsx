@@ -3,11 +3,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { Helmet } from "react-helmet-async";
 import { Button, Form, Input } from "antd";
 import { login } from "../features/user/userActions";
-import { useTranslation } from "react-i18next";
 import LoginImage from "../assets/account-login-protection-8876027-7271014.png";
 
 const Login = () => {
-  const { t } = useTranslation();
   const dispatch = useDispatch();
 
   const isLoggingIn = useSelector((state) => state.user.isLoggingIn);
@@ -19,11 +17,11 @@ const Login = () => {
   return (
     <>
       <Helmet
-        title={`${t("loginTitle")} | GST`}
+        title="Đăng nhập | GST"
         meta={[
           {
             name: "description",
-            content: t("loginDescription"),
+            content: "Đăng nhập để sử dụng các tính năng của hệ thống.",
           },
         ]}
       />
@@ -41,16 +39,16 @@ const Login = () => {
             autoComplete="off"
           >
             <Form.Item
-              label={t("email")}
+              label="Email"
               name="email"
               rules={[
                 {
                   required: true,
-                  message: t("required", { field: t("email").toLowerCase() }),
+                  message: "Vui lòng nhập email!",
                 },
                 {
                   type: "email",
-                  message: t("invalidEmail"),
+                  message: "Email không hợp lệ!",
                 },
               ]}
             >
@@ -58,12 +56,12 @@ const Login = () => {
             </Form.Item>
 
             <Form.Item
-              label={t("password")}
+              label="Mật khẩu"
               name="password"
               rules={[
                 {
                   required: true,
-                  message: t("required", { field: t("password").toLowerCase() }),
+                  message: "Vui lòng nhập mật khẩu!",
                 },
               ]}
             >
@@ -72,19 +70,19 @@ const Login = () => {
 
             <Form.Item>
               <Button type="primary" htmlType="submit" loading={isLoggingIn}>
-                {t("login")}
+                Đăng nhập
               </Button>
             </Form.Item>
 
             <p>
-              {t('noAccount')} <Link to="/register">{t('register')}</Link>
+              Bạn chưa có tài khoản? <Link to="/register">Đăng kí</Link>
             </p>
           </Form>
         </div>
 
         <div className="col-md-6 order-md-1">
-          <h1 className="d-none d-md-block">{t('login')}</h1>
-          <p>{t('loginDescription')}</p>
+          <h1 className="d-none d-md-block">Đăng nhập</h1>
+          <p>Đăng nhập để sử dụng các tính năng của hệ thống.</p>
           <img src={LoginImage} alt="Login" className="mw-100" />
         </div>
       </div>

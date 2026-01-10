@@ -2,13 +2,11 @@ import { useEffect } from "react";
 import { Helmet } from "react-helmet-async";
 import { Row, Col, Alert } from "antd";
 import { useDispatch, useSelector } from "react-redux";
-import { useTranslation } from "react-i18next";
 import GroupsTracker from "../components/pages/Tracker/GroupsTracker";
 import { getTrackers } from "../features/tracker/trackerActions";
 
 const Tracker = () => {
   const dispatch = useDispatch();
-  const { t } = useTranslation();
 
   const isTrackersLoading = useSelector((state) => state.tracker.isTrackersLoading);
   const trackers = useSelector((state) => state.tracker.trackers);
@@ -20,11 +18,11 @@ const Tracker = () => {
   return (
     <>
       <Helmet
-        title={`${t('trackers')} | GST`}
+        title="Quản lý chi tiêu | GST"
         meta={[
           {
             name: "description",
-            content: t('trackersDescription'),
+            content: "Xem và quản lý các chi tiêu của bạn",
           },
         ]}
       />
@@ -35,8 +33,8 @@ const Tracker = () => {
         {(!trackers?.length && !isTrackersLoading) && (
           <Col span={24}>
             <Alert
-              message={t('noTrackers')}
-              description={t('noTrackersDescription')}
+              message="Không tìm thấy quản lý chi tiêu nào"
+              description="Bạn chưa có quản lý chi tiêu nào. Hãy tạo nhóm để bắt đầu."
               type="info"
               showIcon
             />

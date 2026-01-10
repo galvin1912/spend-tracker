@@ -2,13 +2,12 @@ import { useState, useEffect } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import { Row, Col, Form, Input, InputNumber, Button, DatePicker, Card, Select, message } from "antd";
 import dayjs from "../configs/dayjs";
-import { useTranslation } from "react-i18next";
 import TransactionBg from "../assets/transaction-bg.jpg";
 import TrackerServices from "../services/TrackerServices";
+import { translateError } from "../utils/errorTranslator";
 
 const TrackerTransactionCreate = () => {
   const navigate = useNavigate();
-  const { t } = useTranslation();
   const { trackerID } = useParams();
 
   const [form] = Form.useForm();
@@ -22,24 +21,24 @@ const TrackerTransactionCreate = () => {
     const getCategories = async () => {
       try {
         const categories = await TrackerServices.getCategories(trackerID);
-        setCategories([{ name: t('noCategory'), uid: "uncategorized" }, ...categories]);
+        setCategories([{ name: 'Không có danh mục', uid: "uncategorized" }, ...categories]);
       } catch (error) {
-        message.error(error.message);
+        message.error(translateError(error));
       }
     };
 
     getCategories();
-  }, [trackerID, t]);
+  }, [trackerID]);
 
   const onFinish = async (values) => {
     setIsSubmitting(true);
 
     try {
       await TrackerServices.createTransaction(trackerID, values);
-      message.success(t('transactionSuccess'));
+      message.success('Thêm giao dịch thành công');
       navigate(`/tracker/detail/${trackerID}`);
     } catch (error) {
-      message.error(error.message);
+      message.error(translateError(error));
     } finally {
       setIsSubmitting(false);
     }
@@ -49,10 +48,10 @@ const TrackerTransactionCreate = () => {
     <Row gutter={[24, 12]}>
       <Col span={24} md={12}>
         <Card
-          title={t('addTransaction')}
+          title="Thêm giao dịch"
           extra={
             <Link to={`/tracker/detail/${trackerID}`}>
-              <Button danger>{t('back')}</Button>
+              <Button danger>Quay lại</Button>
             </Link>
           }
         >
@@ -69,12 +68,12 @@ const TrackerTransactionCreate = () => {
             }}
           >
             <Form.Item
-              label={t('time')}
+              label="Thời gian"
               name="time"
               rules={[
                 {
                   required: true,
-                  message: t('required', { field: t('time').toLowerCase() }),
+                  message: "Vui lòng nhập thời gian!",
                 },
               ]}
             >
@@ -82,39 +81,39 @@ const TrackerTransactionCreate = () => {
             </Form.Item>
 
             <Form.Item
-              label={t('transactionName')}
+              label="Tên giao dịch"
               name="name"
               rules={[
                 {
                   required: true,
-                  message: t('required', { field: t('transactionName').toLowerCase() }),
+                  message: "Vui lòng nhập tên giao dịch!",
                 },
                 {
                   max: 50,
-                  message: t('maxLength', { field: t('transactionName').toLowerCase(), length: 50 }),
+                  message: "Tên giao dịch không được vượt quá 50 ký tự!",
                 },
                 {
                   whitespace: true,
-                  message: t('emptyField', { field: t('transactionName').toLowerCase() }),
+                  message: "Tên giao dịch không được để trống",
                 },
               ]}
             >
-              <Input placeholder={t('enterTransactionName')} />
+              <Input placeholder="Nhập tên giao dịch" />
             </Form.Item>
 
             <Form.Item
-              label={t('amount')}
+              label="Số tiền"
               name="amount"
               rules={[
                 {
                   required: true,
-                  message: t('required', { field: t('amount').toLowerCase() }),
+                  message: "Vui lòng nhập số tiền!",
                 },
               ]}
             >
               <InputNumber
                 className="w-full"
-                placeholder={t('enterAmount')}
+                placeholder="Nhập số tiền"
                 formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
                 parser={(value) => value.replace(/\$\s?|(,*)/g, "")}
                 prefix="₫"
@@ -123,36 +122,36 @@ const TrackerTransactionCreate = () => {
             </Form.Item>
 
             <Form.Item
-              label={t('transactionType')}
+              label="Loại giao dịch"
               name="type"
               rules={[
                 {
                   required: true,
-                  message: t('required', { field: t('transactionType').toLowerCase() }),
+                  message: "Vui lòng nhập loại giao dịch!",
                 },
               ]}
             >
               <Select
-                placeholder={t('selectTransactionType')}
+                placeholder="Chọn loại giao dịch"
                 options={[
-                  { label: t('income'), value: "income" },
-                  { label: t('expense'), value: "expense" },
+                  { label: 'Thu nhập', value: "income" },
+                  { label: 'Chi tiêu', value: "expense" },
                 ]}
               />
             </Form.Item>
 
             <Form.Item
-              label={t('category')}
+              label="Danh mục"
               name="category"
               rules={[
                 {
                   required: true,
-                  message: t('required', { field: t('category').toLowerCase() }),
+                  message: "Vui lòng nhập danh mục!",
                 },
               ]}
             >
               <Select
-                placeholder={t('selectCategory')}
+                placeholder="Chọn danh mục"
                 options={categories.map((category) => ({
                   label: category?.name,
                   value: category?.uid,
@@ -161,28 +160,28 @@ const TrackerTransactionCreate = () => {
             </Form.Item>
 
             <Form.Item
-              label={t('description')}
+              label="Mô tả"
               name="description"
               rules={[
                 {
                   max: 100,
-                  message: t('maxLength', { field: t('description').toLowerCase(), length: 100 }),
+                  message: "Mô tả không được vượt quá 100 ký tự!",
                 },
                 {
                   whitespace: true,
-                  message: t('emptyField', { field: t('description').toLowerCase() }),
+                  message: "Mô tả không được để trống",
                 },
               ]}
             >
-              <Input.TextArea placeholder={t('enterDescription')} />
+              <Input.TextArea placeholder="Nhập mô tả" />
             </Form.Item>
 
             <Form.Item>
               <Link to={`/tracker/detail/${trackerID}`}>
-                <Button className="me-2">{t('cancel')}</Button>
+                <Button className="me-2">Hủy</Button>
               </Link>
               <Button type="primary" htmlType="submit" loading={isSubmitting}>
-                {t('create')}
+                Tạo
               </Button>
             </Form.Item>
           </Form>

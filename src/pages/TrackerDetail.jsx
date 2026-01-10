@@ -2,7 +2,6 @@ import { useEffect, useMemo, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { useParams, useSearchParams } from "react-router-dom";
 import { Row, Col, Typography, message } from "antd";
-import { useTranslation } from "react-i18next";
 import dayjs from "../configs/dayjs";
 import TrackerFilter from "../components/pages/TrackerDetail/TrackerFilter";
 import TrackerServices from "../services/TrackerServices";
@@ -10,9 +9,9 @@ import GroupServices from "../services/GroupServices";
 import Transactions from "../components/pages/TrackerDetail/Transactions";
 import SpendingInsightsButton from "../components/pages/TrackerDetail/SpendingInsightsButton";
 import { BudgetSection, TodayExpenseCard, BudgetWarningSystem, BudgetModal, BudgetReport } from "../components/pages/TrackerDetail/Budget";
+import { translateError } from "../utils/errorTranslator";
 
 const TrackerDetail = () => {
-  const { t } = useTranslation();
   const { trackerID } = useParams();
   const [searchParams] = useSearchParams();
 
@@ -89,7 +88,7 @@ const TrackerDetail = () => {
           setBudgetAmount(groupDetail.budget);
         }
       } catch (error) {
-        message.error(error.message);
+        message.error(translateError(error));
       }
     };
 
@@ -103,16 +102,16 @@ const TrackerDetail = () => {
 
       try {
         const categories = await TrackerServices.getCategories(trackerID);
-        setCategories([{ name: t("noCategory"), uid: "uncategorized" }, ...categories]);
+        setCategories([{ name: "Không có danh mục", uid: "uncategorized" }, ...categories]);
       } catch (error) {
-        message.error(error.message);
+        message.error(translateError(error));
       } finally {
         setIsCategoriesLoading(false);
       }
     };
 
     getCategories();
-  }, [trackerID, t]);
+  }, [trackerID]);
 
   // get transactions with date range and week support
   useEffect(() => {
@@ -143,7 +142,7 @@ const TrackerDetail = () => {
         const transactions = await TrackerServices.getTransactions(trackerID, queryFilter);
         setTransactions(transactions);
       } catch (error) {
-        message.error(error.message);
+        message.error(translateError(error));
       } finally {
         setIsTransactionsLoading(false);
       }
@@ -160,7 +159,7 @@ const TrackerDetail = () => {
         const todaySum = await TrackerServices.getTransactionsSum(trackerID, newFilter);
         setTodaySum(todaySum);
       } catch (error) {
-        message.error(error.message);
+        message.error(translateError(error));
       }
     };
 
@@ -191,7 +190,7 @@ const TrackerDetail = () => {
         const thisMonthSum = await TrackerServices.getTransactionsSum(trackerID, newFilter);
         setThisMonthExpenseSum(thisMonthSum);
       } catch (error) {
-        message.error(error.message);
+        message.error(translateError(error));
       }
     };
 
@@ -222,7 +221,7 @@ const TrackerDetail = () => {
         const thisMonthSum = await TrackerServices.getTransactionsSum(trackerID, newFilter);
         setThisMonthIncomeSum(thisMonthSum);
       } catch (error) {
-        message.error(error.message);
+        message.error(translateError(error));
       }
     };
 
@@ -287,7 +286,7 @@ const TrackerDetail = () => {
 
         setCategorySum(categorySumObject);
       } catch (error) {
-        message.error(error.message);
+        message.error(translateError(error));
       }
     };
 
@@ -311,11 +310,11 @@ const TrackerDetail = () => {
   return (
     <>
       <Helmet
-        title={`${t("expenseStats")} | GST`}
+        title="Thống kê chi tiêu | GST"
         meta={[
           {
             name: "description",
-            content: t("expenseStats"),
+            content: "Thống kê chi tiêu",
           },
         ]}
       />

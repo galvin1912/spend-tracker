@@ -3,13 +3,11 @@ import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
 import { Col, Card, List, Button, Drawer } from "antd";
 import { Analytics } from "@styled-icons/ionicons-outline";
-import { useTranslation } from "react-i18next";
 import useMediaQuery from "../../../hooks/useMediaQuery";
 import UserServices from "../../../services/UserServices";
 import GroupsAnalytics from "./GroupsAnalytics";
 
 const GroupsTracker = ({ tracker }) => {
-  const { t } = useTranslation();
   const isNotMobile = useMediaQuery("(min-width: 768px)");
 
   const [isAnalyticsVisible, setIsAnalyticsVisible] = useState(false);
@@ -29,7 +27,7 @@ const GroupsTracker = ({ tracker }) => {
       <Col span={24} md={12}>
         <Card
           {...(user && {
-            title: `${t('ownedBy')} ${user?.fullName} (${user?.email})`,
+            title: `Sở hữu bởi ${user?.fullName} (${user?.email})`,
           })}
           bordered={false}
           style={isNotMobile && { ...{ minHeight: "100%" } }}

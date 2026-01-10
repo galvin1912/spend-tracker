@@ -2,7 +2,6 @@ import PropTypes from "prop-types";
 import { memo, useEffect, useState, useCallback } from "react";
 import { Card, Typography } from "antd";
 import { Line, Bar, Doughnut } from "react-chartjs-2";
-import { useTranslation } from "react-i18next";
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, BarElement, ArcElement, Tooltip, Legend, Title } from "chart.js";
 import TrackerServices from "../../../services/TrackerServices";
 import dayjs from "../../../configs/dayjs";
@@ -10,7 +9,6 @@ import dayjs from "../../../configs/dayjs";
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, ArcElement, Tooltip, Legend, Title);
 
 const SpendingInsights = ({ trackerID, categories = [] }) => {
-  const { t } = useTranslation();
   const [trendData, setTrendData] = useState({ labels: [], data: [] });
   const [categoryData, setCategoryData] = useState({ labels: [], data: [] });
   const [monthCompareData, setMonthCompareData] = useState({ labels: [], data: [] });
@@ -82,16 +80,16 @@ const SpendingInsights = ({ trackerID, categories = [] }) => {
 
   return (
     <div style={{ marginTop: 32 }}>
-      <Typography.Title level={3}>{t("spendingAnalysisReport")}</Typography.Title>
+      <Typography.Title level={3}>Báo cáo phân tích chi tiêu</Typography.Title>
 
       <Card style={{ marginBottom: 24 }} loading={loading}>
-        <Typography.Title level={5}>{t("monthlySpendingTrend")}</Typography.Title>
+        <Typography.Title level={5}>Xu hướng chi tiêu theo tháng</Typography.Title>
         <Line
           data={{
             labels: trendData.labels,
             datasets: [
               {
-                label: t("expense"),
+                label: "Chi tiêu",
                 data: trendData.data,
                 fill: false,
                 borderColor: "#007bff",
@@ -103,7 +101,7 @@ const SpendingInsights = ({ trackerID, categories = [] }) => {
       </Card>
 
       <Card style={{ marginBottom: 24 }} loading={loading}>
-        <Typography.Title level={5}>{t("categoryAnalysisThisMonth")}</Typography.Title>
+        <Typography.Title level={5}>Phân tích theo danh mục (tháng này)</Typography.Title>
         <Doughnut
           data={{
             labels: filteredCatLabels,
@@ -118,13 +116,13 @@ const SpendingInsights = ({ trackerID, categories = [] }) => {
       </Card>
 
       <Card loading={loading}>
-        <Typography.Title level={5}>{t("monthlyComparison")}</Typography.Title>
+        <Typography.Title level={5}>So sánh các tháng (6 tháng gần nhất)</Typography.Title>
         <Bar
           data={{
             labels: monthCompareData.labels,
             datasets: [
               {
-                label: t("expense"),
+                label: "Chi tiêu",
                 data: monthCompareData.data,
                 backgroundColor: ["#28a745", "#007bff", "#ffc107", "#dc3545", "#6c757d", "#ff9800"],
               },

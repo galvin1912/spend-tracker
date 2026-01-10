@@ -12,9 +12,9 @@ import {
   GROUP_DELETE_OWNER_GROUP_SUCCESS,
   GROUP_DELETE_OWNER_GROUP_FAILED,
 } from "./groupConstants";
-import { message } from "antd";
+import messageUtil from "../../utils/messageUtil";
 import GroupServices from "../../services/GroupServices";
-import i18next from "i18next";
+import { translateError } from "../../utils/errorTranslator";
 
 export const createGroup = (groupData) => async (dispatch) => {
   dispatch({ type: GROUP_CREATE });
@@ -22,10 +22,10 @@ export const createGroup = (groupData) => async (dispatch) => {
   try {
     const groupID = await GroupServices.createGroup(groupData);
     dispatch({ type: GROUP_CREATE_SUCCESS, payload: groupID });
-    message.success(i18next.t("groupCreateSuccess"));
+    messageUtil.success("Tạo nhóm thành công");
   } catch (error) {
     dispatch({ type: GROUP_CREATE_FAILED });
-    message.error(error.message || i18next.t("groupCreateError"));
+    messageUtil.error(translateError(error) || "Không thể tạo nhóm");
   }
 };
 
@@ -37,7 +37,7 @@ export const getOwnerGroups = () => async (dispatch) => {
     dispatch({ type: GROUP_GET_OWNER_GROUPS_SUCCESS, payload: groups });
   } catch (error) {
     dispatch({ type: GROUP_GET_OWNER_GROUPS_FAILED });
-    message.error(error.message || i18next.t("errorGetGroups"));
+    messageUtil.error(translateError(error) || "Không thể tải danh sách nhóm");
   }
 };
 
@@ -49,7 +49,7 @@ export const getJoinedGroups = () => async (dispatch) => {
     dispatch({ type: GROUP_GET_JOINED_GROUPS_SUCCESS, payload: groups });
   } catch (error) {
     dispatch({ type: GROUP_GET_JOINED_GROUPS_FAILED });
-    message.error(error.message || i18next.t("errorGetGroups"));
+    messageUtil.error(translateError(error) || "Không thể tải danh sách nhóm");
   }
 };
 
@@ -59,9 +59,9 @@ export const deleteOwnerGroup = (groupID) => async (dispatch) => {
   try {
     await GroupServices.deleteGroup(groupID);
     dispatch({ type: GROUP_DELETE_OWNER_GROUP_SUCCESS, payload: groupID });
-    message.success(i18next.t("groupDeleteSuccess"));
+    messageUtil.success("Xóa nhóm thành công");
   } catch (error) {
     dispatch({ type: GROUP_DELETE_OWNER_GROUP_FAILED });
-    message.error(error.message || i18next.t("groupDeleteError"));
+    messageUtil.error(translateError(error) || "Không thể xóa nhóm");
   }
 };

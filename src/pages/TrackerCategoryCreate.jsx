@@ -1,13 +1,12 @@
 import { useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { Row, Col, Form, Input, ColorPicker, Button, Card, message } from "antd";
-import { useTranslation } from "react-i18next";
 import CategoryImage from "../assets/4569774.jpg";
 import TrackerServices from "../services/TrackerServices";
+import { translateError } from "../utils/errorTranslator";
 
 const TrackerCategoryCreate = () => {
   const navigate = useNavigate();
-  const { t } = useTranslation();
   const { trackerID } = useParams();
 
   const [form] = Form.useForm();
@@ -24,10 +23,10 @@ const TrackerCategoryCreate = () => {
     setIsSubmitting(true);
     try {
       await TrackerServices.createCategory(trackerID, values);
-      message.success(t('categoryCreateSuccess'));
+      message.success('Tạo danh mục thành công');
       navigate(`/tracker/detail/${trackerID}`);
     } catch (error) {
-      message.error(error.message);
+      message.error(translateError(error));
     } finally {
       setIsSubmitting(false);
     }
@@ -37,10 +36,10 @@ const TrackerCategoryCreate = () => {
     <Row gutter={[24, 12]}>
       <Col span={24} md={12}>
         <Card
-          title={t('createCategory')}
+          title="Tạo danh mục"
           extra={
             <Link to={`/tracker/detail/${trackerID}`}>
-              <Button danger>{t('back')}</Button>
+              <Button danger>Quay lại</Button>
             </Link>
           }
         >
@@ -56,33 +55,33 @@ const TrackerCategoryCreate = () => {
             onFinish={onFinish}
           >
             <Form.Item
-              label={t('categoryName')}
+              label="Tên danh mục"
               name="name"
               rules={[
                 {
                   required: true,
-                  message: t('required', { field: t('categoryName').toLowerCase() }),
+                  message: "Vui lòng nhập tên danh mục!",
                 },
                 {
                   max: 20,
-                  message: t('maxLength', { field: t('categoryName').toLowerCase(), length: 20 }),
+                  message: "Tên danh mục không được vượt quá 20 ký tự!",
                 },
                 {
                   whitespace: true,
-                  message: t('emptyField', { field: t('categoryName').toLowerCase() }),
+                  message: "Tên danh mục không được để trống",
                 },
               ]}
             >
-              <Input placeholder={t('enterCategoryName')} />
+              <Input placeholder="Nhập tên danh mục" />
             </Form.Item>
 
             <Form.Item
-              label={t('categoryColor')}
+              label="Màu sắc (hiển thị trên biểu đồ)"
               name="color"
               rules={[
                 {
                   required: true,
-                  message: t('selectColor'),
+                  message: "Vui lòng chọn màu sắc!",
                 },
               ]}
             >
@@ -92,11 +91,11 @@ const TrackerCategoryCreate = () => {
             <Form.Item>
               <Link to={`/tracker/detail/${trackerID}`}>
                 <Button className="me-2" disabled={isSubmitting}>
-                  {t('cancel')}
+                  Hủy
                 </Button>
               </Link>
               <Button type="primary" htmlType="submit" loading={isSubmitting}>
-                {t('createCategory')}
+                Tạo danh mục
               </Button>
             </Form.Item>
           </Form>

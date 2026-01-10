@@ -15,6 +15,7 @@ import {
 import { ref, uploadBytes, getDownloadURL, deleteObject } from "firebase/storage";
 import { db, storage } from "../configs/firebase";
 import Compressor from "compressorjs";
+import { translateError } from "./errorTranslator";
 
 class requestUtil {
   static get = async (url, options) => {
@@ -94,23 +95,31 @@ class requestUtil {
 export const request = async (url, options) => {
   const { method = "GET", ...restOptions } = options;
 
-  switch (method) {
-    case "GET":
-      return await requestUtil.get(url, restOptions);
-    case "GET_COUNT":
-      return await requestUtil.getCount(url, restOptions);
-    case "GET_SUM":
-      return await requestUtil.getSum(url, restOptions);
-    case "POST":
-      return await requestUtil.post(url, restOptions);
-    case "PUT":
-      return await requestUtil.put(url, restOptions);
-    case "PATCH":
-      return await requestUtil.patch(url, restOptions);
-    case "DELETE":
-      return await requestUtil.delete(url, restOptions);
-    default:
-      return await requestUtil.get(url, restOptions);
+  try {
+    switch (method) {
+      case "GET":
+        return await requestUtil.get(url, restOptions);
+      case "GET_COUNT":
+        return await requestUtil.getCount(url, restOptions);
+      case "GET_SUM":
+        return await requestUtil.getSum(url, restOptions);
+      case "POST":
+        return await requestUtil.post(url, restOptions);
+      case "PUT":
+        return await requestUtil.put(url, restOptions);
+      case "PATCH":
+        return await requestUtil.patch(url, restOptions);
+      case "DELETE":
+        return await requestUtil.delete(url, restOptions);
+      default:
+        return await requestUtil.get(url, restOptions);
+    }
+  } catch (error) {
+    // Wrap Firebase errors with translated messages
+    const translatedError = new Error(translateError(error));
+    translatedError.code = error.code;
+    translatedError.originalError = error;
+    throw translatedError;
   }
 };
 
@@ -123,20 +132,27 @@ export const request = async (url, options) => {
 export const uploadFile = async (url, options) => {
   const { file } = options;
   const storageRef = ref(storage, url);
-  const compressedFile = await new Promise((resolve, reject) => {
-    new Compressor(file, {
-      quality: 0.4,
-      success: (result) => {
-        resolve(result);
-      },
-      error: (err) => {
-        reject(err);
-      },
+  try {
+    const compressedFile = await new Promise((resolve, reject) => {
+      new Compressor(file, {
+        quality: 0.4,
+        success: (result) => {
+          resolve(result);
+        },
+        error: (err) => {
+          reject(err);
+        },
+      });
     });
-  });
-  const uploadTask = await uploadBytes(storageRef, compressedFile);
-  const downloadURL = await getDownloadURL(uploadTask.ref);
-  return { downloadURL, url };
+    const uploadTask = await uploadBytes(storageRef, compressedFile);
+    const downloadURL = await getDownloadURL(uploadTask.ref);
+    return { downloadURL, url };
+  } catch (error) {
+    const translatedError = new Error(translateError(error));
+    translatedError.code = error.code;
+    translatedError.originalError = error;
+    throw translatedError;
+  }
 };
 
 /**
@@ -144,8 +160,15 @@ export const uploadFile = async (url, options) => {
  */
 export const deleteFile = async (url) => {
   const storageRef = ref(storage, url);
-  const deleteTask = await deleteObject(storageRef);
-  return deleteTask;
+  try {
+    const deleteTask = await deleteObject(storageRef);
+    return deleteTask;
+  } catch (error) {
+    const translatedError = new Error(translateError(error));
+    translatedError.code = error.code;
+    translatedError.originalError = error;
+    throw translatedError;
+  }
 };
 
 export default requestUtil;

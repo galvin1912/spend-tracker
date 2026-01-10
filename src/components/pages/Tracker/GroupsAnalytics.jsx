@@ -2,11 +2,11 @@ import { useState, useMemo, useEffect } from "react";
 import { Col, Row, Statistic, DatePicker, message } from "antd";
 import PropTypes from "prop-types";
 import { Bar } from "react-chartjs-2";
-import { useTranslation } from "react-i18next";
 import { convertCurrency, convertShorterCurrency } from "../../../utils/numberUtils";
 import dayjs from "../../../configs/dayjs";
 import vi_VN from "../../../locale/vi_VN";
 import TrackerServices from "../../../services/TrackerServices";
+import { translateError } from "../../../utils/errorTranslator";
 
 const chartOptions = {
   responsive: true,
@@ -37,7 +37,6 @@ const chartOptions = {
 };
 
 const GroupsAnalytics = ({ tracker }) => {
-  const { t } = useTranslation();
   const [selectedMonth, setSelectedMonth] = useState(dayjs());
   const [isStatisticLoading, setIsStatisticLoading] = useState(false);
   const [thisMonthTotalIncome, setThisMonthTotalIncome] = useState(0);
@@ -121,7 +120,7 @@ const GroupsAnalytics = ({ tracker }) => {
         setExpenseDatasets(expenseDatasets);
         setIncomeDatasets(incomeDatasets);
       } catch (error) {
-        message.error(error.message);
+        message.error(translateError(error));
       } finally {
         setIsStatisticLoading(false);
       }
@@ -157,7 +156,7 @@ const GroupsAnalytics = ({ tracker }) => {
 
         setBalance(totalBalance);
       } catch (error) {
-        message.error(error.message);
+        message.error(translateError(error));
       } finally {
         setIsBalanceLoading(false);
       }
@@ -181,16 +180,16 @@ const GroupsAnalytics = ({ tracker }) => {
       />
       <Bar
         data={expenseChartData}
-        options={{ ...chartOptions, plugins: { ...chartOptions.plugins, title: { display: true, text: t('expenseStats') } } }}
+        options={{ ...chartOptions, plugins: { ...chartOptions.plugins, title: { display: true, text: 'Thống kê chi tiêu' } } }}
       />
       <Bar
         data={incomeChartData}
-        options={{ ...chartOptions, plugins: { ...chartOptions.plugins, title: { display: true, text: t('incomeStats') } } }}
+        options={{ ...chartOptions, plugins: { ...chartOptions.plugins, title: { display: true, text: 'Thống kê thu nhập' } } }}
       />
       <Row gutter={[24, 24]} className="mt-4">
         <Col span={24} md={12}>
           <Statistic
-            title={`${t('totalIncome')} (${dayjs(selectedMonth).format("MM/YYYY")})`}
+            title={`Tổng thu nhập (${dayjs(selectedMonth).format("MM/YYYY")})`}
             value={convertCurrency(thisMonthTotalIncome)}
             valueStyle={{ color: "#3f8600" }}
             loading={isStatisticLoading}
@@ -198,7 +197,7 @@ const GroupsAnalytics = ({ tracker }) => {
         </Col>
         <Col span={24} md={12}>
           <Statistic
-            title={`${t('totalExpense')} (${dayjs(selectedMonth).format("MM/YYYY")})`}
+            title={`Tổng chi tiêu (${dayjs(selectedMonth).format("MM/YYYY")})`}
             value={convertCurrency(thisMonthTotalExpense)}
             valueStyle={{ color: "#cf1322" }}
             loading={isStatisticLoading}
@@ -206,7 +205,7 @@ const GroupsAnalytics = ({ tracker }) => {
         </Col>
         <Col span={24} md={12}>
           <Statistic
-            title={t('totalBalance')}
+            title="Tổng số dư còn lại"
             value={convertCurrency(balance)}
             valueStyle={{ color: "rgba(0,0,0,0.88)" }}
             loading={isBalanceLoading}

@@ -1,16 +1,13 @@
 import { useMemo } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Link, NavLink, useNavigate } from "react-router-dom";
-import { Dropdown, Avatar, Switch, Space } from "antd";
+import { Dropdown, Avatar } from "antd";
 import { Gsc } from "@styled-icons/crypto";
 import { UserCircle } from "@styled-icons/boxicons-regular";
-import { Translate } from "styled-icons/material";
 import { PeopleMoney } from "@styled-icons/fluentui-system-filled";
 import { UserGroup, Robot } from "@styled-icons/fa-solid";
 import { Login } from "@styled-icons/material-sharp";
 import { logout } from "../../features/user/userActions";
-import { setLanguage } from "../../features/language/languageActions";
-import { useTranslation } from "react-i18next";
 
 const Header = () => {
   // create navigate function
@@ -19,60 +16,50 @@ const Header = () => {
   // create dispatch function
   const dispatch = useDispatch();
 
-  // Initialize translation hook
-  const { t } = useTranslation();
-
   // get state from redux store
   const isAuthenticated = useSelector((state) => state.user.isAuthenticated);
   const user = useSelector((state) => state.user.user);
-  const currentLanguage = useSelector((state) => state.language.currentLanguage);
-
-  // Handle language change
-  const handleLanguageChange = (checked) => {
-    const newLang = checked ? "en" : "vi";
-    dispatch(setLanguage(newLang));
-  };
 
   // memorize menu items
   const menu = useMemo(
     () => [
       {
-        label: t('trackers'),
+        label: 'Quản lý chi tiêu',
         key: "finance",
         icon: <PeopleMoney size="24" className="me-2" />,
         url: "/tracker",
       },
       {
-        label: t('groups'),
+        label: 'Nhóm',
         key: "group",
         icon: <UserGroup size="24" className="me-2" />,
         url: "/group",
       },
       {
-        label: t('chat'),
+        label: 'Trợ lý AI',
         key: "chat",
         icon: <Robot size="24" className="me-2" />,
         url: "/chat",
       },
     ],
-    [t]
+    []
   );
 
   // memorize account menu items
   const accountMenu = useMemo(
     () => [
       {
-        label: `${t('hello')}, ${user?.fullName}`,
+        label: `Xin chào, ${user?.fullName}`,
         key: "account",
         className: "font-medium",
       },
       {
-        label: t('settings'),
+        label: 'Cài đặt',
         key: "setting",
         onClick: () => navigate("/user/settings"),
       },
       {
-        label: t('help'),
+        label: 'Trợ giúp',
         key: "help",
         disabled: true,
       },
@@ -80,13 +67,13 @@ const Header = () => {
         type: "divider",
       },
       {
-        label: t('logout'),
+        label: 'Đăng xuất',
         key: "logout",
         danger: true,
         onClick: () => dispatch(logout()).then(() => navigate("/login")),
       },
     ],
-    [dispatch, navigate, user?.fullName, t]
+    [dispatch, navigate, user?.fullName]
   );
 
   return (
@@ -120,22 +107,6 @@ const Header = () => {
                 </li>
               ))}
 
-              {/* Language Switcher */}
-              <li className="mx-2">
-                <div className="d-inline-flex align-items-center nav-link text-white">
-                  <Translate size="24" className="me-2" />
-                  <Space>
-                    <span>VI</span>
-                    <Switch 
-                      size="small"
-                      checked={currentLanguage === 'en'} 
-                      onChange={handleLanguageChange}
-                    />
-                    <span>EN</span>
-                  </Space>
-                </div>
-              </li>
-
               {isAuthenticated ? (
                 <li>
                   <Dropdown 
@@ -153,7 +124,7 @@ const Header = () => {
                       ) : (
                         <UserCircle size="24" className="me-2" />
                       )}
-                      {t('account')}
+                      Tài khoản
                     </div>
                   </Dropdown>
                 </li>
@@ -166,7 +137,7 @@ const Header = () => {
                     }
                   >
                     <Login size="24" className="me-2" />
-                    {t('login')}
+                    Đăng nhập
                   </NavLink>
                 </li>
               )}

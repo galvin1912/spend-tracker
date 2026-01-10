@@ -3,11 +3,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { Helmet } from "react-helmet-async";
 import { Button, Form, Input, Select } from "antd";
 import { register } from "../features/user/userActions";
-import { useTranslation } from "react-i18next";
 import LoginImage from "../assets/account-login-protection-8876027-7271014.png";
 
 const Register = () => {
-  const { t } = useTranslation();
   const dispatch = useDispatch();
 
   // get state from redux store
@@ -21,11 +19,11 @@ const Register = () => {
   return (
     <>
       <Helmet
-        title={`${t('registerTitle')} | GST`}
+        title="Đăng kí | GST"
         meta={[
           {
             name: "description",
-            content: t("registerDescription"),
+            content: "Đăng kí để sử dụng các tính năng của hệ thống. Nếu bạn đã có tài khoản, vui lòng đăng nhập.",
           },
         ]}
       />
@@ -46,16 +44,16 @@ const Register = () => {
             autoComplete="off"
           >
             <Form.Item
-              label={t("email")}
+              label="Email"
               name="email"
               rules={[
                 {
                   required: true,
-                  message: t("required", { field: t("email").toLowerCase() }),
+                  message: "Vui lòng nhập email!",
                 },
                 {
                   type: "email",
-                  message: t("invalidEmail"),
+                  message: "Email không hợp lệ!",
                 },
               ]}
             >
@@ -63,12 +61,12 @@ const Register = () => {
             </Form.Item>
 
             <Form.Item
-              label={t("fullName")}
+              label="Họ và tên"
               name="fullName"
               rules={[
                 {
                   required: true,
-                  message: t("required", { field: t("fullName").toLowerCase() }),
+                  message: "Vui lòng nhập họ và tên!",
                 },
               ]}
             >
@@ -76,35 +74,35 @@ const Register = () => {
             </Form.Item>
 
             <Form.Item
-              label={t("gender")}
+              label="Giới tính"
               name="gender"
               rules={[
                 {
                   required: true,
-                  message: t("required", { field: t("gender").toLowerCase() }),
+                  message: "Vui lòng nhập giới tính!",
                 },
               ]}
             >
               <Select
                 options={[
-                  { value: "male", label: t("male") },
-                  { value: "female", label: t("female") },
-                  { value: "other", label: t("other") },
+                  { value: "male", label: "Nam" },
+                  { value: "female", label: "Nữ" },
+                  { value: "other", label: "Khác" },
                 ]}
               />
             </Form.Item>
 
             <Form.Item
-              label={t("password")}
+              label="Mật khẩu"
               name="password"
               rules={[
                 {
                   required: true,
-                  message: t("required", { field: t("password").toLowerCase() }),
+                  message: "Vui lòng nhập mật khẩu!",
                 },
                 {
                   pattern: /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/,
-                  message: t("passwordStrength"),
+                  message: "Mật khẩu phải có ít nhất 8 ký tự và chứa ít nhất 1 chữ cái viết hoa, 1 chữ cái viết thường, 1 số và 1 ký tự đặc biệt!",
                 },
               ]}
             >
@@ -112,12 +110,12 @@ const Register = () => {
             </Form.Item>
 
             <Form.Item
-              label={t("confirmPassword")}
+              label="Xác nhận mật khẩu"
               name="passwordConfirm"
               rules={[
                 {
                   required: true,
-                  message: t("required", { field: t("confirmPassword").toLowerCase() }),
+                  message: "Vui lòng nhập xác nhận mật khẩu!",
                 },
                 ({ getFieldValue }) => ({
                   validator(_, value) {
@@ -125,7 +123,7 @@ const Register = () => {
                       return Promise.resolve();
                     }
 
-                    return Promise.reject(new Error(t("passwordsDontMatch")));
+                    return Promise.reject(new Error("Mật khẩu không khớp!"));
                   },
                 }),
               ]}
@@ -135,19 +133,19 @@ const Register = () => {
 
             <Form.Item>
               <Button type="primary" htmlType="submit" loading={isRegistering}>
-                {t("register")}
+                Đăng kí
               </Button>
             </Form.Item>
 
             <p>
-              {t('haveAccount')} <Link to="/login">{t('login')}</Link>
+              Bạn đã có tài khoản? <Link to="/login">Đăng nhập</Link>
             </p>
           </Form>
         </div>
 
         <div className="col-md-6 order-md-1">
-          <h1 className="d-none d-md-block">{t('register')}</h1>
-          <p>{t('registerDescription')}</p>
+          <h1 className="d-none d-md-block">Đăng kí</h1>
+          <p>Đăng kí để sử dụng các tính năng của hệ thống. Nếu bạn đã có tài khoản, vui lòng đăng nhập.</p>
           <img src={LoginImage} alt="Login" className="mw-100" />
         </div>
       </div>

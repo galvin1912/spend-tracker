@@ -1,17 +1,15 @@
 import PropTypes from "prop-types";
 import { memo, useState } from "react";
 import { Button, Modal } from "antd";
-import { useTranslation } from "react-i18next";
 import SpendingInsights from "./SpendingInsights";
 
 const SpendingInsightsButton = ({ trackerID, categories }) => {
-  const { t } = useTranslation();
   const [isInsightsModalVisible, setIsInsightsModalVisible] = useState(false);
 
   return (
     <>
       <Button type="default" onClick={() => setIsInsightsModalVisible(true)} style={{ marginBottom: 16 }}>
-        {t("spendingInsights")}
+        Báo cáo chi tiêu
       </Button>
 
       <Modal
@@ -19,7 +17,7 @@ const SpendingInsightsButton = ({ trackerID, categories }) => {
         onCancel={() => setIsInsightsModalVisible(false)}
         footer={null}
         width={800}
-        title={t("spendingInsightsTitle")}
+        title="Báo cáo chi tiêu & Thống kê"
       >
         <SpendingInsights trackerID={trackerID} categories={categories} />
       </Modal>

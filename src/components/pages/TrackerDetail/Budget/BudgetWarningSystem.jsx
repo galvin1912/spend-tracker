@@ -1,11 +1,9 @@
 import PropTypes from "prop-types";
 import { useEffect, useState, useRef } from "react";
 import { Typography, Button, App } from "antd";
-import { useTranslation } from "react-i18next";
 import { convertCurrency } from "../../../../utils/numberUtils";
 
 const BudgetWarningSystem = ({ isCurrentMonth, isUsingDateRange, groupDetail, thisMonthExpenseSum, remainingDays }) => {
-  const { t } = useTranslation();
   const [warningShown, setWarningShown] = useState(false);
   // Get notification API from App context to show modal
   const { modal } = App.useApp();
@@ -93,11 +91,11 @@ const BudgetWarningSystem = ({ isCurrentMonth, isUsingDateRange, groupDetail, th
               <div style={{ fontSize: "28px", lineHeight: "1" }}>{iconType}</div>
               <div style={{ flex: 1 }}>
                 <Typography.Title level={4} style={{ margin: "0 0 8px 0" }}>
-                  {t("budgetWarningTitle")}
+                  Cảnh báo ngân sách
                 </Typography.Title>
 
                 <div style={{ marginBottom: "16px" }}>
-                  <Typography.Text>{t("daysRemaining", { remainingDays })}</Typography.Text>
+                  <Typography.Text>Còn {remainingDays} ngày nữa mới hết tháng mà đã chi:</Typography.Text>
 
                   <div
                     style={{
@@ -138,7 +136,7 @@ const BudgetWarningSystem = ({ isCurrentMonth, isUsingDateRange, groupDetail, th
                     height: "38px",
                   }}
                 >
-                  {t("understandWarning")}
+                  Đã hiểu
                 </Button>
               </div>
             </div>
@@ -157,7 +155,7 @@ const BudgetWarningSystem = ({ isCurrentMonth, isUsingDateRange, groupDetail, th
         modalInstanceRef.current = null;
       }
     };
-  }, [groupDetail, thisMonthExpenseSum, remainingDays, warningShown, t, isCurrentMonth, isUsingDateRange, modal]);
+  }, [groupDetail, thisMonthExpenseSum, remainingDays, warningShown, isCurrentMonth, isUsingDateRange, modal]);
 
   // This is a utility component that renders nothing to the DOM
   return null;

@@ -16,8 +16,8 @@ import {
   USER_UPDATE_PROFILE_SUCCESS,
   USER_UPDATE_PROFILE_FAILED,
 } from "./userConstants";
-import { message } from "antd";
-import i18next from "i18next";
+import messageUtil from "../../utils/messageUtil";
+import { translateError } from "../../utils/errorTranslator";
 
 export const login = (credentials) => async (dispatch) => {
   dispatch({ type: USER_LOGIN });
@@ -25,10 +25,10 @@ export const login = (credentials) => async (dispatch) => {
   try {
     await UserServices.login(credentials);
     dispatch({ type: USER_LOGIN_SUCCESS });
-    message.success(i18next.t("loginSuccess"));
+    messageUtil.success("Đăng nhập thành công");
   } catch (error) {
     dispatch({ type: USER_LOGIN_FAILED });
-    message.error(error.message || i18next.t("loginError"));
+    messageUtil.error(translateError(error) || "Đăng nhập thất bại. Vui lòng kiểm tra thông tin đăng nhập và thử lại.");
   }
 };
 
@@ -38,10 +38,10 @@ export const register = (credentials) => async (dispatch) => {
   try {
     await UserServices.register(credentials);
     dispatch({ type: USER_REGISTER_SUCCESS });
-    message.success(i18next.t("registerSuccess"));
+    messageUtil.success("Đăng ký thành công");
   } catch (error) {
     dispatch({ type: USER_REGISTER_FAILED });
-    message.error(error.message || i18next.t("registerError"));
+    messageUtil.error(translateError(error) || "Đăng ký thất bại. Vui lòng thử lại.");
   }
 };
 
@@ -51,10 +51,10 @@ export const logout = () => async (dispatch) => {
   try {
     await UserServices.logout();
     dispatch({ type: USER_LOGOUT_SUCCESS });
-    message.success(i18next.t("logoutSuccess", "Đăng xuất thành công!"));
+    messageUtil.success("Đăng xuất thành công");
   } catch (error) {
     dispatch({ type: USER_LOGOUT_FAILED });
-    message.error(error.message);
+    messageUtil.error(translateError(error));
   }
 };
 
@@ -66,7 +66,7 @@ export const fetchUserInfo = (uid) => async (dispatch) => {
     dispatch({ type: USER_FETCH_INFO_SUCCESS, payload: user });
   } catch (error) {
     dispatch({ type: USER_FETCH_INFO_FAILED });
-    message.error(error.message || i18next.t("fetchUserInfoError", "Có lỗi xảy ra khi tải thông tin người dùng."));
+    messageUtil.error(translateError(error) || "Không thể tải thông tin người dùng.");
   }
 };
 
@@ -76,11 +76,11 @@ export const updateUserProfile = (userData) => async (dispatch) => {
   try {
     const updatedUser = await UserServices.updateUserProfile(userData);
     dispatch({ type: USER_UPDATE_PROFILE_SUCCESS, payload: updatedUser });
-    message.success(i18next.t("profileUpdateSuccess"));
+    messageUtil.success("Cập nhật thông tin thành công");
     return updatedUser;
   } catch (error) {
     dispatch({ type: USER_UPDATE_PROFILE_FAILED });
-    message.error(error.message || i18next.t("profileUpdateError", "Có lỗi xảy ra khi cập nhật thông tin."));
+    messageUtil.error(translateError(error) || "Không thể cập nhật thông tin hồ sơ.");
     throw error;
   }
 };

@@ -1,11 +1,9 @@
 import PropTypes from "prop-types";
 import { memo } from "react";
 import { Typography, Button } from "antd";
-import { useTranslation } from "react-i18next";
 import { convertCurrency } from "../../../../utils/numberUtils";
 
 const BudgetSection = ({ groupDetail, onBudgetClick }) => {
-  const { t } = useTranslation();
 
   return (
     <div
@@ -21,7 +19,7 @@ const BudgetSection = ({ groupDetail, onBudgetClick }) => {
       }}
     >
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-        <Typography.Text style={{ fontSize: "16px", fontWeight: 500 }}>{t("budget")}</Typography.Text>
+        <Typography.Text style={{ fontSize: "16px", fontWeight: 500 }}>Ngân sách tháng</Typography.Text>
         <Button
           type="primary"
           onClick={onBudgetClick}
@@ -36,7 +34,7 @@ const BudgetSection = ({ groupDetail, onBudgetClick }) => {
           }}
           icon={<span style={{ fontSize: "16px" }}>{groupDetail?.budget ? "✏️" : "+"}</span>}
         >
-          {groupDetail?.budget ? t("editBudget") : t("setBudget")}
+          {groupDetail?.budget ? "Chỉnh sửa ngân sách" : "Đặt ngân sách"}
         </Button>
       </div>
 

@@ -1,11 +1,10 @@
 import PropTypes from "prop-types";
 import { useState, useEffect, memo } from "react";
 import { Modal, Typography, InputNumber, message } from "antd";
-import { useTranslation } from "react-i18next";
 import GroupServices from "../../../../services/GroupServices";
+import { translateError } from "../../../../utils/errorTranslator";
 
 const BudgetModal = ({ visible, initialBudget, trackerID, groupDetail, onCancel, onSuccess }) => {
-  const { t } = useTranslation();
   const [budgetAmount, setBudgetAmount] = useState(null);
   const [isSavingBudget, setIsSavingBudget] = useState(false);
 
@@ -19,17 +18,17 @@ const BudgetModal = ({ visible, initialBudget, trackerID, groupDetail, onCancel,
   // Handle budget save
   const handleSaveBudget = async () => {
     if (!budgetAmount || budgetAmount <= 0) {
-      message.error(t("validBudgetError"));
+      message.error("Vui lòng nhập số tiền ngân sách hợp lệ!");
       return;
     }
 
     setIsSavingBudget(true);
     try {
       await GroupServices.updateGroup(trackerID, { budget: budgetAmount });
-      message.success(t("budgetUpdateSuccess"));
+      message.success("Cập nhật ngân sách thành công");
       onSuccess(budgetAmount);
     } catch (error) {
-      message.error(error.message);
+      message.error(translateError(error));
     } finally {
       setIsSavingBudget(false);
     }
@@ -39,15 +38,15 @@ const BudgetModal = ({ visible, initialBudget, trackerID, groupDetail, onCancel,
     <Modal
       title={
         <Typography.Title level={4} style={{ margin: 0 }}>
-          {groupDetail?.budget ? t("changeBudget") : t("setGroupBudget")}
+          {groupDetail?.budget ? "Thay đổi ngân sách" : "Đặt ngân sách"}
         </Typography.Title>
       }
       open={visible}
       onOk={handleSaveBudget}
       onCancel={onCancel}
       confirmLoading={isSavingBudget}
-      okText={t("saveBudget")}
-      cancelText={t("cancel")}
+      okText="Lưu ngân sách"
+      cancelText="Hủy"
       okButtonProps={{
         className: "rounded-xl",
         style: {
@@ -68,7 +67,7 @@ const BudgetModal = ({ visible, initialBudget, trackerID, groupDetail, onCancel,
       style={{ borderRadius: "16px" }}
     >
       <div style={{ marginBottom: "20px" }}>
-        <Typography.Text style={{ fontSize: "15px", display: "block", marginBottom: "12px" }}>{t("enterBudget")}</Typography.Text>
+        <Typography.Text style={{ fontSize: "15px", display: "block", marginBottom: "12px" }}>Nhập ngân sách tháng cho nhóm:</Typography.Text>
         <InputNumber
           style={{
             width: "100%",
@@ -82,13 +81,13 @@ const BudgetModal = ({ visible, initialBudget, trackerID, groupDetail, onCancel,
           parser={(value) => value.replace(/\$\s?|(,*)/g, "")}
           min={1}
           prefix="₫"
-          placeholder={t("enterBudgetPlaceholder")}
+          placeholder="Nhập số tiền ngân sách"
           size="large"
           className="budget-input"
         />
       </div>
       <Typography.Text type="secondary" style={{ fontSize: "13px" }}>
-        {t("budgetHelp")}
+        Ngân sách giúp bạn theo dõi và kiểm soát chi tiêu hàng tháng của nhóm.
       </Typography.Text>
     </Modal>
   );
