@@ -5,7 +5,7 @@ import { Dropdown, Avatar, Drawer } from "antd";
 import { UserCircle } from "@styled-icons/boxicons-regular";
 import logo from "../../assets/logo.png";
 import { PeopleMoney } from "@styled-icons/fluentui-system-filled";
-import { UserGroup, Robot, Bars } from "@styled-icons/fa-solid";
+import { UserGroup, Bars } from "@styled-icons/fa-solid";
 import { Close, Settings } from "@styled-icons/material";
 import { Login } from "@styled-icons/material-sharp";
 import { logout } from "../../features/user/userActions";
@@ -42,12 +42,6 @@ const Header = () => {
         key: "group",
         icon: <UserGroup size="24" />,
         url: "/group",
-      },
-      {
-        label: 'Trợ lý AI',
-        key: "chat",
-        icon: <Robot size="24" />,
-        url: "/chat",
       },
     ],
     []
