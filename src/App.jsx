@@ -5,7 +5,7 @@ import { HelmetProvider } from "react-helmet-async";
 import { App as AntdApp } from "antd";
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from "chart.js";
 import { auth } from "./configs/firebase";
-import { fetchUserInfo } from "./features/user/userActions";
+import { fetchUserInfo, checkAuthComplete } from "./features/user/userActions";
 import { setMessageInstance } from "./utils/messageUtil";
 import AppRoutes from "./routes";
 
@@ -17,7 +17,11 @@ function App() {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
+        // fetchUserInfo will dispatch checkAuthComplete after completion
         dispatch(fetchUserInfo(user.uid));
+      } else {
+        // No user found, mark auth check as complete immediately
+        dispatch(checkAuthComplete());
       }
     });
 

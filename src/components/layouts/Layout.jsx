@@ -1,17 +1,22 @@
 import { useSelector } from "react-redux";
 import { Outlet, Link } from "react-router-dom";
-import { Result, Button } from "antd";
+import { Result, Button, Spin } from "antd";
 import Header from "./Header";
 
 const Layout = () => {
   const isAuthenticated = useSelector((state) => state.user.isAuthenticated);
+  const isCheckingAuth = useSelector((state) => state.user.isCheckingAuth);
 
   return (
     <>
       <Header />
 
       <div className="container-fluid">
-        {isAuthenticated ? (
+        {isCheckingAuth ? (
+          <div style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "50vh" }}>
+            <Spin size="large" />
+          </div>
+        ) : isAuthenticated ? (
           <Outlet />
         ) : (
           <Result

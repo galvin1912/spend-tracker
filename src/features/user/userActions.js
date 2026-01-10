@@ -15,6 +15,8 @@ import {
   USER_UPDATE_PROFILE,
   USER_UPDATE_PROFILE_SUCCESS,
   USER_UPDATE_PROFILE_FAILED,
+  USER_CHECK_AUTH_START,
+  USER_CHECK_AUTH_COMPLETE,
 } from "./userConstants";
 import messageUtil from "../../utils/messageUtil";
 import { translateError } from "../../utils/errorTranslator";
@@ -64,8 +66,12 @@ export const fetchUserInfo = (uid) => async (dispatch) => {
   try {
     const user = await UserServices.fetchUserInfo(uid);
     dispatch({ type: USER_FETCH_INFO_SUCCESS, payload: user });
+    // Mark auth check as complete after successfully fetching user info
+    dispatch({ type: USER_CHECK_AUTH_COMPLETE });
   } catch (error) {
     dispatch({ type: USER_FETCH_INFO_FAILED });
+    // Mark auth check as complete even if fetch fails
+    dispatch({ type: USER_CHECK_AUTH_COMPLETE });
     messageUtil.error(translateError(error) || "Không thể tải thông tin người dùng.");
   }
 };
@@ -83,4 +89,12 @@ export const updateUserProfile = (userData) => async (dispatch) => {
     messageUtil.error(translateError(error) || "Không thể cập nhật thông tin hồ sơ.");
     throw error;
   }
+};
+
+export const checkAuthStart = () => (dispatch) => {
+  dispatch({ type: USER_CHECK_AUTH_START });
+};
+
+export const checkAuthComplete = () => (dispatch) => {
+  dispatch({ type: USER_CHECK_AUTH_COMPLETE });
 };

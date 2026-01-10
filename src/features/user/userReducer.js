@@ -14,6 +14,8 @@ import {
   USER_UPDATE_PROFILE,
   USER_UPDATE_PROFILE_SUCCESS,
   USER_UPDATE_PROFILE_FAILED,
+  USER_CHECK_AUTH_START,
+  USER_CHECK_AUTH_COMPLETE,
 } from "./userConstants";
 
 import { GROUP_CREATE_SUCCESS, GROUP_DELETE_OWNER_GROUP_SUCCESS } from "../group/groupConstants";
@@ -26,6 +28,7 @@ const initialState = {
   isLoggingOut: false,
   isRegistering: false,
   isUpdatingProfile: false,
+  isCheckingAuth: true,
 };
 
 const userReducer = (state = initialState, action) => {
@@ -112,6 +115,16 @@ const userReducer = (state = initialState, action) => {
       return {
         ...state,
         isUpdatingProfile: false,
+      };
+    case USER_CHECK_AUTH_START:
+      return {
+        ...state,
+        isCheckingAuth: true,
+      };
+    case USER_CHECK_AUTH_COMPLETE:
+      return {
+        ...state,
+        isCheckingAuth: false,
       };
     case GROUP_CREATE_SUCCESS:
       return {

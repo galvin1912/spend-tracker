@@ -17,3 +17,6 @@ export const USER_FETCH_INFO_FAILED = "user/fetchInfoFailed";
 export const USER_UPDATE_PROFILE = "user/updateProfile";
 export const USER_UPDATE_PROFILE_SUCCESS = "user/updateProfileSuccess";
 export const USER_UPDATE_PROFILE_FAILED = "user/updateProfileFailed";
+
+export const USER_CHECK_AUTH_START = "user/checkAuthStart";
+export const USER_CHECK_AUTH_COMPLETE = "user/checkAuthComplete";
