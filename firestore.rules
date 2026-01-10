@@ -2,55 +2,125 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Function to check if user is a member of a group
-    function isGroupMember(groupId) {
-      return request.auth.uid in get(/databases/$(database)/documents/groups/$(groupId)).data.members;
+    // Helper function to get user data
+    function getUser() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
     }
     
     // Function to check if user is an owner of a group
     function isGroupOwner(groupId) {
-      return groupId in get(/databases/$(database)/documents/users/$(request.auth.uid)).data.groups;
+      return exists(/databases/$(database)/documents/users/$(request.auth.uid))
+        && getUser().groups != null
+        && groupId in getUser().groups;
+    }
+    
+    // Function to check if user is an owner of a wallet
+    function isWalletOwner(walletId) {
+      return exists(/databases/$(database)/documents/users/$(request.auth.uid))
+        && getUser().wallets != null
+        && walletId in getUser().wallets;
+    }
+    
+    // Function to check if user is a member of a wallet
+    function isWalletMember(walletId) {
+      return exists(/databases/$(database)/documents/wallets/$(walletId))
+        && get(/databases/$(database)/documents/wallets/$(walletId)).data.members != null
+        && request.auth.uid in get(/databases/$(database)/documents/wallets/$(walletId)).data.members;
+    }
+    
+    // Helper function to get group data
+    function getGroup(groupId) {
+      return get(/databases/$(database)/documents/groups/$(groupId)).data;
     }
     
     match /users/{userId} {
-      // User rules remain the same
       allow read: if request.auth != null;
       allow create: if request.auth != null;
-      allow update, delete: if request.auth != null && request.auth.uid == userId;
+      // Allow update if:
+      // 1. User is updating their own document, OR
+      // 2. Only wallets field is being updated and requester owns wallets (for wallet owner adding/removing members)
+      allow update: if request.auth != null && (
+        request.auth.uid == userId || 
+        (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['wallets']) 
+         && request.resource.data.wallets != null
+         && resource.data.wallets != null
+         && getUser().wallets != null
+         && getUser().wallets.size() > 0)
+      );
+      allow delete: if request.auth != null && request.auth.uid == userId;
+    }
+
+    match /wallets/{walletId} {
+      allow read: if request.auth != null && (isWalletOwner(walletId) || isWalletMember(walletId));
+      allow create: if request.auth != null;
+      allow update, delete: if request.auth != null && isWalletOwner(walletId);
+
+      match /members/{memberId} {
+        allow read: if request.auth != null && (isWalletOwner(walletId) || isWalletMember(walletId));
+        allow write: if request.auth != null && isWalletOwner(walletId);
+      }
     }
 
     match /groups/{groupId} {
-      allow read: if request.auth != null;
+      // Allow read if user is owner OR has wallet access
+      allow read: if request.auth != null && (
+        isGroupOwner(groupId) || 
+        (exists(/databases/$(database)/documents/groups/$(groupId))
+          && getGroup(groupId).walletID != null
+          && (isWalletOwner(getGroup(groupId).walletID) || isWalletMember(getGroup(groupId).walletID)))
+      );
       allow create: if request.auth != null;
       
-      // Allow updates by both owners and members, but only owners can delete
-      allow update: if request.auth != null && (isGroupOwner(groupId) || isGroupMember(groupId));
-      allow delete: if request.auth != null && isGroupOwner(groupId);
+      allow update: if request.auth != null && (
+        isGroupOwner(groupId) || 
+        (exists(/databases/$(database)/documents/groups/$(groupId))
+          && getGroup(groupId).walletID != null
+          && (isWalletOwner(getGroup(groupId).walletID) || isWalletMember(getGroup(groupId).walletID)))
+      );
+      allow delete: if false;
       
-      // Budget-related fields can be edited by all members
       match /budget/{budgetId} {
-        allow read, write: if request.auth != null && (isGroupOwner(groupId) || isGroupMember(groupId));
-      }
-
-      match /members/{memberId} {
-        allow read: if request.auth != null && (isGroupOwner(groupId) || isGroupMember(groupId));
-        // Only group owners can modify member list
-        allow write: if request.auth != null && isGroupOwner(groupId);
+        allow read, write: if request.auth != null && (
+          isGroupOwner(groupId) || 
+          (exists(/databases/$(database)/documents/groups/$(groupId))
+            && getGroup(groupId).walletID != null
+            && (isWalletOwner(getGroup(groupId).walletID) || isWalletMember(getGroup(groupId).walletID)))
+        );
       }
     }
 
     match /trackers/{trackerId} {
-      allow read: if request.auth != null;
+      allow read: if request.auth != null && (
+        isGroupOwner(trackerId) || 
+        (exists(/databases/$(database)/documents/groups/$(trackerId))
+          && getGroup(trackerId).walletID != null
+          && (isWalletOwner(getGroup(trackerId).walletID) || isWalletMember(getGroup(trackerId).walletID)))
+      );
       allow create: if request.auth != null;
-      allow update: if request.auth != null && (isGroupOwner(trackerId) || isGroupMember(trackerId));
+      allow update: if request.auth != null && (
+        isGroupOwner(trackerId) || 
+        (exists(/databases/$(database)/documents/groups/$(trackerId))
+          && getGroup(trackerId).walletID != null
+          && (isWalletOwner(getGroup(trackerId).walletID) || isWalletMember(getGroup(trackerId).walletID)))
+      );
       allow delete: if request.auth != null && isGroupOwner(trackerId);
 
       match /categories/{categoryId} {
-        allow read, write: if request.auth != null && (isGroupOwner(trackerId) || isGroupMember(trackerId));
+        allow read, write: if request.auth != null && (
+          isGroupOwner(trackerId) || 
+          (exists(/databases/$(database)/documents/groups/$(trackerId))
+            && getGroup(trackerId).walletID != null
+            && (isWalletOwner(getGroup(trackerId).walletID) || isWalletMember(getGroup(trackerId).walletID)))
+        );
       }
 
       match /transactions/{transactionId} {
-        allow read, write: if request.auth != null && (isGroupOwner(trackerId) || isGroupMember(trackerId));
+        allow read, write: if request.auth != null && (
+          isGroupOwner(trackerId) || 
+          (exists(/databases/$(database)/documents/groups/$(trackerId))
+            && getGroup(trackerId).walletID != null
+            && (isWalletOwner(getGroup(trackerId).walletID) || isWalletMember(getGroup(trackerId).walletID)))
+        );
       }
     }
   }

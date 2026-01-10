@@ -11,32 +11,37 @@ const GroupsTracker = ({ tracker }) => {
   const isNotMobile = useMediaQuery("(min-width: 768px)");
 
   const [isAnalyticsVisible, setIsAnalyticsVisible] = useState(false);
-  const [user, setUser] = useState(null);
+  const [owner, setOwner] = useState(null);
 
   useEffect(() => {
-    const getUser = async () => {
-      const user = await UserServices.fetchOtherUserInfo(tracker?.owner);
-      setUser(user);
+    const getOwner = async () => {
+      if (tracker?.walletOwner) {
+        const ownerInfo = await UserServices.fetchOtherUserInfo(tracker.walletOwner);
+        setOwner(ownerInfo);
+      }
     };
 
-    getUser();
-  }, [tracker?.owner]);
+    getOwner();
+  }, [tracker?.walletOwner]);
+
+  const cardTitle = tracker?.walletName && owner 
+    ? `${tracker.walletName} (${owner.fullName})`
+    : tracker?.walletName || 'Ví';
 
   if (isNotMobile) {
     // Desktop: Show both cards side by side
     return (
       <>
         <Card
-          {...(user && {
-            title: `Sở hữu bởi ${user?.fullName} (${user?.email})`,
-          })}
+          title={cardTitle}
           bordered={false}
           style={{ minHeight: "100%" }}
           className="page-card"
         >
           <List
             itemLayout="horizontal"
-            dataSource={tracker?.groups}
+            dataSource={tracker?.groups || []}
+            locale={{ emptyText: 'Chưa có nhóm nào trong ví này' }}
             renderItem={(item) => (
               <Link to={`/tracker/detail/${item?.uid}`} style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}>
                 <List.Item style={{ cursor: 'pointer' }}>
@@ -62,9 +67,7 @@ const GroupsTracker = ({ tracker }) => {
   return (
     <>
       <Card
-        {...(user && {
-          title: `Sở hữu bởi ${user?.fullName} (${user?.email})`,
-        })}
+        title={cardTitle}
         bordered={false}
         extra={
           <Button type="primary" onClick={() => setIsAnalyticsVisible(true)}>
@@ -75,7 +78,8 @@ const GroupsTracker = ({ tracker }) => {
       >
         <List
           itemLayout="horizontal"
-          dataSource={tracker?.groups}
+          dataSource={tracker?.groups || []}
+          locale={{ emptyText: 'Chưa có nhóm nào trong ví này' }}
           renderItem={(item) => (
             <Link to={`/tracker/detail/${item?.uid}`} style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}>
               <List.Item style={{ cursor: 'pointer' }}>

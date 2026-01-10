@@ -8,14 +8,10 @@ import {
   GROUP_GET_JOINED_GROUPS,
   GROUP_GET_JOINED_GROUPS_SUCCESS,
   GROUP_GET_JOINED_GROUPS_FAILED,
-  GROUP_DELETE_OWNER_GROUP,
-  GROUP_DELETE_OWNER_GROUP_SUCCESS,
-  GROUP_DELETE_OWNER_GROUP_FAILED,
 } from "./groupConstants";
 
 const initialState = {
   isCreatingGroup: false,
-  isDeletingGroup: false,
   ownerGroups: [],
   isOwnerGroupsLoading: false,
   joinedGroups: [],
@@ -70,22 +66,6 @@ const groupReducer = (state = initialState, action) => {
       return {
         ...state,
         isJoinedGroupsLoading: false,
-      };
-    case GROUP_DELETE_OWNER_GROUP:
-      return {
-        ...state,
-        isDeletingGroup: true,
-      };
-    case GROUP_DELETE_OWNER_GROUP_SUCCESS:
-      return {
-        ...state,
-        isDeletingGroup: false,
-        ownerGroups: state.ownerGroups.filter((group) => group.uid !== action.payload),
-      };
-    case GROUP_DELETE_OWNER_GROUP_FAILED:
-      return {
-        ...state,
-        isDeletingGroup: false,
       };
     default:
       return state;

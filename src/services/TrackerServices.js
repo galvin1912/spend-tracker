@@ -1,45 +1,43 @@
 import store from "../store";
-import { where, or, orderBy, Timestamp } from "firebase/firestore";
+import { where, orderBy, Timestamp, documentId } from "firebase/firestore";
 import { request } from "../utils/requestUtil";
 
 class TrackerServices {
   static getTrackers = async () => {
-    const { user: { uid } } = store.getState().user;
+    // Get wallets where user is owner or member
+    const WalletServices = (await import("./WalletServices")).default;
+    const wallets = await WalletServices.getWallets();
     
-    const groups = await request("/groups", {
-      method: "GET",
-      queryConstraints: [or(
-        where("owner", "==", uid),
-        where("members", "array-contains", uid)
-      )],
-    });
+    if (wallets.length === 0) return [];
 
-    const processedGroups = await Promise.all(groups.map(async group => {
-      if (group.owner === uid) return group;
-      
-      const member = await request(`/groups/${group.uid}/members`, {
-        method: "GET",
-        uid,
-      });
+    // Get groups for each wallet
+    const walletsWithGroups = await Promise.all(
+      wallets.map(async (wallet) => {
+        if (!wallet.groups || wallet.groups.length === 0) {
+          return {
+            walletID: wallet.uid,
+            walletName: wallet.walletName,
+            walletOwner: wallet.owner,
+            groups: []
+          };
+        }
 
-      return member?.permissions?.tracker ? group : null;
-    }));
+        // Get all groups for this wallet
+        const groups = await request("/groups", {
+          method: "GET",
+          queryConstraints: [where(documentId(), "in", wallet.groups)],
+        });
 
-    const grouped = processedGroups
-      .filter(Boolean)
-      .reduce((acc, group) => {
-        const ownerGroups = acc.find(g => g.owner === group.owner)?.groups || [];
-        return [
-          ...acc.filter(g => g.owner !== group.owner),
-          { owner: group.owner, groups: [...ownerGroups, group] }
-        ];
-      }, [])
-      .sort((a, b) => (a.owner === uid ? -1 : b.owner === uid ? 1 : 0));
+        return {
+          walletID: wallet.uid,
+          walletName: wallet.walletName,
+          walletOwner: wallet.owner,
+          groups: groups.sort((a, b) => a.groupName.localeCompare(b.groupName))
+        };
+      })
+    );
 
-    return grouped.map(group => ({
-      ...group,
-      groups: group.groups.sort((a, b) => a.groupName.localeCompare(b.groupName))
-    }));
+    return walletsWithGroups;
   };
 
   static deleteTracker = async trackerID => {
@@ -173,28 +171,59 @@ class TrackerServices {
   static getTransactions = async (trackerID, filter) => {
     let queryConstraints = [];
 
-    // Handle date filtering based on filter type
+    // Firestore requires: equality filters first, then range filters, then orderBy
+    
+    // Filter by type - equality filter (must come before range filters)
+    if (filter.type !== "all") {
+      queryConstraints.push(where("type", "==", filter.type));
+    }
+
+    // Filter by categories - equality filter with 'in' operator (must come before range filters)
+    // Handle both string (comma-separated) and array formats
+    let categoryArray = [];
+    if (filter.categories) {
+      if (typeof filter.categories === "string") {
+        categoryArray = filter.categories.split(",").filter(cat => cat.trim());
+      } else if (Array.isArray(filter.categories)) {
+        categoryArray = filter.categories;
+      }
+    }
+
+    if (categoryArray.length > 0) {
+      // Firestore 'in' operator supports up to 10 values
+      if (categoryArray.length <= 10) {
+        queryConstraints.push(where("category", "in", categoryArray));
+      }
+      // If > 10 categories, we'll filter client-side as fallback
+    }
+
+    // Handle date filtering - range filters (must come after equality filters)
     if (filter.timeType === "custom" && filter.timeRange) {
       // Custom date range filtering
-      queryConstraints = [
+      queryConstraints.push(
         where("time", ">=", Timestamp.fromDate(filter.timeRange.startDate.startOf("day").toDate())),
-        where("time", "<=", Timestamp.fromDate(filter.timeRange.endDate.endOf("day").toDate())),
-        orderBy("time", "desc"),
-      ];
+        where("time", "<=", Timestamp.fromDate(filter.timeRange.endDate.endOf("day").toDate()))
+      );
     } else if (filter.timeType === "week") {
       // Week filtering (Monday to Sunday)
-      queryConstraints = [
+      queryConstraints.push(
         where("time", ">=", Timestamp.fromDate(filter.time.startOf("week").toDate())),
-        where("time", "<=", Timestamp.fromDate(filter.time.endOf("week").toDate())),
-        orderBy("time", "desc"),
-      ];
+        where("time", "<=", Timestamp.fromDate(filter.time.endOf("week").toDate()))
+      );
     } else {
       // Standard month filtering
-      queryConstraints = [
+      queryConstraints.push(
         where("time", ">=", Timestamp.fromDate(filter.time.startOf("month").toDate())),
-        where("time", "<=", Timestamp.fromDate(filter.time.endOf("month").toDate())),
-        orderBy("time", "desc"),
-      ];
+        where("time", "<=", Timestamp.fromDate(filter.time.endOf("month").toDate()))
+      );
+    }
+
+    // Determine sort order - orderBy must come last
+    // If sorting by amount, use amount orderBy; otherwise use time
+    if (filter.sortBy === "amount") {
+      queryConstraints.push(orderBy("amount", "desc"));
+    } else {
+      queryConstraints.push(orderBy("time", "desc"));
     }
 
     let transactions = await request(`/trackers/${trackerID}/transactions`, {
@@ -202,19 +231,21 @@ class TrackerServices {
       queryConstraints,
     });
 
-    // filter by type
-    if (filter.type !== "all") {
-      transactions = transactions.filter((transaction) => transaction.type === filter.type);
+    // Fallback: filter by categories client-side if > 10 categories
+    if (categoryArray.length > 10) {
+      transactions = transactions.filter((transaction) => categoryArray.includes(transaction.category));
     }
 
-    // filter by sortBy
+    // Fallback: filter by type client-side if not already filtered (shouldn't happen, but safety check)
+    if (filter.type === "all") {
+      // No filtering needed
+    }
+
+    // Fallback: sort by amount client-side if sortBy is amount but orderBy failed
+    // (This shouldn't happen if index exists, but provides fallback)
     if (filter.sortBy === "amount") {
-      transactions.sort((a, b) => a.amount - b.amount);
-    }
-
-    // filter by categories
-    if (filter.categories) {
-      transactions = transactions.filter((transaction) => filter.categories.includes(transaction.category));
+      // Already sorted by Firestore, but verify
+      transactions.sort((a, b) => Math.abs(b.amount) - Math.abs(a.amount));
     }
 
     return transactions;

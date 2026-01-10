@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { Dropdown, Avatar, Drawer } from "antd";
 import { UserCircle } from "@styled-icons/boxicons-regular";
+import { Wallet } from "@styled-icons/boxicons-solid";
 import logo from "../../assets/logo.png";
 import { PeopleMoney } from "@styled-icons/fluentui-system-filled";
 import { UserGroup, Bars } from "@styled-icons/fa-solid";
@@ -36,6 +37,12 @@ const Header = () => {
         key: "finance",
         icon: <PeopleMoney size="24" />,
         url: "/tracker",
+      },
+      {
+        label: 'Ví',
+        key: "wallet",
+        icon: <Wallet size="24" />,
+        url: "/wallet",
       },
       {
         label: 'Nhóm',

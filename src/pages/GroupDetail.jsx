@@ -1,15 +1,11 @@
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { useSelector } from "react-redux";
 import { Helmet } from "react-helmet-async";
 import { Link, useParams, useNavigate } from "react-router-dom";
-import { Form, Input, ColorPicker, List, Button, Avatar, Card } from "antd";
-import { PersonAdd } from "@styled-icons/evaicons-solid";
-import { PersonRemove } from "@styled-icons/material-rounded";
-import { debounce } from "lodash";
+import { Form, Input, ColorPicker, Button, Card } from "antd";
 import dayjs from "../configs/dayjs";
 import GroupServices from "../services/GroupServices";
 import GroupDetailImage from "../assets/4380.jpg";
-import UserServices from "../services/UserServices";
 import { translateError } from "../utils/errorTranslator";
 import messageUtil from "../utils/messageUtil";
 
@@ -27,12 +23,6 @@ const GroupDetail = () => {
   // This is used to get user from redux store
   const { user } = useSelector((state) => state.user);
 
-  // This state is used to store member and search text
-  const [searchText, setSearchText] = useState("");
-  const [memberOptionsLoading, setMemberOptionsLoading] = useState(false);
-  const [memberOptions, setMemberOptions] = useState([]);
-  const [members, setMembers] = useState([]);
-  const [memberInfos, setMemberInfos] = useState([]);
 
   // This is used to check if current user is owner of group
   const isOwnerGroup = useMemo(() => {
@@ -61,122 +51,11 @@ const GroupDetail = () => {
     getGroupDetail();
   }, [form, groupID]);
 
-  // This effect is used to get members
-  useEffect(() => {
-    if (!groupID) return;
-
-    const getMembers = async () => {
-      try {
-        const members = await GroupServices.getMembers(groupID);
-        setMembers(members.map((member) => member.uid));
-      } catch (error) {
-        messageUtil.error(translateError(error));
-      }
-    };
-
-    getMembers();
-  }, [groupID]);
-
-  // This effect is used to get member info
-  useEffect(() => {
-    if (!groupID) return;
-
-    const getMemberInfo = async () => {
-      try {
-        const memberInfos = await Promise.all(
-          members.map(async (uid) => {
-            const memberInfo = await UserServices.fetchOtherUserInfo(uid);
-            return memberInfo;
-          })
-        );
-        setMemberInfos(memberInfos);
-      } catch (error) {
-        messageUtil.error(translateError(error));
-      }
-    };
-
-    getMemberInfo();
-  }, [groupID, members]);
-
   // This function is used to handle change color
   const handleChangeColor = (value) => {
     form.setFieldsValue({
       color: value.toHexString(),
     });
-  };
-
-  // This function is used to search member by email
-  const handleSearchMember = (event) => {
-    const { value } = event.target;
-    setSearchText(value);
-
-    if (!value || value.length < 3) {
-      setMemberOptions([]);
-      return;
-    }
-
-    const searchMember = async () => {
-      setMemberOptionsLoading(true);
-      try {
-        const users = await GroupServices.searchMember(value);
-        const options = users.map((user) => ({
-          uid: user.uid,
-          label: `${user.fullName} (${user.email})`,
-        }));
-
-        // Filter options that already in members or current user
-        const filterOptions = options.filter((option) => {
-          return option.uid !== user.uid && !members.find((memberUid) => memberUid === option.uid);
-        });
-
-        setMemberOptions(filterOptions);
-      } catch (error) {
-        messageUtil.error(translateError(error));
-      } finally {
-        setMemberOptionsLoading(false);
-      }
-    };
-
-    debounce(searchMember, 500)();
-  };
-
-  // This function is used to add member to group
-  const handleAddMember = async (uid) => {
-    try {
-      // add member to group
-      await GroupServices.addMember(groupID, uid);
-      await GroupServices.updateGroup(groupID, {
-        members: [...members, uid],
-      });
-      messageUtil.success("Thêm thành viên thành công");
-
-      // store member uid
-      setMembers([...members, uid]);
-
-      // reset member options and search text
-      setMemberOptions([]);
-      setSearchText("");
-    } catch (error) {
-      messageUtil.error(translateError(error));
-    }
-  };
-
-  // This function is used to remove member from group
-  const handleRemoveMember = async (uid) => {
-    try {
-      // remove member from group
-      await GroupServices.removeMember(groupID, uid);
-      await GroupServices.updateGroup(groupID, {
-        members: members.filter((memeberUid) => memeberUid !== uid),
-      });
-      messageUtil.success("Xóa thành viên thành công");
-
-      // remove member uid from members
-      const newMembers = members.filter((memeberUid) => memeberUid !== uid);
-      setMembers(newMembers);
-    } catch (error) {
-      messageUtil.error(translateError(error));
-    }
   };
 
   // This function is used to handle form submit
@@ -298,58 +177,6 @@ const GroupDetail = () => {
                 </div>
               </Form.Item>
             </Form>
-          </Card>
-
-          <Card title="Thành viên" className="page-card">
-            {isOwnerGroup && (
-              <Input 
-                placeholder="Tìm thành viên theo email" 
-                allowClear 
-                value={searchText} 
-                onChange={handleSearchMember}
-                style={{ marginBottom: '1rem' }}
-              />
-            )}
-            {searchText.length >= 3 && (
-              <List
-                bordered
-                dataSource={memberOptions}
-                loading={memberOptionsLoading}
-                locale={{ emptyText: <i>Không có kết quả phù hợp</i> }}
-                style={{ marginBottom: '1rem' }}
-                renderItem={(memeberOption) => (
-                  <List.Item 
-                    style={{ cursor: "pointer" }} 
-                    extra={<PersonAdd size={20} />} 
-                    onClick={() => handleAddMember(memeberOption.uid)}
-                  >
-                    <span>{memeberOption.label}</span>
-                  </List.Item>
-                )}
-              />
-            )}
-            {members.length > 0 && (
-              <List
-                dataSource={memberInfos}
-                renderItem={(memberInfo) => (
-                  <List.Item
-                    extra={
-                      isOwnerGroup && (
-                        <Button type="text" onClick={() => handleRemoveMember(memberInfo?.uid)}>
-                          <PersonRemove size={20} />
-                        </Button>
-                      )
-                    }
-                  >
-                    <List.Item.Meta
-                      avatar={<Avatar>{memberInfo?.fullName?.charAt(0).toUpperCase()}</Avatar>}
-                      title={<span style={{ color: 'var(--foreground)' }}>{memberInfo?.fullName}</span>}
-                      description={<span style={{ color: 'var(--muted-foreground)' }}>{memberInfo?.email}</span>}
-                    />
-                  </List.Item>
-                )}
-              />
-            )}
           </Card>
         </div>
 

@@ -20,6 +20,7 @@ class UserServices {
         fullName,
         gender,
         groups: [],
+        wallets: [],
         createdAt: Timestamp.now(),
         updatedAt: null,
       };

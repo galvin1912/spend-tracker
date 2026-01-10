@@ -24,7 +24,11 @@ class requestUtil {
     if (uid) {
       // If uid is provided, retrieve a specific document
       const docSnap = await getDoc(doc(db, url, uid));
-      return docSnap.data();
+      if (!docSnap.exists()) {
+        return null;
+      }
+      const data = docSnap.data();
+      return { ...data, uid: docSnap.id };
     } else {
       // If uid is not provided, perform a query to retrieve multiple documents
       const queries = query(collection(db, url), ...queryConstraints);

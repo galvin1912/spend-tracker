@@ -18,7 +18,7 @@ import {
   USER_CHECK_AUTH_COMPLETE,
 } from "./userConstants";
 
-import { GROUP_CREATE_SUCCESS, GROUP_DELETE_OWNER_GROUP_SUCCESS } from "../group/groupConstants";
+import { GROUP_CREATE_SUCCESS } from "../group/groupConstants";
 
 const initialState = {
   user: null,
@@ -132,14 +132,6 @@ const userReducer = (state = initialState, action) => {
         user: {
           ...state.user,
           groups: [...(state.user.groups || []), action.payload],
-        },
-      };
-    case GROUP_DELETE_OWNER_GROUP_SUCCESS:
-      return {
-        ...state,
-        user: {
-          ...state.user,
-          groups: state.user.groups.filter((group) => group !== action.payload),
         },
       };
     default:

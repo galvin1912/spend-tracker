@@ -20,6 +20,7 @@ import {
 } from "./userConstants";
 import messageUtil from "../../utils/messageUtil";
 import { translateError } from "../../utils/errorTranslator";
+import { createDefaultWalletForUser } from "../../utils/migration/createDefaultWallets";
 
 export const login = (credentials) => async (dispatch) => {
   dispatch({ type: USER_LOGIN });
@@ -65,7 +66,19 @@ export const fetchUserInfo = (uid) => async (dispatch) => {
 
   try {
     const user = await UserServices.fetchUserInfo(uid);
-    dispatch({ type: USER_FETCH_INFO_SUCCESS, payload: user });
+    
+    // Run migration: create default wallet if user doesn't have one
+    try {
+      await createDefaultWalletForUser(user);
+      // Re-fetch user info to get updated wallets array
+      const updatedUser = await UserServices.fetchUserInfo(uid);
+      dispatch({ type: USER_FETCH_INFO_SUCCESS, payload: updatedUser });
+    } catch (migrationError) {
+      // If migration fails, still use the original user data
+      console.error("Migration failed:", migrationError);
+      dispatch({ type: USER_FETCH_INFO_SUCCESS, payload: user });
+    }
+    
     // Mark auth check as complete after successfully fetching user info
     dispatch({ type: USER_CHECK_AUTH_COMPLETE });
   } catch (error) {

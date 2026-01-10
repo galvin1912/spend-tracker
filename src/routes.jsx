@@ -14,6 +14,9 @@ const TrackerTransactionDetail = lazy(() => import("./pages/TrackerTransactionDe
 const Group = lazy(() => import("./pages/Group"));
 const GroupCreate = lazy(() => import("./pages/GroupCreate"));
 const GroupDetail = lazy(() => import("./pages/GroupDetail"));
+const Wallet = lazy(() => import("./pages/Wallet"));
+const WalletCreate = lazy(() => import("./pages/WalletCreate"));
+const WalletDetail = lazy(() => import("./pages/WalletDetail"));
 const UserSettings = lazy(() => import("./pages/UserSettings"));
 const Login = lazy(() => import("./pages/Login"));
 const Register = lazy(() => import("./pages/Register"));
@@ -111,6 +114,30 @@ const AppRoutes = () => {
           element: (
             <Suspense fallback={<Skeleton active />}>
               <GroupDetail />
+            </Suspense>
+          ),
+        },
+        {
+          path: "/wallet",
+          element: (
+            <Suspense fallback={<Skeleton active />}>
+              <Wallet />
+            </Suspense>
+          ),
+        },
+        {
+          path: "/wallet/create",
+          element: (
+            <Suspense fallback={<Skeleton active />}>
+              <WalletCreate />
+            </Suspense>
+          ),
+        },
+        {
+          path: "/wallet/detail/:walletID",
+          element: (
+            <Suspense fallback={<Skeleton active />}>
+              <WalletDetail />
             </Suspense>
           ),
         },

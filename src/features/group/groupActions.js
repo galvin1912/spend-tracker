@@ -8,9 +8,6 @@ import {
   GROUP_GET_JOINED_GROUPS,
   GROUP_GET_JOINED_GROUPS_SUCCESS,
   GROUP_GET_JOINED_GROUPS_FAILED,
-  GROUP_DELETE_OWNER_GROUP,
-  GROUP_DELETE_OWNER_GROUP_SUCCESS,
-  GROUP_DELETE_OWNER_GROUP_FAILED,
 } from "./groupConstants";
 import messageUtil from "../../utils/messageUtil";
 import GroupServices from "../../services/GroupServices";
@@ -26,6 +23,7 @@ export const createGroup = (groupData) => async (dispatch) => {
   } catch (error) {
     dispatch({ type: GROUP_CREATE_FAILED });
     messageUtil.error(translateError(error) || "Không thể tạo nhóm");
+    throw error;
   }
 };
 
@@ -50,18 +48,5 @@ export const getJoinedGroups = () => async (dispatch) => {
   } catch (error) {
     dispatch({ type: GROUP_GET_JOINED_GROUPS_FAILED });
     messageUtil.error(translateError(error) || "Không thể tải danh sách nhóm");
-  }
-};
-
-export const deleteOwnerGroup = (groupID) => async (dispatch) => {
-  dispatch({ type: GROUP_DELETE_OWNER_GROUP });
-
-  try {
-    await GroupServices.deleteGroup(groupID);
-    dispatch({ type: GROUP_DELETE_OWNER_GROUP_SUCCESS, payload: groupID });
-    messageUtil.success("Xóa nhóm thành công");
-  } catch (error) {
-    dispatch({ type: GROUP_DELETE_OWNER_GROUP_FAILED });
-    messageUtil.error(translateError(error) || "Không thể xóa nhóm");
   }
 };

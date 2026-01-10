@@ -206,7 +206,7 @@ const GroupsAnalytics = ({ tracker }) => {
         </Col>
         <Col span={24} md={12}>
           <Statistic
-            title="Tổng số dư còn lại"
+            title="Số dư ví"
             value={convertCurrency(balance)}
             valueStyle={{ color: "rgba(0,0,0,0.88)" }}
             loading={isBalanceLoading}

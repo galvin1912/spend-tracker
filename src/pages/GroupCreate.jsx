@@ -1,9 +1,13 @@
 import { Link, useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { useDispatch, useSelector } from "react-redux";
-import { Form, Input, ColorPicker, Button, Row, Col, Card } from "antd";
+import { useEffect, useState } from "react";
+import { Form, Input, ColorPicker, Button, Row, Col, Card, Select } from "antd";
 import { createGroup } from "../features/group/groupActions";
+import { getOwnerWallets } from "../features/wallet/walletActions";
 import GroupImage from "../assets/89z_2203_w009_n001_120b_p14_120.jpg";
+import { translateError } from "../utils/errorTranslator";
+import messageUtil from "../utils/messageUtil";
 
 const GroupCreate = () => {
   const navigate = useNavigate();
@@ -11,6 +15,22 @@ const GroupCreate = () => {
   const [form] = Form.useForm();
 
   const isCreatingGroup = useSelector((state) => state.group.isCreatingGroup);
+  const wallets = useSelector((state) => state.wallet.ownerWallets);
+  const [walletsLoading, setWalletsLoading] = useState(false);
+
+  useEffect(() => {
+    const loadWallets = async () => {
+      setWalletsLoading(true);
+      try {
+        await dispatch(getOwnerWallets());
+      } catch (error) {
+        messageUtil.error(translateError(error) || "Không thể tải danh sách ví");
+      } finally {
+        setWalletsLoading(false);
+      }
+    };
+    loadWallets();
+  }, [dispatch]);
 
   const handleChangeColor = (value) => {
     form.setFieldsValue({
@@ -88,6 +108,29 @@ const GroupCreate = () => {
                 ]}
               >
                 <Input.TextArea placeholder="Nhập mô tả" />
+              </Form.Item>
+
+              <Form.Item
+                label="Ví"
+                name="walletID"
+                rules={[
+                  {
+                    required: true,
+                    message: "Vui lòng chọn ví!",
+                  },
+                ]}
+              >
+                <Select
+                  placeholder="Chọn ví"
+                  loading={walletsLoading}
+                  disabled={walletsLoading || wallets.length === 0}
+                >
+                  {wallets.map((wallet) => (
+                    <Select.Option key={wallet.uid} value={wallet.uid}>
+                      {wallet.walletName}
+                    </Select.Option>
+                  ))}
+                </Select>
               </Form.Item>
 
               <Form.Item

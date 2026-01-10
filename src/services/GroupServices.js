@@ -1,16 +1,20 @@
 import { Timestamp, where, documentId, limit } from "firebase/firestore";
 import { request } from "../utils/requestUtil";
 import store from "../store";
-import TrackerServices from "./TrackerServices";
 
 class GroupServices {
   static createGroup = async (groupData) => {
     const { user } = store.getState().user;
+    const { walletID, ...restGroupData } = groupData;
+
+    if (!walletID) {
+      throw new Error("walletID is required");
+    }
 
     const newGroup = {
-      ...groupData,
+      ...restGroupData,
+      walletID,
       owner: user?.uid,
-      members: [],
       budget: null,
       createdAt: Timestamp.now(),
       updatedAt: null,
@@ -22,7 +26,7 @@ class GroupServices {
       data: newGroup,
     });
 
-    // Add group to user's groups
+    // Add group to user's groups (for backward compatibility)
     await request("/users", {
       method: "PATCH",
       uid: user?.uid,
@@ -30,6 +34,10 @@ class GroupServices {
         groups: [...(user?.groups || []), groupRef.id],
       },
     });
+
+    // Add group to wallet
+    const WalletServices = (await import("./WalletServices")).default;
+    await WalletServices.addGroupToWallet(walletID, groupRef.id);
 
     // Create tracker for group
     await request("/trackers", {
@@ -64,14 +72,34 @@ class GroupServices {
   static getJoinedGroups = async () => {
     const { user } = store.getState().user;
 
-    const groups = await request("/groups", {
-      method: "GET",
-      queryConstraints: [where("members", "array-contains", user?.uid)],
+    // Get groups where user is a member of the wallet
+    if (!user?.wallets?.length) return [];
+
+    const WalletServices = (await import("./WalletServices")).default;
+    const wallets = await WalletServices.getWallets();
+    
+    // Get all groups from wallets where user is a member
+    const groupIDs = new Set();
+    wallets.forEach(wallet => {
+      if (wallet.groups) {
+        wallet.groups.forEach(groupID => groupIDs.add(groupID));
+      }
     });
 
-    groups.sort((a, b) => a?.groupName.localeCompare(b?.groupName));
+    if (groupIDs.size === 0) return [];
 
-    return groups;
+    const groups = await request("/groups", {
+      method: "GET",
+      queryConstraints: [where(documentId(), "in", Array.from(groupIDs)), limit(10)],
+    });
+
+    // Filter out groups owned by user (those are in ownerGroups)
+    const ownerGroupIDs = new Set(user.groups || []);
+    const joinedGroups = groups.filter(group => !ownerGroupIDs.has(group.uid));
+
+    joinedGroups.sort((a, b) => a?.groupName.localeCompare(b?.groupName));
+
+    return joinedGroups;
   };
 
   static getDetail = async (groupID) => {
@@ -91,78 +119,6 @@ class GroupServices {
     });
   };
 
-  static deleteGroup = async (groupID) => {
-    // Remove tracker
-    await TrackerServices.deleteTracker(groupID);
-
-    // Remove all members
-    const groupDetail = await GroupServices.getDetail(groupID);
-
-    if (groupDetail?.members && groupDetail?.members.length) {
-      let removeMemberPromises = [];
-
-      groupDetail.members.forEach((uid) => {
-        removeMemberPromises.push(GroupServices.removeMember(groupID, uid));
-      });
-
-      await Promise.all(removeMemberPromises);
-    }
-
-    // Remove group
-    await request(`/groups`, {
-      method: "DELETE",
-      uid: groupID,
-    });
-
-    // Remove group from user's groups
-    const { user } = store.getState().user;
-
-    await request("/users", {
-      method: "PATCH",
-      uid: user?.uid,
-      data: {
-        groups: user?.groups.filter((group) => group !== groupID),
-      },
-    });
-  };
-
-  static getMembers = async (groupID) => {
-    const members = await request(`/groups/${groupID}/members`, {
-      method: "GET",
-    });
-
-    return members;
-  };
-
-  static searchMember = async (email) => {
-    const users = await request("/users", {
-      method: "GET",
-      queryConstraints: [where("email", ">=", email), where("email", "<=", email + "\uf8ff"), limit(10)],
-    });
-
-    return users;
-  };
-
-  static addMember = async (groupID, memberID) => {
-    const memberPermissions = {
-      tracker: true,
-    };
-
-    await request(`/groups/${groupID}/members`, {
-      method: "PUT",
-      uid: memberID,
-      data: {
-        permissions: memberPermissions,
-      },
-    });
-  };
-
-  static removeMember = async (groupID, memberID) => {
-    await request(`/groups/${groupID}/members`, {
-      method: "DELETE",
-      uid: memberID,
-    });
-  };
 }
 
 export default GroupServices;

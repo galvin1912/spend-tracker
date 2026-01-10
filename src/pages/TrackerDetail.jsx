@@ -151,29 +151,31 @@ const TrackerDetail = () => {
     getTransactions();
   }, [trackerID, filter]);
 
-  // get today sum
+  // Batch multiple sum queries together for better performance
   useEffect(() => {
-    const getTodaySum = async () => {
+    const fetchSums = async () => {
       try {
-        const newFilter = { time: dayjs(), timeType: "day", type: "expense" };
-        const todaySum = await TrackerServices.getTransactionsSum(trackerID, newFilter);
-        setTodaySum(todaySum);
-      } catch (error) {
-        messageUtil.error(translateError(error));
-      }
-    };
+        const promises = [];
+        let todaySumIndex = -1;
+        let expenseSumIndex = -1;
+        let incomeSumIndex = -1;
 
-    getTodaySum();
-  }, [trackerID]);
+        // Only fetch today sum if current month and not using date range
+        if (isCurrentMonth && !isUsingDateRange) {
+          todaySumIndex = promises.length;
+          promises.push(
+            TrackerServices.getTransactionsSum(trackerID, {
+              time: dayjs(),
+              timeType: "day",
+              type: "expense",
+            })
+          );
+        }
 
-  // get this month expense sum with date range and week support
-  useEffect(() => {
-    const getThisMonthSum = async () => {
-      try {
-        let newFilter;
-
+        // Build expense filter
+        let expenseFilter;
         if (filter.dateRange && filter.dateRangeStart && filter.dateRangeEnd) {
-          newFilter = {
+          expenseFilter = {
             timeType: "custom",
             type: "expense",
             timeRange: {
@@ -182,29 +184,17 @@ const TrackerDetail = () => {
             },
           };
         } else if (filter.timeType === "week") {
-          newFilter = { time: filter.time, timeType: "week", type: "expense" };
+          expenseFilter = { time: filter.time, timeType: "week", type: "expense" };
         } else {
-          newFilter = { time: filter.time, timeType: "month", type: "expense" };
+          expenseFilter = { time: filter.time, timeType: "month", type: "expense" };
         }
+        expenseSumIndex = promises.length;
+        promises.push(TrackerServices.getTransactionsSum(trackerID, expenseFilter));
 
-        const thisMonthSum = await TrackerServices.getTransactionsSum(trackerID, newFilter);
-        setThisMonthExpenseSum(thisMonthSum);
-      } catch (error) {
-        messageUtil.error(translateError(error));
-      }
-    };
-
-    getThisMonthSum();
-  }, [filter.time, filter.timeType, filter.dateRange, filter.dateRangeStart, filter.dateRangeEnd, trackerID]);
-
-  // get this month income sum with date range and week support
-  useEffect(() => {
-    const getThisMonthSum = async () => {
-      try {
-        let newFilter;
-
+        // Build income filter
+        let incomeFilter;
         if (filter.dateRange && filter.dateRangeStart && filter.dateRangeEnd) {
-          newFilter = {
+          incomeFilter = {
             timeType: "custom",
             type: "income",
             timeRange: {
@@ -213,20 +203,42 @@ const TrackerDetail = () => {
             },
           };
         } else if (filter.timeType === "week") {
-          newFilter = { time: filter.time, timeType: "week", type: "income" };
+          incomeFilter = { time: filter.time, timeType: "week", type: "income" };
         } else {
-          newFilter = { time: filter.time, timeType: "month", type: "income" };
+          incomeFilter = { time: filter.time, timeType: "month", type: "income" };
         }
+        incomeSumIndex = promises.length;
+        promises.push(TrackerServices.getTransactionsSum(trackerID, incomeFilter));
 
-        const thisMonthSum = await TrackerServices.getTransactionsSum(trackerID, newFilter);
-        setThisMonthIncomeSum(thisMonthSum);
+        // Execute all queries in parallel
+        const results = await Promise.all(promises);
+
+        // Set states based on result indices
+        if (todaySumIndex >= 0) {
+          setTodaySum(results[todaySumIndex]);
+        }
+        if (expenseSumIndex >= 0) {
+          setThisMonthExpenseSum(results[expenseSumIndex]);
+        }
+        if (incomeSumIndex >= 0) {
+          setThisMonthIncomeSum(results[incomeSumIndex]);
+        }
       } catch (error) {
         messageUtil.error(translateError(error));
       }
     };
 
-    getThisMonthSum();
-  }, [filter.time, filter.timeType, filter.dateRange, filter.dateRangeStart, filter.dateRangeEnd, trackerID]);
+    fetchSums();
+  }, [
+    trackerID,
+    filter.time,
+    filter.timeType,
+    filter.dateRange,
+    filter.dateRangeStart,
+    filter.dateRangeEnd,
+    isCurrentMonth,
+    isUsingDateRange,
+  ]);
 
   // get this month income and expense sum when categories change
   useEffect(() => {

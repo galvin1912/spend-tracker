@@ -40,7 +40,7 @@ const Tracker = () => {
       ) : trackers?.length > 0 ? (
         <div className="grid grid-cols-1 grid-cols-md-2">
           {trackers.map((tracker) => (
-            <GroupsTracker key={tracker?.owner} tracker={tracker} />
+            <GroupsTracker key={tracker?.walletID} tracker={tracker} />
           ))}
         </div>
       ) : (
@@ -48,7 +48,7 @@ const Tracker = () => {
           <div className="empty-state-icon">📊</div>
           <h3 className="empty-state-title">Chưa có quản lý chi tiêu nào</h3>
           <p className="empty-state-description">
-            Bạn chưa có quản lý chi tiêu nào. Hãy tạo nhóm để bắt đầu theo dõi chi tiêu của bạn.
+            Bạn chưa phải thành viên của ví nào hoặc chưa có ví nào. Hãy tạo ví hoặc được mời vào ví để bắt đầu theo dõi chi tiêu.
           </p>
         </div>
       )}
