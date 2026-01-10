@@ -14,12 +14,9 @@ const BudgetReport = ({
   isWeekFilter
 }) => {
   
-  // Calculate budget usage percentage
+  // Calculate budget usage percentage (allow over 100% to show overspending)
   const budgetUsedPercentage = groupDetail?.budget && Number(groupDetail.budget) > 0
-    ? Math.min(
-        Math.abs(thisMonthExpenseSum) / groupDetail.budget * 100, 
-        100
-      )
+    ? Math.abs(thisMonthExpenseSum) / groupDetail.budget * 100
     : 0;
   
   // Determine status color based on percentage
@@ -30,6 +27,9 @@ const BudgetReport = ({
   };
 
   const statusColor = getStatusColor(budgetUsedPercentage);
+  
+  // Calculate actual percentage for display (cap at 100% for progress bar visual, but show real % in text)
+  const displayPercentage = Math.min(budgetUsedPercentage, 100);
   
   // Format date range, week, or month for display
   const getDateDisplay = () => {
@@ -85,7 +85,7 @@ const BudgetReport = ({
 
       <Row gutter={[16, 16]}>
         {/* Budget Usage Section */}
-        <Col xs={24} md={12}>
+        <Col span={24}>
           <div
             style={{
               padding: "20px",
@@ -107,8 +107,15 @@ const BudgetReport = ({
               Đã sử dụng ngân sách
             </Typography.Text>
             
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
-              <Typography.Text strong style={{ fontSize: "16px", color: "var(--card-foreground)" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px", flexWrap: "wrap", gap: "8px" }}>
+              <Typography.Text 
+                strong 
+                style={{ 
+                  fontSize: "16px", 
+                  color: "var(--card-foreground)",
+                  whiteSpace: "nowrap",
+                }}
+              >
                 {convertCurrency(Math.abs(thisMonthExpenseSum))}
               </Typography.Text>
               <Typography.Text
@@ -117,18 +124,20 @@ const BudgetReport = ({
                   fontSize: "18px",
                   color: statusColor,
                   fontWeight: 700,
+                  whiteSpace: "nowrap",
                 }}
               >
-                {Number.isFinite(budgetUsedPercentage) ? budgetUsedPercentage.toFixed(0) : 0}%
+                {Number.isFinite(budgetUsedPercentage) ? budgetUsedPercentage.toFixed(1) : 0}%
               </Typography.Text>
             </div>
 
-            <div style={{ marginBottom: "8px" }}>
+            <div style={{ marginBottom: "12px" }}>
               <Typography.Text
                 type="secondary"
                 style={{
                   fontSize: "12px",
                   color: "var(--muted-foreground)",
+                  whiteSpace: "nowrap",
                 }}
               >
                 Tổng ngân sách: {convertCurrency(groupDetail.budget)}
@@ -136,7 +145,7 @@ const BudgetReport = ({
             </div>
 
             <Progress 
-              percent={budgetUsedPercentage} 
+              percent={displayPercentage} 
               showInfo={false} 
               strokeColor={statusColor}
               strokeWidth={8}
@@ -144,11 +153,25 @@ const BudgetReport = ({
                 borderRadius: "4px",
               }}
             />
+            
+            {budgetUsedPercentage > 100 && (
+              <Typography.Text
+                type="danger"
+                style={{
+                  fontSize: "12px",
+                  display: "block",
+                  marginTop: "8px",
+                  fontWeight: 500,
+                }}
+              >
+                ⚠️ Đã vượt quá ngân sách {convertCurrency(Math.abs(thisMonthExpenseSum) - groupDetail.budget)}
+              </Typography.Text>
+            )}
           </div>
         </Col>
 
         {/* Income vs Expense Section */}
-        <Col xs={24} md={12}>
+        <Col span={24}>
           <div
             style={{
               padding: "20px",
@@ -157,18 +180,20 @@ const BudgetReport = ({
               border: "1px solid var(--border)",
             }}
           >
-            <Typography.Text
-              type="secondary"
-              style={{
-                fontSize: "13px",
-                fontWeight: 500,
-                display: "block",
-                marginBottom: "16px",
-                color: "var(--muted-foreground)",
-              }}
-            >
-              Thu nhập và Chi tiêu
-            </Typography.Text>
+            <div style={{ marginBottom: "16px" }}>
+              <Typography.Text
+                type="secondary"
+                style={{
+                  fontSize: "13px",
+                  fontWeight: 500,
+                  display: "block",
+                  lineHeight: "1.5",
+                  color: "var(--muted-foreground)",
+                }}
+              >
+                Thu nhập và Chi tiêu
+              </Typography.Text>
+            </div>
             
             <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
               {/* Income */}
@@ -213,9 +238,15 @@ const BudgetReport = ({
                   border: "1px solid rgba(168, 78, 59, 0.2)",
                 }}
               >
-                <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                  <ArrowDownOutlined style={{ fontSize: "16px", color: "var(--destructive)" }} />
-                  <Typography.Text style={{ fontSize: "14px", color: "var(--card-foreground)" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "8px", minWidth: 0, flex: 1 }}>
+                  <ArrowDownOutlined style={{ fontSize: "16px", color: "var(--destructive)", flexShrink: 0 }} />
+                  <Typography.Text 
+                    style={{ 
+                      fontSize: "14px", 
+                      color: "var(--card-foreground)",
+                      whiteSpace: "nowrap",
+                    }}
+                  >
                     Chi tiêu
                   </Typography.Text>
                 </div>
@@ -225,6 +256,9 @@ const BudgetReport = ({
                     fontSize: "16px",
                     color: "var(--destructive)",
                     fontWeight: 600,
+                    whiteSpace: "nowrap",
+                    marginLeft: "12px",
+                    flexShrink: 0,
                   }}
                 >
                   {convertCurrency(Math.abs(thisMonthExpenseSum))}
