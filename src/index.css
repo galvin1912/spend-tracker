@@ -350,6 +350,7 @@ html {
   padding-left: 0.75rem;
   padding-right: 0.75rem;
   padding-top: 10px;
+  padding-bottom: 80px; /* Space for bottom nav on mobile */
   max-width: 1400px;
   margin: 0 auto;
   background-color: var(--background);
@@ -360,6 +361,7 @@ html {
   .container-fluid {
     padding-left: 32px;
     padding-right: 32px;
+    padding-bottom: 10px; /* Reset padding on desktop */
   }
 }
 
@@ -1075,4 +1077,89 @@ html {
 
   --destructive: #A84E3B;
   --destructive-foreground: #F6F1EC;
+}
+
+/* Hide Firebase Emulator Warning Banner */
+.firebase-emulator-warning {
+  display: none !important;
+}
+
+/* ============================================
+   Bottom Navigation - Mobile Only
+   ============================================ */
+
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 999;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  background-color: var(--card);
+  border-top: 1px solid var(--border);
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.05);
+  padding: 0.5rem 0;
+  padding-bottom: max(0.5rem, env(safe-area-inset-bottom));
+  height: 64px;
+  max-height: 64px;
+}
+
+@media (min-width: 768px) {
+  .bottom-nav {
+    display: none;
+  }
+}
+
+.bottom-nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.375rem 0.75rem;
+  text-decoration: none;
+  color: var(--muted-foreground);
+  transition: all 0.2s ease;
+  border-radius: calc(var(--radius) / 2);
+  min-width: 60px;
+  flex: 1;
+  max-width: 100px;
+}
+
+.bottom-nav-item svg {
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+}
+
+.bottom-nav-label {
+  font-size: 0.625rem;
+  font-weight: 500;
+  line-height: 1;
+  text-align: center;
+  transition: all 0.2s ease;
+}
+
+.bottom-nav-item:hover {
+  color: var(--foreground);
+  background-color: var(--secondary);
+}
+
+.bottom-nav-item:hover svg {
+  transform: translateY(-2px);
+}
+
+.bottom-nav-item-active {
+  color: var(--primary);
+}
+
+.bottom-nav-item-active svg {
+  color: var(--primary);
+  transform: scale(1.1);
+}
+
+.bottom-nav-item-active .bottom-nav-label {
+  color: var(--primary);
+  font-weight: 600;
 }

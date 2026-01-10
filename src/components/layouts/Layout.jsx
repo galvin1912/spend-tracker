@@ -2,6 +2,7 @@ import { useSelector } from "react-redux";
 import { Outlet, Link } from "react-router-dom";
 import { Result, Button, Spin } from "antd";
 import Header from "./Header";
+import BottomNav from "./BottomNav";
 
 const Layout = () => {
   const isAuthenticated = useSelector((state) => state.user.isAuthenticated);
@@ -31,6 +32,8 @@ const Layout = () => {
           />
         )}
       </div>
+
+      <BottomNav />
     </>
   );
 };
