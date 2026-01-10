@@ -11,13 +11,15 @@ const TodayExpenseCard = ({ todaySum }) => {
     <div
       className="shadow-hover rounded-xl"
       style={{
-        padding: "12px 16px",
+        padding: "0.75rem 1rem",
         background: "linear-gradient(to right, #fef2f2, #ffe4e6)",
         border: "1px solid #fecdd3",
-        marginBottom: "16px",
+        marginBottom: "1rem",
         display: "flex",
         alignItems: "center",
         justifyContent: "space-between",
+        flexWrap: "wrap",
+        gap: "0.5rem",
       }}
     >
       <Typography.Text style={{ fontSize: "16px" }}>

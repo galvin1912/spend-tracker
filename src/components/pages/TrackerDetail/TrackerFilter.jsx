@@ -151,7 +151,7 @@ const TrackerFilter = ({ filter, categories, isCategoriesLoading, thisMonthExpen
           </Typography.Title>
         }
         className="shadow-hover rounded-2xl"
-        style={{ marginBottom: 16 }}
+        style={{ marginBottom: '1rem' }}
       >
         <Row gutter={[16, 16]}>
           <Col xs={24} md={24}>

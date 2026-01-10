@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { Helmet } from "react-helmet-async";
-import { Row, Col, Alert } from "antd";
+import { Empty } from "antd";
 import { useDispatch, useSelector } from "react-redux";
 import GroupsTracker from "../components/pages/Tracker/GroupsTracker";
 import { getTrackers } from "../features/tracker/trackerActions";
@@ -16,7 +16,7 @@ const Tracker = () => {
   }, [dispatch]);
 
   return (
-    <>
+    <div className="page-container">
       <Helmet
         title="Quản lý chi tiêu | GST"
         meta={[
@@ -27,21 +27,32 @@ const Tracker = () => {
         ]}
       />
 
-      <Row gutter={[24, 12]}>
-        {trackers?.length && !isTrackersLoading ? trackers?.map((tracker) => <GroupsTracker key={tracker?.owner} tracker={tracker} />) : null}
+      <div className="page-header">
+        <h1 className="page-title">Quản lý chi tiêu</h1>
+      </div>
 
-        {(!trackers?.length && !isTrackersLoading) && (
-          <Col span={24}>
-            <Alert
-              message="Không tìm thấy quản lý chi tiêu nào"
-              description="Bạn chưa có quản lý chi tiêu nào. Hãy tạo nhóm để bắt đầu."
-              type="info"
-              showIcon
-            />
-          </Col>
-        )}
-      </Row>
-    </>
+      {isTrackersLoading ? (
+        <div className="grid grid-cols-1 grid-cols-md-2">
+          <div className="page-card">
+            <Empty description="Đang tải..." />
+          </div>
+        </div>
+      ) : trackers?.length > 0 ? (
+        <div className="grid grid-cols-1 grid-cols-md-2">
+          {trackers.map((tracker) => (
+            <GroupsTracker key={tracker?.owner} tracker={tracker} />
+          ))}
+        </div>
+      ) : (
+        <div className="empty-state">
+          <div className="empty-state-icon">📊</div>
+          <h3 className="empty-state-title">Chưa có quản lý chi tiêu nào</h3>
+          <p className="empty-state-description">
+            Bạn chưa có quản lý chi tiêu nào. Hãy tạo nhóm để bắt đầu theo dõi chi tiêu của bạn.
+          </p>
+        </div>
+      )}
+    </div>
   );
 };
 

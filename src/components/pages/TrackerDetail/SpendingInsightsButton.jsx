@@ -8,7 +8,7 @@ const SpendingInsightsButton = ({ trackerID, categories }) => {
 
   return (
     <>
-      <Button type="default" onClick={() => setIsInsightsModalVisible(true)} style={{ marginBottom: 16 }}>
+      <Button type="default" onClick={() => setIsInsightsModalVisible(true)}>
         Báo cáo chi tiêu
       </Button>
 

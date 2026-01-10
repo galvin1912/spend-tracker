@@ -24,7 +24,7 @@ const Group = () => {
   }, [dispatch]);
 
   return (
-    <>
+    <div className="page-container">
       <Helmet
         title="Nhóm | GST"
         meta={[
@@ -35,66 +35,89 @@ const Group = () => {
         ]}
       />
 
-      <div className="row">
-        <div className="col-md-6">
-          <Card
-            className="mb-3 mb-md-0"
-            title="Nhóm của tôi"
-            bordered={false}
-            loading={isOwnerGroupsLoading}
-            extra={
-              <Link to="/group/create">
-                <Button type="primary">Tạo nhóm</Button>
-              </Link>
-            }
-          >
-            <List
-              itemLayout="horizontal"
-              dataSource={ownerGroups}
-              locale={{ emptyText: 'Bạn chưa sở hữu nhóm nào.' }}
-              renderItem={(item) => (
-                <List.Item
-                  extra={
-                    <Popconfirm
-                      title="Bạn có chắc muốn xóa nhóm này?"
-                      description="Hành động này không thể hoàn tác."
-                      onConfirm={() => dispatch(deleteOwnerGroup(item.uid))}
-                      okText="Có"
-                      cancelText="Không"
-                    >
-                      <Button type="default" danger>
-                        <Trash size={20} />
-                      </Button>
-                    </Popconfirm>
-                  }
-                >
-                  <Link to={`/group/detail/${item.uid}`} className="text-decoration-none text-dark d-flex flex-fill pe-3">
-                    <List.Item.Meta avatar={<Groups size={32} />} title={item.groupName} description={item.description} />
-                  </Link>
-                </List.Item>
-              )}
-            />
-          </Card>
-        </div>
-
-        <div className="col-md-6">
-          <Card title="Nhóm đã tham gia" bordered={false} loading={isJoinedGroupsLoading}>
-            <List
-              itemLayout="horizontal"
-              dataSource={joinedGroups}
-              locale={{ emptyText: 'Bạn chưa tham gia nhóm nào.' }}
-              renderItem={(item) => (
-                <List.Item>
-                  <Link to={`/group/detail/${item.uid}`} className="text-decoration-none text-dark d-flex flex-fill pe-3">
-                    <List.Item.Meta avatar={<Groups size={32} />} title={item.groupName} description={item.description} />
-                  </Link>
-                </List.Item>
-              )}
-            />
-          </Card>
+      <div className="page-header">
+        <h1 className="page-title">Nhóm của tôi</h1>
+        <div className="page-actions">
+          <Link to="/group/create">
+            <Button type="primary">Tạo nhóm</Button>
+          </Link>
         </div>
       </div>
-    </>
+
+      <div className="grid grid-cols-1 grid-cols-md-2">
+        <Card
+          title="Nhóm của tôi"
+          bordered={false}
+          loading={isOwnerGroupsLoading}
+          className="page-card"
+        >
+          <List
+            itemLayout="horizontal"
+            dataSource={ownerGroups}
+            locale={{ emptyText: 'Bạn chưa sở hữu nhóm nào.' }}
+            renderItem={(item) => (
+              <List.Item
+                extra={
+                  <Popconfirm
+                    title="Bạn có chắc muốn xóa nhóm này?"
+                    description="Hành động này không thể hoàn tác."
+                    onConfirm={() => dispatch(deleteOwnerGroup(item.uid))}
+                    okText="Có"
+                    cancelText="Không"
+                  >
+                    <Button type="default" danger>
+                      <Trash size={20} />
+                    </Button>
+                  </Popconfirm>
+                }
+              >
+                <Link 
+                  to={`/group/detail/${item.uid}`} 
+                  style={{ textDecoration: 'none', color: 'inherit', flex: 1, display: 'block' }}
+                >
+                  <List.Item.Meta 
+                    avatar={<Groups size={24} />} 
+                    title={<span style={{ color: 'var(--foreground)' }}>{item.groupName}</span>} 
+                    {...(item.description && {
+                      description: <span style={{ color: 'var(--muted-foreground)' }}>{item.description}</span>
+                    })}
+                  />
+                </Link>
+              </List.Item>
+            )}
+          />
+        </Card>
+
+        <Card 
+          title="Nhóm đã tham gia" 
+          bordered={false} 
+          loading={isJoinedGroupsLoading}
+          className="page-card"
+        >
+          <List
+            itemLayout="horizontal"
+            dataSource={joinedGroups}
+            locale={{ emptyText: 'Bạn chưa tham gia nhóm nào.' }}
+            renderItem={(item) => (
+              <List.Item>
+                <Link 
+                  to={`/group/detail/${item.uid}`} 
+                  style={{ textDecoration: 'none', color: 'inherit', flex: 1, display: 'block' }}
+                >
+                  <List.Item.Meta 
+                    avatar={<Groups size={24} />} 
+                    title={<span style={{ color: 'var(--foreground)' }}>{item.groupName}</span>} 
+                    {...(item.description && {
+                      description: <span style={{ color: 'var(--muted-foreground)' }}>{item.description}</span>
+                    })}
+                  />
+                </Link>
+              </List.Item>
+            )}
+          />
+        </Card>
+      </div>
+    </div>
   );
 };
 

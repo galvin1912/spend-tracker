@@ -9,13 +9,13 @@ const BudgetSection = ({ groupDetail, onBudgetClick }) => {
     <div
       className="rounded-2xl shadow-hover"
       style={{
-        marginBottom: "20px",
-        padding: "16px 20px",
+        marginBottom: "1rem",
+        padding: "0.75rem 1rem",
         background: "linear-gradient(to right, #f0f9ff, #e0f2fe)",
         border: "1px solid #bae6fd",
         display: "flex",
         flexDirection: "column",
-        gap: "12px",
+        gap: "0.75rem",
       }}
     >
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>

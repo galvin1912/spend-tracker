@@ -2,7 +2,7 @@ import { useEffect, useState, useMemo } from "react";
 import { useSelector } from "react-redux";
 import { Helmet } from "react-helmet-async";
 import { Link, useParams, useNavigate } from "react-router-dom";
-import { Row, Col, Form, Input, ColorPicker, List, Button, Avatar, Card, message } from "antd";
+import { Form, Input, ColorPicker, List, Button, Avatar, Card, message } from "antd";
 import { PersonAdd } from "@styled-icons/evaicons-solid";
 import { PersonRemove } from "@styled-icons/material-rounded";
 import { debounce } from "lodash";
@@ -197,7 +197,7 @@ const GroupDetail = () => {
   };
 
   return (
-    <>
+    <div className="page-container">
       <Helmet
         title="Chi tiết nhóm | GST"
         meta={[
@@ -208,15 +208,21 @@ const GroupDetail = () => {
         ]}
       />
 
-      <Row gutter={[24, 12]}>
-        <Col span={24} md={12}>
+      <div className="page-header">
+        <h1 className="page-title">Chi tiết nhóm</h1>
+        <div className="page-actions">
+          <Link to="/group">
+            <Button danger>Quay lại</Button>
+          </Link>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 grid-cols-md-2">
+        <div>
           <Card
-            title="Chi tiết nhóm"
-            extra={
-              <Link to="/group">
-                <Button danger>Quay lại</Button>
-              </Link>
-            }
+            title="Thông tin nhóm"
+            className="page-card"
+            style={{ marginBottom: '1.5rem' }}
           >
             <Form form={form} name="groupDetailForm" layout="vertical" autoComplete="off" onFinish={handleUpdateGroup} disabled={!isOwnerGroup}>
               <Form.Item
@@ -279,31 +285,43 @@ const GroupDetail = () => {
               </Form.Item>
 
               <Form.Item>
-                <Link to="/group">
-                  <Button className="me-2" type="default">
-                    Hủy
+                <div style={{ display: 'flex', gap: '0.75rem' }}>
+                  <Link to="/group">
+                    <Button type="default">
+                      Hủy
+                    </Button>
+                  </Link>
+                  <Button type="primary" htmlType="submit">
+                    Cập nhật
                   </Button>
-                </Link>
-                <Button type="primary" htmlType="submit">
-                  Cập nhật
-                </Button>
+                </div>
               </Form.Item>
             </Form>
           </Card>
 
-          <Card title="Thành viên" className="mt-3">
+          <Card title="Thành viên" className="page-card">
             {isOwnerGroup && (
-              <Input placeholder="Tìm thành viên theo email" allowClear value={searchText} onChange={handleSearchMember} />
+              <Input 
+                placeholder="Tìm thành viên theo email" 
+                allowClear 
+                value={searchText} 
+                onChange={handleSearchMember}
+                style={{ marginBottom: '1rem' }}
+              />
             )}
             {searchText.length >= 3 && (
               <List
                 bordered
-                className="mt-1"
                 dataSource={memberOptions}
                 loading={memberOptionsLoading}
                 locale={{ emptyText: <i>Không có kết quả phù hợp</i> }}
+                style={{ marginBottom: '1rem' }}
                 renderItem={(memeberOption) => (
-                  <List.Item style={{ cursor: "pointer" }} extra={<PersonAdd size={20} />} onClick={() => handleAddMember(memeberOption.uid)}>
+                  <List.Item 
+                    style={{ cursor: "pointer" }} 
+                    extra={<PersonAdd size={20} />} 
+                    onClick={() => handleAddMember(memeberOption.uid)}
+                  >
                     <span>{memeberOption.label}</span>
                   </List.Item>
                 )}
@@ -324,20 +342,27 @@ const GroupDetail = () => {
                   >
                     <List.Item.Meta
                       avatar={<Avatar>{memberInfo?.fullName?.charAt(0).toUpperCase()}</Avatar>}
-                      title={memberInfo?.fullName}
-                      description={memberInfo?.email}
+                      title={<span style={{ color: 'var(--foreground)' }}>{memberInfo?.fullName}</span>}
+                      description={<span style={{ color: 'var(--muted-foreground)' }}>{memberInfo?.email}</span>}
                     />
                   </List.Item>
                 )}
               />
             )}
           </Card>
-        </Col>
-        <Col span={24} md={12}>
-          <img src={GroupDetailImage} alt="Chi tiết nhóm" className="img-fluid" />
-        </Col>
-      </Row>
-    </>
+        </div>
+
+        <div>
+          <Card className="page-card" style={{ position: 'sticky', top: '80px' }}>
+            <img 
+              src={GroupDetailImage} 
+              alt="Chi tiết nhóm" 
+              style={{ width: '100%', height: 'auto', borderRadius: 'var(--radius)' }}
+            />
+          </Card>
+        </div>
+      </div>
+    </div>
   );
 };
 

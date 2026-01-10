@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { useParams, useSearchParams } from "react-router-dom";
-import { Row, Col, Typography, message } from "antd";
+import { message } from "antd";
 import dayjs from "../configs/dayjs";
 import TrackerFilter from "../components/pages/TrackerDetail/TrackerFilter";
 import TrackerServices from "../services/TrackerServices";
@@ -308,7 +308,7 @@ const TrackerDetail = () => {
   };
 
   return (
-    <>
+    <div className="page-container">
       <Helmet
         title="Thống kê chi tiêu | GST"
         meta={[
@@ -319,63 +319,81 @@ const TrackerDetail = () => {
         ]}
       />
 
-      {/* Show budget warning only for current month, not for date ranges */}
+      {/* Page Header */}
+      <div className="page-header">
+        <h1 className="page-title">{trackerDetail?.groupName || 'Thống kê chi tiêu'}</h1>
+        <div className="page-actions">
+          <SpendingInsightsButton trackerID={trackerID} categories={categories} />
+        </div>
+      </div>
+
+      {/* Budget Warning Section */}
       {isCurrentMonth && !isUsingDateRange && groupDetail?.budget && (
-        <BudgetWarningSystem
-          isCurrentMonth={isCurrentMonth}
-          isUsingDateRange={isUsingDateRange}
-          groupDetail={groupDetail}
-          thisMonthExpenseSum={thisMonthExpenseSum}
-          remainingDays={remainingDays}
-        />
+        <div className="section">
+          <BudgetWarningSystem
+            isCurrentMonth={isCurrentMonth}
+            isUsingDateRange={isUsingDateRange}
+            groupDetail={groupDetail}
+            thisMonthExpenseSum={thisMonthExpenseSum}
+            remainingDays={remainingDays}
+          />
+        </div>
       )}
 
-      <Row gutter={[24, 12]}>
-        <Col span={24}>
-          <Typography.Title level={2}>{trackerDetail?.groupName}</Typography.Title>
+      {/* Summary Cards Section */}
+      <div className="section">
+        <div className="summary-cards">
+          {/* Budget Section */}
+          <div>
+            <BudgetSection groupDetail={groupDetail} onBudgetClick={showBudgetModal} />
+          </div>
 
-          {/* Spending insights button and modal */}
-          <SpendingInsightsButton trackerID={trackerID} categories={categories} />
-
-          {/* Budget section component */}
-          <BudgetSection groupDetail={groupDetail} onBudgetClick={showBudgetModal} />
-
-          {/* Show budget report for previous months */}
+          {/* Budget Report for previous months */}
           {!isCurrentMonth && groupDetail?.budget && (
-            <BudgetReport
-              groupDetail={groupDetail}
-              thisMonthExpenseSum={thisMonthExpenseSum}
-              thisMonthIncomeSum={thisMonthIncomeSum}
-              selectedMonth={filter.time}
-              isDateRange={isUsingDateRange}
-              dateRangeStart={filter.dateRangeStart ? dayjs(filter.dateRangeStart) : null}
-              dateRangeEnd={filter.dateRangeEnd ? dayjs(filter.dateRangeEnd) : null}
-              isWeekFilter={filter.timeType === "week"}
-            />
+            <div>
+              <BudgetReport
+                groupDetail={groupDetail}
+                thisMonthExpenseSum={thisMonthExpenseSum}
+                thisMonthIncomeSum={thisMonthIncomeSum}
+                selectedMonth={filter.time}
+                isDateRange={isUsingDateRange}
+                dateRangeStart={filter.dateRangeStart ? dayjs(filter.dateRangeStart) : null}
+                dateRangeEnd={filter.dateRangeEnd ? dayjs(filter.dateRangeEnd) : null}
+                isWeekFilter={filter.timeType === "week"}
+              />
+            </div>
           )}
 
           {/* Today's expense summary - only show for current month */}
-          {isCurrentMonth && !isUsingDateRange && <TodayExpenseCard todaySum={todaySum} />}
+          {isCurrentMonth && !isUsingDateRange && (
+            <div>
+              <TodayExpenseCard todaySum={todaySum} />
+            </div>
+          )}
+        </div>
+      </div>
 
-          <TrackerFilter
-            filter={filter}
-            categories={categories}
-            isCategoriesLoading={isCategoriesLoading}
-            thisMonthExpenseSum={thisMonthExpenseSum}
-            thisMonthIncomeSum={thisMonthIncomeSum}
-            categorySum={categorySum}
-          />
-        </Col>
+      {/* Filter Section */}
+      <div className="section">
+        <TrackerFilter
+          filter={filter}
+          categories={categories}
+          isCategoriesLoading={isCategoriesLoading}
+          thisMonthExpenseSum={thisMonthExpenseSum}
+          thisMonthIncomeSum={thisMonthIncomeSum}
+          categorySum={categorySum}
+        />
+      </div>
 
-        <Col span={24}>
-          <Transactions
-            categories={categories}
-            transactionPageSize={transactionPageSize}
-            transactions={transactions}
-            isTransactionsLoading={isTransactionsLoading}
-          />
-        </Col>
-      </Row>
+      {/* Transactions Section */}
+      <div className="section">
+        <Transactions
+          categories={categories}
+          transactionPageSize={transactionPageSize}
+          transactions={transactions}
+          isTransactionsLoading={isTransactionsLoading}
+        />
+      </div>
 
       {/* Budget Modal Component */}
       <BudgetModal
@@ -386,7 +404,7 @@ const TrackerDetail = () => {
         onCancel={() => setIsBudgetModalVisible(false)}
         onSuccess={handleBudgetSaveSuccess}
       />
-    </>
+    </div>
   );
 };
 

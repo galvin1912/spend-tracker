@@ -35,32 +35,48 @@ const ChatContainer = styled.div`
 const MessagesContainer = styled.div`
   flex: 1;
   overflow-y: auto;
-  padding: 16px;
+  padding: 0.75rem;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 0.75rem;
   min-height: 400px;
   max-height: 60vh;
+  
+  @media (min-width: 768px) {
+    padding: 16px;
+    gap: 16px;
+  }
 `;
 
 const InputContainer = styled.div`
-  padding: 16px;
-  border-top: 1px solid #f0f0f0;
+  padding: 0.75rem;
+  border-top: 1px solid var(--border);
   display: flex;
   align-items: center;
   gap: 8px;
+  background-color: var(--card);
+  
+  @media (min-width: 768px) {
+    padding: 16px;
+  }
 `;
 
 const MessageBubble = styled.div`
-  padding: 12px 16px;
-  border-radius: 12px;
-  max-width: 80%;
+  padding: 0.625rem 0.75rem;
+  border-radius: 8px;
+  max-width: 85%;
   word-wrap: break-word;
   align-self: ${props => props.$isUser ? 'flex-end' : 'flex-start'};
-  background-color: ${props => props.$isUser ? '#1677ff' : '#f5f5f5'};
-  color: ${props => props.$isUser ? 'white' : 'inherit'};
+  background-color: ${props => props.$isUser ? 'var(--primary)' : 'var(--secondary)'};
+  color: ${props => props.$isUser ? 'var(--primary-foreground)' : 'var(--foreground)'};
   position: relative;
   margin-top: ${props => props.$hasHeader ? '30px' : '0'};
+  
+  @media (min-width: 768px) {
+    padding: 12px 16px;
+    border-radius: calc(var(--radius) / 2);
+    max-width: 80%;
+  }
 `;
 
 const MessageHeader = styled.div`
@@ -75,10 +91,15 @@ const MessageHeader = styled.div`
 `;
 
 const TransactionConfirmation = styled(Card)`
-  margin: 16px 0;
-  border-radius: 12px;
+  margin: 0.75rem 0;
+  border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   width: 100%;
+  
+  @media (min-width: 768px) {
+    margin: 16px 0;
+    border-radius: 12px;
+  }
 `;
 
 const Chat = () => {
@@ -237,29 +258,41 @@ const Chat = () => {
 
   if (!hasAccess) {
     return (
-      <>
+      <div className="page-container">
         <Helmet
           title="Trợ lý AI | GST"
           meta={[{ name: "description", content: 'Chat với trợ lý AI để nhanh chóng thêm giao dịch' }]}
         />
-        <Card>
-          <Empty
-            description="Bạn cần tạo hoặc tham gia một nhóm để sử dụng tính năng chat."
-            image={Empty.PRESENTED_IMAGE_SIMPLE}
-          />
+        
+        <div className="page-header">
+          <h1 className="page-title">Trợ lý AI</h1>
+        </div>
+
+        <Card className="page-card">
+          <div className="empty-state">
+            <div className="empty-state-icon">💬</div>
+            <h3 className="empty-state-title">Chưa thể sử dụng tính năng này</h3>
+            <p className="empty-state-description">
+              Bạn cần tạo hoặc tham gia một nhóm để sử dụng tính năng chat với trợ lý AI.
+            </p>
+          </div>
         </Card>
-      </>
+      </div>
     );
   }
 
   return (
-    <>
+    <div className="page-container">
       <Helmet
         title="Trợ lý AI | GST"
         meta={[{ name: "description", content: 'Chat với trợ lý AI để nhanh chóng thêm giao dịch' }]}
       />
       
-      <Card title="Trợ lý AI" className="shadow-hover rounded-2xl">
+      <div className="page-header">
+        <h1 className="page-title">Trợ lý AI</h1>
+      </div>
+      
+      <Card style={{ maxWidth: '900px', margin: '0 auto' }}>
         <ChatContainer>
           <MessagesContainer>
             {messages.length === 0 ? (
@@ -280,8 +313,8 @@ const Chat = () => {
                         <Avatar 
                           size="small"
                           style={{ 
-                            backgroundColor: isUser ? '#1677ff' : '#f5f5f5',
-                            color: isUser ? 'white' : '#1677ff'
+                            backgroundColor: isUser ? 'var(--primary)' : 'var(--secondary)',
+                            color: isUser ? 'var(--primary-foreground)' : 'var(--foreground)'
                           }}
                         >
                           {isUser ? 'B' : 'AI'}
@@ -329,7 +362,7 @@ const Chat = () => {
                   <Text>{potentialTransaction.category === "uncategorized" ? 'Không có danh mục' : potentialTransaction.categoryName}</Text>
                   {potentialTransaction.category === "uncategorized" && (
                     <Tooltip title="Không tìm thấy danh mục phù hợp. Sử dụng danh mục không xác định.">
-                      <InfoCircleOutlined style={{ marginLeft: 8, color: '#1890ff' }} />
+                      <InfoCircleOutlined style={{ marginLeft: 8, color: 'var(--accent)' }} />
                     </Tooltip>
                   )}
                 </p>
@@ -395,7 +428,7 @@ const Chat = () => {
           </InputContainer>
         </ChatContainer>
       </Card>
-    </>
+    </div>
   );
 };
 

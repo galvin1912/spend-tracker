@@ -35,7 +35,7 @@ const TrackerCategoryList = () => {
     <Row gutter={[24, 12]}>
       <Col span={24} md={12}>
         <Card
-          title="(nhấp vào để xem danh sách)"
+          title="Danh sách danh mục"
           extra={
             <Link to={`/tracker/detail/${trackerID}`}>
               <Button danger>Quay lại</Button>
