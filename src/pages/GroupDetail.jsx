@@ -2,7 +2,7 @@ import { useEffect, useState, useMemo } from "react";
 import { useSelector } from "react-redux";
 import { Helmet } from "react-helmet-async";
 import { Link, useParams, useNavigate } from "react-router-dom";
-import { Form, Input, ColorPicker, List, Button, Avatar, Card, message } from "antd";
+import { Form, Input, ColorPicker, List, Button, Avatar, Card } from "antd";
 import { PersonAdd } from "@styled-icons/evaicons-solid";
 import { PersonRemove } from "@styled-icons/material-rounded";
 import { debounce } from "lodash";
@@ -11,6 +11,7 @@ import GroupServices from "../services/GroupServices";
 import GroupDetailImage from "../assets/4380.jpg";
 import UserServices from "../services/UserServices";
 import { translateError } from "../utils/errorTranslator";
+import messageUtil from "../utils/messageUtil";
 
 const GroupDetail = () => {
   
@@ -53,7 +54,7 @@ const GroupDetail = () => {
           updatedAt: group?.updatedAt ? dayjs(group.updatedAt.toDate()).format("DD/MM/YYYY HH:mm") : "",
         });
       } catch (error) {
-        message.error(translateError(error));
+        messageUtil.error(translateError(error));
       }
     };
 
@@ -69,7 +70,7 @@ const GroupDetail = () => {
         const members = await GroupServices.getMembers(groupID);
         setMembers(members.map((member) => member.uid));
       } catch (error) {
-        message.error(translateError(error));
+        messageUtil.error(translateError(error));
       }
     };
 
@@ -90,7 +91,7 @@ const GroupDetail = () => {
         );
         setMemberInfos(memberInfos);
       } catch (error) {
-        message.error(translateError(error));
+        messageUtil.error(translateError(error));
       }
     };
 
@@ -130,7 +131,7 @@ const GroupDetail = () => {
 
         setMemberOptions(filterOptions);
       } catch (error) {
-        message.error(translateError(error));
+        messageUtil.error(translateError(error));
       } finally {
         setMemberOptionsLoading(false);
       }
@@ -147,7 +148,7 @@ const GroupDetail = () => {
       await GroupServices.updateGroup(groupID, {
         members: [...members, uid],
       });
-      message.success("Thêm thành viên thành công");
+      messageUtil.success("Thêm thành viên thành công");
 
       // store member uid
       setMembers([...members, uid]);
@@ -156,7 +157,7 @@ const GroupDetail = () => {
       setMemberOptions([]);
       setSearchText("");
     } catch (error) {
-      message.error(translateError(error));
+      messageUtil.error(translateError(error));
     }
   };
 
@@ -168,13 +169,13 @@ const GroupDetail = () => {
       await GroupServices.updateGroup(groupID, {
         members: members.filter((memeberUid) => memeberUid !== uid),
       });
-      message.success("Xóa thành viên thành công");
+      messageUtil.success("Xóa thành viên thành công");
 
       // remove member uid from members
       const newMembers = members.filter((memeberUid) => memeberUid !== uid);
       setMembers(newMembers);
     } catch (error) {
-      message.error(translateError(error));
+      messageUtil.error(translateError(error));
     }
   };
 
@@ -189,10 +190,10 @@ const GroupDetail = () => {
         description,
         color,
       });
-      message.success("Cập nhật nhóm thành công");
+      messageUtil.success("Cập nhật nhóm thành công");
       navigate("/group");
     } catch (error) {
-      message.error(translateError(error));
+      messageUtil.error(translateError(error));
     }
   };
 

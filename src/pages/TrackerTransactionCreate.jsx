@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
-import { Row, Col, Form, Input, InputNumber, Button, DatePicker, Card, Select, message } from "antd";
+import { Row, Col, Form, Input, InputNumber, Button, DatePicker, Card, Select } from "antd";
 import dayjs from "../configs/dayjs";
 import TransactionBg from "../assets/transaction-bg.jpg";
 import TrackerServices from "../services/TrackerServices";
 import { translateError } from "../utils/errorTranslator";
+import messageUtil from "../utils/messageUtil";
 
 const TrackerTransactionCreate = () => {
   const navigate = useNavigate();
@@ -23,7 +24,7 @@ const TrackerTransactionCreate = () => {
         const categories = await TrackerServices.getCategories(trackerID);
         setCategories([{ name: 'Không có danh mục', uid: "uncategorized" }, ...categories]);
       } catch (error) {
-        message.error(translateError(error));
+        messageUtil.error(translateError(error));
       }
     };
 
@@ -35,10 +36,10 @@ const TrackerTransactionCreate = () => {
 
     try {
       await TrackerServices.createTransaction(trackerID, values);
-      message.success('Thêm giao dịch thành công');
+      messageUtil.success('Thêm giao dịch thành công');
       navigate(`/tracker/detail/${trackerID}`);
     } catch (error) {
-      message.error(translateError(error));
+      messageUtil.error(translateError(error));
     } finally {
       setIsSubmitting(false);
     }

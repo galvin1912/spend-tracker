@@ -1,8 +1,9 @@
 import PropTypes from "prop-types";
 import { useState, useEffect, memo } from "react";
-import { Modal, Typography, InputNumber, message } from "antd";
+import { Modal, Typography, InputNumber } from "antd";
 import GroupServices from "../../../../services/GroupServices";
 import { translateError } from "../../../../utils/errorTranslator";
+import messageUtil from "../../../../utils/messageUtil";
 
 const BudgetModal = ({ visible, initialBudget, trackerID, groupDetail, onCancel, onSuccess }) => {
   const [budgetAmount, setBudgetAmount] = useState(null);
@@ -18,17 +19,17 @@ const BudgetModal = ({ visible, initialBudget, trackerID, groupDetail, onCancel,
   // Handle budget save
   const handleSaveBudget = async () => {
     if (!budgetAmount || budgetAmount <= 0) {
-      message.error("Vui lòng nhập số tiền ngân sách hợp lệ!");
+      messageUtil.error("Vui lòng nhập số tiền ngân sách hợp lệ!");
       return;
     }
 
     setIsSavingBudget(true);
     try {
       await GroupServices.updateGroup(trackerID, { budget: budgetAmount });
-      message.success("Cập nhật ngân sách thành công");
+      messageUtil.success("Cập nhật ngân sách thành công");
       onSuccess(budgetAmount);
     } catch (error) {
-      message.error(translateError(error));
+      messageUtil.error(translateError(error));
     } finally {
       setIsSavingBudget(false);
     }

@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { useParams, useSearchParams } from "react-router-dom";
-import { message } from "antd";
 import dayjs from "../configs/dayjs";
 import TrackerFilter from "../components/pages/TrackerDetail/TrackerFilter";
 import TrackerServices from "../services/TrackerServices";
@@ -10,6 +9,7 @@ import Transactions from "../components/pages/TrackerDetail/Transactions";
 import SpendingInsightsButton from "../components/pages/TrackerDetail/SpendingInsightsButton";
 import { BudgetSection, TodayExpenseCard, BudgetWarningSystem, BudgetModal, BudgetReport } from "../components/pages/TrackerDetail/Budget";
 import { translateError } from "../utils/errorTranslator";
+import messageUtil from "../utils/messageUtil";
 
 const TrackerDetail = () => {
   const { trackerID } = useParams();
@@ -88,7 +88,7 @@ const TrackerDetail = () => {
           setBudgetAmount(groupDetail.budget);
         }
       } catch (error) {
-        message.error(translateError(error));
+        messageUtil.error(translateError(error));
       }
     };
 
@@ -104,7 +104,7 @@ const TrackerDetail = () => {
         const categories = await TrackerServices.getCategories(trackerID);
         setCategories([{ name: "Không có danh mục", uid: "uncategorized" }, ...categories]);
       } catch (error) {
-        message.error(translateError(error));
+        messageUtil.error(translateError(error));
       } finally {
         setIsCategoriesLoading(false);
       }
@@ -142,7 +142,7 @@ const TrackerDetail = () => {
         const transactions = await TrackerServices.getTransactions(trackerID, queryFilter);
         setTransactions(transactions);
       } catch (error) {
-        message.error(translateError(error));
+        messageUtil.error(translateError(error));
       } finally {
         setIsTransactionsLoading(false);
       }
@@ -159,7 +159,7 @@ const TrackerDetail = () => {
         const todaySum = await TrackerServices.getTransactionsSum(trackerID, newFilter);
         setTodaySum(todaySum);
       } catch (error) {
-        message.error(translateError(error));
+        messageUtil.error(translateError(error));
       }
     };
 
@@ -190,7 +190,7 @@ const TrackerDetail = () => {
         const thisMonthSum = await TrackerServices.getTransactionsSum(trackerID, newFilter);
         setThisMonthExpenseSum(thisMonthSum);
       } catch (error) {
-        message.error(translateError(error));
+        messageUtil.error(translateError(error));
       }
     };
 
@@ -221,7 +221,7 @@ const TrackerDetail = () => {
         const thisMonthSum = await TrackerServices.getTransactionsSum(trackerID, newFilter);
         setThisMonthIncomeSum(thisMonthSum);
       } catch (error) {
-        message.error(translateError(error));
+        messageUtil.error(translateError(error));
       }
     };
 
@@ -286,7 +286,7 @@ const TrackerDetail = () => {
 
         setCategorySum(categorySumObject);
       } catch (error) {
-        message.error(translateError(error));
+        messageUtil.error(translateError(error));
       }
     };
 

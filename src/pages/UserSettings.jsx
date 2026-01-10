@@ -1,9 +1,10 @@
 import { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Helmet } from "react-helmet-async";
-import { Form, Input, Select, Button, Card, Avatar, message } from "antd";
+import { Form, Input, Select, Button, Card, Avatar } from "antd";
 import { UserOutlined } from "@ant-design/icons";
 import { updateUserProfile } from "../features/user/userActions";
+import messageUtil from "../utils/messageUtil";
 
 const UserSettings = () => {
   const dispatch = useDispatch();
@@ -145,7 +146,7 @@ const UserSettings = () => {
             style={{ backgroundColor: 'var(--secondary)' }}
           >
             <Button 
-              onClick={() => message.info("Tính năng đổi mật khẩu sẽ được cập nhật trong thời gian tới.")}
+              onClick={() => messageUtil.info("Tính năng đổi mật khẩu sẽ được cập nhật trong thời gian tới.")}
               block
             >
               Đổi mật khẩu

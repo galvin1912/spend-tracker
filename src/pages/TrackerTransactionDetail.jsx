@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
-import { Row, Col, Form, Input, InputNumber, Button, DatePicker, Card, Select, Popconfirm, message } from "antd";
+import { Row, Col, Form, Input, InputNumber, Button, DatePicker, Card, Select, Popconfirm } from "antd";
 import dayjs from "../configs/dayjs";
 import TransactionBg from "../assets/aaaaa.webp";
 import TrackerServices from "../services/TrackerServices";
 import { translateError } from "../utils/errorTranslator";
+import messageUtil from "../utils/messageUtil";
 
 const TrackerTransactionDetail = () => {
   const navigate = useNavigate();
@@ -23,7 +24,7 @@ const TrackerTransactionDetail = () => {
         const categories = await TrackerServices.getCategories(trackerID);
         setCategories([{ name: "Không có danh mục", uid: "uncategorized" }, ...categories]);
       } catch (error) {
-        message.error(translateError(error));
+        messageUtil.error(translateError(error));
       }
     };
 
@@ -41,7 +42,7 @@ const TrackerTransactionDetail = () => {
           amount: Math.abs(transactionDetail.amount),
         });
       } catch (error) {
-        message.error(translateError(error));
+        messageUtil.error(translateError(error));
       }
     };
 
@@ -53,10 +54,10 @@ const TrackerTransactionDetail = () => {
 
     try {
       await TrackerServices.updateTransaction(trackerID, transactionID, values);
-      message.success("Cập nhật giao dịch thành công");
+      messageUtil.success("Cập nhật giao dịch thành công");
       navigate(`/tracker/detail/${trackerID}`);
     } catch (error) {
-      message.error(translateError(error));
+      messageUtil.error(translateError(error));
     } finally {
       setIsSubmitting(false);
     }
@@ -65,10 +66,10 @@ const TrackerTransactionDetail = () => {
   const handleDeleteTransaction = async () => {
     try {
       await TrackerServices.deleteTransaction(trackerID, transactionID);
-      message.success("Xóa giao dịch thành công");
+      messageUtil.success("Xóa giao dịch thành công");
       navigate(`/tracker/detail/${trackerID}`);
     } catch (error) {
-      message.error(translateError(error));
+      messageUtil.error(translateError(error));
     }
   };
 

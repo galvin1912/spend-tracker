@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
-import { Row, Col, Form, Input, ColorPicker, Button, Card, message } from "antd";
+import { Row, Col, Form, Input, ColorPicker, Button, Card } from "antd";
 import CategoryImage from "../assets/4569774.jpg";
 import TrackerServices from "../services/TrackerServices";
 import { translateError } from "../utils/errorTranslator";
+import messageUtil from "../utils/messageUtil";
 
 const TrackerCategoryCreate = () => {
   const navigate = useNavigate();
@@ -23,10 +24,10 @@ const TrackerCategoryCreate = () => {
     setIsSubmitting(true);
     try {
       await TrackerServices.createCategory(trackerID, values);
-      message.success('Tạo danh mục thành công');
+      messageUtil.success('Tạo danh mục thành công');
       navigate(`/tracker/detail/${trackerID}`);
     } catch (error) {
-      message.error(translateError(error));
+      messageUtil.error(translateError(error));
     } finally {
       setIsSubmitting(false);
     }

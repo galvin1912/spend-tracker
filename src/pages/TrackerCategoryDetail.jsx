@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
-import { Row, Col, Form, Input, ColorPicker, Button, Card, message } from "antd";
+import { Row, Col, Form, Input, ColorPicker, Button, Card } from "antd";
 import TrackerServices from "../services/TrackerServices";
 import EditImage from "../assets/write-edit.webp";
 import { translateError } from "../utils/errorTranslator";
+import messageUtil from "../utils/messageUtil";
 
 const TrackerCategoryDetail = () => {
   const navigate = useNavigate();
@@ -22,7 +23,7 @@ const TrackerCategoryDetail = () => {
           color: categoryDetail.color,
         });
       } catch (error) {
-        message.error(translateError(error));
+        messageUtil.error(translateError(error));
       }
     };
 
@@ -40,10 +41,10 @@ const TrackerCategoryDetail = () => {
 
     try {
       await TrackerServices.updateCategory(trackerID, categoryID, values);
-      message.success('Cập nhật danh mục thành công');
+      messageUtil.success('Cập nhật danh mục thành công');
       navigate(`/tracker/detail/${trackerID}/category/list`);
     } catch (error) {
-      message.error(translateError(error));
+      messageUtil.error(translateError(error));
     } finally {
       setIsSubmitting(false);
     }

@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
-import { List, Card, Row, Col, Button, Popconfirm, Space, message } from "antd";
+import { List, Card, Row, Col, Button, Popconfirm, Space } from "antd";
 import { Edit } from "@styled-icons/evaicons-solid";
 import { Trash } from "@styled-icons/bootstrap";
 import TrackerServices from "../services/TrackerServices";
 import CategoryImage from "../assets/Collaboration_Illustrations_Thumbnail.png";
 import { translateError } from "../utils/errorTranslator";
+import messageUtil from "../utils/messageUtil";
 
 const TrackerCategoryList = () => {
   const { trackerID } = useParams();
@@ -22,7 +23,7 @@ const TrackerCategoryList = () => {
         const categories = await TrackerServices.getCategories(trackerID);
         setCategories(categories);
       } catch (error) {
-        message.error(translateError(error));
+        messageUtil.error(translateError(error));
       } finally {
         setIsCategoriesLoading(false);
       }

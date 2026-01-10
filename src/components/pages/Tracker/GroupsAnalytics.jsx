@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect } from "react";
-import { Col, Row, Statistic, DatePicker, message } from "antd";
+import { Col, Row, Statistic, DatePicker } from "antd";
 import PropTypes from "prop-types";
 import { Bar } from "react-chartjs-2";
 import { convertCurrency, convertShorterCurrency } from "../../../utils/numberUtils";
@@ -7,6 +7,7 @@ import dayjs from "../../../configs/dayjs";
 import vi_VN from "../../../locale/vi_VN";
 import TrackerServices from "../../../services/TrackerServices";
 import { translateError } from "../../../utils/errorTranslator";
+import messageUtil from "../../../utils/messageUtil";
 
 const chartOptions = {
   responsive: true,
@@ -120,7 +121,7 @@ const GroupsAnalytics = ({ tracker }) => {
         setExpenseDatasets(expenseDatasets);
         setIncomeDatasets(incomeDatasets);
       } catch (error) {
-        message.error(translateError(error));
+        messageUtil.error(translateError(error));
       } finally {
         setIsStatisticLoading(false);
       }
@@ -156,7 +157,7 @@ const GroupsAnalytics = ({ tracker }) => {
 
         setBalance(totalBalance);
       } catch (error) {
-        message.error(translateError(error));
+        messageUtil.error(translateError(error));
       } finally {
         setIsBalanceLoading(false);
       }
