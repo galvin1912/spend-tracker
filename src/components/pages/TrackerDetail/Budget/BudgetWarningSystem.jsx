@@ -35,33 +35,41 @@ const BudgetWarningSystem = ({ isCurrentMonth, isUsingDateRange, groupDetail, th
       let badgeColor = "";
       let buttonStyle = {};
 
-      if (budgetUsedPercentage >= 80) {
-        // Critical warning (80% or more of the budget)
+      if (budgetUsedPercentage >= 100) {
+        // Critical warning (100% or more - over budget)
         warningStyle = {
-          background: "linear-gradient(to right, #fef2f2, #fee2e2)",
-          border: "1px solid #fecaca",
-          borderRadius: "12px",
-          padding: "16px 20px",
+          background: "linear-gradient(135deg, #fee2e2 0%, #fecaca 100%)",
+          border: "1px solid rgba(239, 68, 68, 0.3)",
         };
-        badgeColor = "#ef4444";
+        badgeColor = "var(--destructive)";
         iconType = "🚨";
         buttonStyle = {
-          background: "#ef4444",
-          borderColor: "#ef4444",
+          background: "var(--destructive)",
+          borderColor: "var(--destructive)",
+        };
+      } else if (budgetUsedPercentage >= 80) {
+        // Critical warning (80% or more of the budget)
+        warningStyle = {
+          background: "linear-gradient(135deg, #fee2e2 0%, #fecaca 100%)",
+          border: "1px solid rgba(239, 68, 68, 0.3)",
+        };
+        badgeColor = "var(--destructive)";
+        iconType = "⚠️";
+        buttonStyle = {
+          background: "var(--destructive)",
+          borderColor: "var(--destructive)",
         };
       } else {
         // Warning (60% or more of the budget)
         warningStyle = {
-          background: "linear-gradient(to right, #fffbeb, #fef3c7)",
-          border: "1px solid #fde68a",
-          borderRadius: "12px",
-          padding: "16px 20px",
+          background: "linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)",
+          border: "1px solid rgba(245, 158, 11, 0.3)",
         };
-        badgeColor = "#f59e0b";
+        badgeColor = "var(--warning)";
         iconType = "⚠️";
         buttonStyle = {
-          background: "#f59e0b",
-          borderColor: "#f59e0b",
+          background: "var(--warning)",
+          borderColor: "var(--warning)",
         };
       }
 
@@ -81,46 +89,109 @@ const BudgetWarningSystem = ({ isCurrentMonth, isUsingDateRange, groupDetail, th
         className: "budget-warning-modal",
         icon: null,
         centered: true,
-        width: 420,
+        width: 480,
         footer: null,
         maskClosable: false,
         closable: false,
+        styles: {
+          content: {
+            padding: 0,
+            borderRadius: "16px",
+            overflow: "hidden",
+          },
+        },
         content: (
-          <div style={warningStyle}>
+          <div
+            style={{
+              ...warningStyle,
+              padding: "24px",
+              borderRadius: "16px",
+            }}
+          >
             <div style={{ display: "flex", alignItems: "flex-start", gap: "16px" }}>
-              <div style={{ fontSize: "28px", lineHeight: "1" }}>{iconType}</div>
+              <div
+                style={{
+                  width: "48px",
+                  height: "48px",
+                  borderRadius: "12px",
+                  background: "rgba(255, 255, 255, 0.9)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontSize: "24px",
+                  flexShrink: 0,
+                  boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
+                }}
+              >
+                {iconType}
+              </div>
               <div style={{ flex: 1 }}>
-                <Typography.Title level={4} style={{ margin: "0 0 8px 0" }}>
+                <Typography.Title level={4} style={{ margin: "0 0 4px 0", fontWeight: 600 }}>
                   Cảnh báo ngân sách
                 </Typography.Title>
+                <Typography.Text
+                  type="secondary"
+                  style={{
+                    fontSize: "14px",
+                    display: "block",
+                    marginBottom: "20px",
+                    color: "var(--muted-foreground)",
+                  }}
+                >
+                  Còn {remainingDays} ngày nữa mới hết tháng mà đã chi:
+                </Typography.Text>
 
-                <div style={{ marginBottom: "16px" }}>
-                  <Typography.Text>Còn {remainingDays} ngày nữa mới hết tháng mà đã chi:</Typography.Text>
-
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                      background: "rgba(255, 255, 255, 0.6)",
-                      borderRadius: "8px",
-                      padding: "8px 12px",
-                      marginTop: "12px",
-                    }}
-                  >
-                    <Typography.Text style={{ fontWeight: 500 }}>
-                      {convertCurrency(Math.abs(thisMonthExpenseSum))}/{convertCurrency(groupDetail.budget)}
+                <div
+                  style={{
+                    background: "rgba(255, 255, 255, 0.8)",
+                    borderRadius: "12px",
+                    padding: "16px",
+                    marginBottom: "20px",
+                    border: "1px solid rgba(255, 255, 255, 0.5)",
+                  }}
+                >
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "12px" }}>
+                    <Typography.Text
+                      style={{
+                        fontSize: "13px",
+                        fontWeight: 500,
+                        color: "var(--muted-foreground)",
+                      }}
+                    >
+                      Đã chi tiêu
                     </Typography.Text>
                     <Typography.Text
                       style={{
-                        fontWeight: 600,
+                        fontWeight: 700,
+                        fontSize: "18px",
                         color: badgeColor,
-                        background: "rgba(255, 255, 255, 0.8)",
-                        borderRadius: "20px",
-                        padding: "2px 10px",
+                        background: "rgba(255, 255, 255, 0.9)",
+                        borderRadius: "8px",
+                        padding: "4px 12px",
                       }}
                     >
                       {Number.isFinite(budgetUsedPercentage) ? budgetUsedPercentage.toFixed(0) : 0}%
+                    </Typography.Text>
+                  </div>
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                    <Typography.Text
+                      strong
+                      style={{
+                        fontSize: "16px",
+                        fontWeight: 600,
+                        color: "var(--card-foreground)",
+                      }}
+                    >
+                      {convertCurrency(Math.abs(thisMonthExpenseSum))}
+                    </Typography.Text>
+                    <Typography.Text
+                      type="secondary"
+                      style={{
+                        fontSize: "14px",
+                        color: "var(--muted-foreground)",
+                      }}
+                    >
+                      / {convertCurrency(groupDetail.budget)}
                     </Typography.Text>
                   </div>
                 </div>
@@ -133,7 +204,9 @@ const BudgetWarningSystem = ({ isCurrentMonth, isUsingDateRange, groupDetail, th
                   style={{
                     ...buttonStyle,
                     fontWeight: 500,
-                    height: "38px",
+                    height: "42px",
+                    borderRadius: "10px",
+                    fontSize: "15px",
                   }}
                 >
                   Đã hiểu

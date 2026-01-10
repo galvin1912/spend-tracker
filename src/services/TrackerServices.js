@@ -136,6 +136,45 @@ class TrackerServices {
     return res;
   };
 
+  static deleteCategory = async (trackerID, categoryID) => {
+    // Find all transactions that belong to this category
+    const transactions = await request(`/trackers/${trackerID}/transactions`, {
+      method: "GET",
+      queryConstraints: [where("category", "==", categoryID)],
+    });
+
+    // Update all transactions to set category to "uncategorized"
+    if (transactions.length > 0) {
+      await Promise.all(
+        transactions.map((transaction) =>
+          request(`/trackers/${trackerID}/transactions`, {
+            method: "PATCH",
+            uid: transaction.uid,
+            data: { category: "uncategorized", updatedAt: Timestamp.now() },
+          })
+        )
+      );
+    }
+
+    // Delete the category document
+    await request(`/trackers/${trackerID}/categories`, {
+      method: "DELETE",
+      uid: categoryID,
+    });
+
+    // Update tracker document to remove categoryID from categories array
+    const trackerDetail = await this.getDetail(trackerID);
+    if (trackerDetail.categories && trackerDetail.categories.includes(categoryID)) {
+      await request(`/trackers`, {
+        method: "PATCH",
+        uid: trackerID,
+        data: {
+          categories: trackerDetail.categories.filter((id) => id !== categoryID),
+        },
+      });
+    }
+  };
+
   static updateTransaction = async (trackerID, transactionID, transactionData) => {
     const updateTransaction = {
       ...transactionData,

@@ -13,6 +13,7 @@ const TrackerCategoryList = () => {
 
   const [isCategoriesLoading, setIsCategoriesLoading] = useState(false);
   const [categories, setCategories] = useState([]);
+  const [deletingCategoryId, setDeletingCategoryId] = useState(null);
 
   // get categories
   useEffect(() => {
@@ -31,6 +32,21 @@ const TrackerCategoryList = () => {
 
     getCategories();
   }, [trackerID]);
+
+  const handleDeleteCategory = async (categoryID) => {
+    setDeletingCategoryId(categoryID);
+    try {
+      await TrackerServices.deleteCategory(trackerID, categoryID);
+      messageUtil.success('Xóa danh mục thành công');
+      // Refresh categories list
+      const updatedCategories = await TrackerServices.getCategories(trackerID);
+      setCategories(updatedCategories);
+    } catch (error) {
+      messageUtil.error(translateError(error));
+    } finally {
+      setDeletingCategoryId(null);
+    }
+  };
 
   return (
     <Row gutter={[24, 12]}>
@@ -55,12 +71,17 @@ const TrackerCategoryList = () => {
                     </Link>
                     <Popconfirm
                       title="Bạn có chắc chắn muốn xóa danh mục này?"
-                      description="Điều này cũng sẽ xóa danh mục khỏi tất cả các giao dịch liên quan"
-                      onConfirm={() => console.log("delete")}
+                      description="Các giao dịch thuộc danh mục này sẽ được chuyển sang 'Không có danh mục'"
+                      onConfirm={() => handleDeleteCategory(category?.uid)}
                       okText="Xóa"
                       cancelText="Hủy"
+                      disabled={deletingCategoryId === category?.uid}
                     >
-                      <Trash size={20} className="text-danger" style={{ cursor: "pointer" }} />
+                      <Trash 
+                        size={20} 
+                        className="text-danger" 
+                        style={{ cursor: deletingCategoryId === category?.uid ? "wait" : "pointer" }} 
+                      />
                     </Popconfirm>
                   </Space>
                 }
