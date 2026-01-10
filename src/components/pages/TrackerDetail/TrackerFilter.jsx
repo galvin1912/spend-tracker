@@ -256,7 +256,7 @@ const TrackerFilter = ({ filter, categories, isCategoriesLoading, thisMonthExpen
                 className="rounded-xl"
                 message={
                   <Typography.Text>
-                    Tổng thu nhập {filter.dateRange ? "trong khoảng" : filter.timeType === "week" ? "trong tuần" : "trong tháng"}
+                    Tổng thu nhập {filter.dateRange ? "trong khoảng" : filter.timeType === "week" ? "trong tuần" : "trong tháng"}{" "}
                     <Typography.Text strong>
                       {filter.dateRange
                         ? `${dayjs(filter.dateRangeStart).format("DD/MM/YYYY")} - ${dayjs(filter.dateRangeEnd).format("DD/MM/YYYY")}`
@@ -282,7 +282,7 @@ const TrackerFilter = ({ filter, categories, isCategoriesLoading, thisMonthExpen
                 className="rounded-xl"
                 message={
                   <Typography.Text>
-                    Tổng chi tiêu {filter.dateRange ? "trong khoảng" : filter.timeType === "week" ? "trong tuần" : "trong tháng"}
+                    Tổng chi tiêu {filter.dateRange ? "trong khoảng" : filter.timeType === "week" ? "trong tuần" : "trong tháng"}{" "}
                     <Typography.Text strong>
                       {filter.dateRange
                         ? `${dayjs(filter.dateRangeStart).format("DD/MM/YYYY")} - ${dayjs(filter.dateRangeEnd).format("DD/MM/YYYY")}`
