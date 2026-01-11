@@ -34,7 +34,7 @@ const GroupsTracker = ({ tracker }) => {
       <>
         <Card
           title={cardTitle}
-          bordered={false}
+          variant="borderless"
           style={{ minHeight: "100%" }}
           className="page-card"
         >
@@ -56,7 +56,7 @@ const GroupsTracker = ({ tracker }) => {
             )}
           />
         </Card>
-        <Card bordered={false} style={{ minHeight: "100%" }} className="page-card">
+        <Card variant="borderless" style={{ minHeight: "100%" }} className="page-card">
           <GroupsAnalytics tracker={tracker} />
         </Card>
       </>
@@ -68,7 +68,7 @@ const GroupsTracker = ({ tracker }) => {
     <>
       <Card
         title={cardTitle}
-        bordered={false}
+        variant="borderless"
         extra={
           <Button type="primary" onClick={() => setIsAnalyticsVisible(true)}>
             <Analytics size="20" />

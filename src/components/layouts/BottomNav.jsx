@@ -1,7 +1,7 @@
 import { useSelector } from "react-redux";
 import { NavLink } from "react-router-dom";
 import { PeopleMoney } from "@styled-icons/fluentui-system-filled";
-import { Wallet } from "@styled-icons/boxicons-solid";
+import { Wallet, Note } from "@styled-icons/boxicons-solid";
 import { UserGroup } from "@styled-icons/fa-solid";
 import { Settings } from "@styled-icons/material";
 import useMediaQuery from "../../hooks/useMediaQuery";
@@ -36,6 +36,13 @@ const BottomNav = () => {
       icon: UserGroup,
       url: "/group",
       end: false, // Match all /group/* routes
+    },
+    {
+      label: "Ghi chú",
+      key: "notes",
+      icon: Note,
+      url: "/notes",
+      end: false, // Match all /notes/* routes
     },
     {
       label: "Cài đặt",

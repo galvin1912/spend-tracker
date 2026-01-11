@@ -139,7 +139,7 @@ const Group = () => {
       <div className="grid grid-cols-1">
         <Card
           title="Nhóm theo ví của tôi"
-          bordered={false}
+          variant="borderless"
           loading={isOwnerWalletsLoading}
           className="page-card"
           style={{ marginBottom: '1.5rem' }}
@@ -155,7 +155,7 @@ const Group = () => {
 
         <Card
           title="Nhóm theo ví đã tham gia"
-          bordered={false}
+          variant="borderless"
           loading={isJoinedWalletsLoading}
           className="page-card"
         >

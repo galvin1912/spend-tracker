@@ -1,0 +1,131 @@
+.note-editor-content {
+  min-height: 400px;
+  outline: none;
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--foreground, #000);
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
+.note-editor-content p {
+  margin: 0.5em 0;
+}
+
+.note-editor-content p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  float: left;
+  color: #adb5bd;
+  pointer-events: none;
+  height: 0;
+}
+
+.note-editor-content h1,
+.note-editor-content h2,
+.note-editor-content h3 {
+  font-weight: 600;
+  margin-top: 1em;
+  margin-bottom: 0.5em;
+}
+
+.note-editor-content h1 {
+  font-size: 2em;
+}
+
+.note-editor-content h2 {
+  font-size: 1.5em;
+}
+
+.note-editor-content h3 {
+  font-size: 1.25em;
+}
+
+.note-editor-content ul,
+.note-editor-content ol {
+  padding-left: 1.5em;
+  margin: 0.5em 0;
+}
+
+.note-editor-content li {
+  margin: 0.25em 0;
+}
+
+.note-editor-content code {
+  background-color: #f5f5f5;
+  padding: 2px 4px;
+  border-radius: 3px;
+  font-family: monospace;
+  font-size: 0.9em;
+}
+
+.note-editor-content pre {
+  background-color: #f5f5f5;
+  padding: 12px;
+  border-radius: 4px;
+  overflow-x: auto;
+  margin: 0.5em 0;
+}
+
+.note-editor-content pre code {
+  background-color: transparent;
+  padding: 0;
+}
+
+.note-editor-content blockquote {
+  border-left: 3px solid #ddd;
+  padding-left: 1em;
+  margin: 0.5em 0;
+  color: #666;
+}
+
+.note-editor-content strong {
+  font-weight: 600;
+}
+
+.note-editor-content em {
+  font-style: italic;
+}
+
+/* Task List Styles */
+.note-editor-content .task-list {
+  list-style: none;
+  padding-left: 0;
+  margin: 0.5em 0;
+}
+
+.note-editor-content .task-item {
+  display: flex;
+  align-items: flex-start;
+  margin: 0.25em 0;
+  padding: 0.25em 0;
+}
+
+.note-editor-content .task-item input[type="checkbox"] {
+  margin-right: 0.5em;
+  margin-top: 0;
+  cursor: pointer;
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  align-self: flex-start;
+  position: relative;
+  top: 11.5px;
+}
+
+.note-editor-content .task-item > div {
+  flex: 1;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
+.note-editor-content .task-item[data-checked="true"] {
+  text-decoration: line-through;
+  opacity: 0.6;
+  color: #8c8c8c;
+}
+
+.note-editor-content .task-item[data-checked="true"] p {
+  text-decoration: line-through;
+}

@@ -5,6 +5,7 @@ import userReducer from "../features/user/userReducer";
 import groupReducer from "../features/group/groupReducer";
 import trackerReducer from "../features/tracker/trackerReducer";
 import walletReducer from "../features/wallet/walletReducer";
+import notesReducer from "../features/notes/notesReducer";
 
 const middlewares = [thunk];
 
@@ -17,7 +18,8 @@ const store = createStore(
     user: userReducer,
     group: groupReducer,
     tracker: trackerReducer,
-    wallet: walletReducer
+    wallet: walletReducer,
+    notes: notesReducer,
   }),
   compose(applyMiddleware(...middlewares))
 );

@@ -7,6 +7,8 @@ import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Toolti
 import { auth } from "./configs/firebase";
 import { fetchUserInfo, checkAuthComplete } from "./features/user/userActions";
 import { setMessageInstance } from "./utils/messageUtil";
+import { initDB } from "./utils/indexedDB";
+import { startBackgroundSync, stopBackgroundSync } from "./utils/backgroundSync";
 import AppRoutes from "./routes";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
@@ -15,6 +17,14 @@ function App() {
   const dispatch = useDispatch();
 
   useEffect(() => {
+    // Initialize IndexedDB
+    initDB().catch((error) => {
+      console.error("Failed to initialize IndexedDB:", error);
+    });
+
+    // Start background sync
+    startBackgroundSync();
+
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         // fetchUserInfo will dispatch checkAuthComplete after completion
@@ -25,7 +35,10 @@ function App() {
       }
     });
 
-    return () => unsubscribe();
+    return () => {
+      unsubscribe();
+      stopBackgroundSync();
+    };
   }, [dispatch]);
 
   return (

@@ -73,7 +73,7 @@ const WalletPage = () => {
       <div className="grid grid-cols-1 grid-cols-md-2">
         <Card
           title="Danh sách ví của tôi"
-          bordered={false}
+          variant="borderless"
           loading={isOwnerWalletsLoading}
           className="page-card"
           style={{ marginBottom: '1.5rem' }}
@@ -103,7 +103,7 @@ const WalletPage = () => {
 
         <Card
           title="Danh sách ví đã tham gia"
-          bordered={false}
+          variant="borderless"
           loading={isJoinedWalletsLoading}
           className="page-card"
           style={{ marginBottom: '1.5rem' }}
