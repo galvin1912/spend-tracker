@@ -98,7 +98,7 @@ html {
 }
 
 .ant-btn:hover {
-  transform: translateY(-2px);
+  /* Removed translateY hover effect */
 }
 
 .ant-btn-primary {
@@ -122,7 +122,6 @@ html {
 
 @media (min-width: 768px) {
   .ant-card:hover {
-    transform: translateY(-5px);
     box-shadow: var(--shadow-lg);
   }
 }
@@ -168,7 +167,6 @@ html {
 
 .nav-link:hover {
   background-color: rgba(255, 255, 255, 0.1);
-  transform: translateY(-2px);
 }
 
 .nav-link.active-nav {
@@ -322,7 +320,6 @@ html {
 
 .shadow-hover:hover {
   box-shadow: var(--shadow-lg);
-  transform: translateY(-3px);
 }
 
 .rounded-xl {
@@ -489,7 +486,6 @@ html {
 }
 
 .transaction-item:hover {
-  transform: translateY(-2px);
   box-shadow: var(--shadow);
 }
 
@@ -1147,7 +1143,7 @@ html {
 }
 
 .bottom-nav-item:hover svg {
-  transform: translateY(-2px);
+  /* Removed translateY hover effect */
 }
 
 .bottom-nav-item-active {

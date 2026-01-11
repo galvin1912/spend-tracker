@@ -22,6 +22,7 @@ const NoteEditor = ({ noteId = null }) => {
   const saveStatus = noteId ? saveStatuses[noteId] : null;
   const [titleValue, setTitleValue] = useState(note?.title || "");
   const isReorderingRef = useRef(false);
+  const previousContentRef = useRef(null);
 
   // Update title value when note changes
   useEffect(() => {
@@ -157,41 +158,89 @@ const NoteEditor = ({ noteId = null }) => {
       content: [],
     },
     onUpdate: ({ editor }) => {
-      // Check if any task item was checked/unchecked
       const currentContent = editor.getJSON();
-      let shouldReorder = false;
-
-      // Check if we need to reorder (if any task items exist)
-      const checkForTaskItems = (node) => {
-        if (node.type === "taskList" && node.content) {
-          const hasChecked = node.content.some(
-            (item) => item.type === "taskItem" && item.attrs?.checked
-          );
-          const hasUnchecked = node.content.some(
-            (item) => item.type === "taskItem" && !item.attrs?.checked
-          );
-          if (hasChecked && hasUnchecked) {
-            shouldReorder = true;
+      
+      // Check if any checkbox was checked/unchecked by comparing checked counts
+      let checkboxChanged = false;
+      if (previousContentRef.current) {
+        const prevContent = previousContentRef.current;
+        
+        // Helper function to count checked/unchecked task items
+        const countTaskItems = (node) => {
+          let checked = 0;
+          let unchecked = 0;
+          if (node.type === "taskItem") {
+            if (node.attrs?.checked) {
+              checked = 1;
+            } else {
+              unchecked = 1;
+            }
           }
+          if (node.content && Array.isArray(node.content)) {
+            node.content.forEach((child) => {
+              const counts = countTaskItems(child);
+              checked += counts.checked;
+              unchecked += counts.unchecked;
+            });
+          }
+          return { checked, unchecked };
+        };
+        
+        const prevCounts = countTaskItems(prevContent);
+        const currentCounts = countTaskItems(currentContent);
+        
+        // Check if checked count changed (meaning a checkbox was toggled)
+        checkboxChanged = prevCounts.checked !== currentCounts.checked;
+      }
+      
+      // Only reorder if checkbox was checked/unchecked, not when typing text
+      if (checkboxChanged && !isReorderingRef.current) {
+        // Check if we have both checked and unchecked items
+        const hasCheckedAndUnchecked = (node) => {
+          if (node.type === "taskList" && node.content) {
+            const hasChecked = node.content.some(
+              (item) => item.type === "taskItem" && item.attrs?.checked
+            );
+            const hasUnchecked = node.content.some(
+              (item) => item.type === "taskItem" && !item.attrs?.checked
+            );
+            return hasChecked && hasUnchecked;
+          }
+          if (node.content && Array.isArray(node.content)) {
+            return node.content.some(hasCheckedAndUnchecked);
+          }
+          return false;
+        };
+        
+        if (hasCheckedAndUnchecked(currentContent)) {
+          isReorderingRef.current = true;
+          
+          // Save cursor position
+          const { from, to } = editor.state.selection;
+          
+          const reorderedContent = reorderTaskItems(currentContent);
+          editor.commands.setContent(reorderedContent, false);
+          
+          // Restore cursor position after a brief delay
+          setTimeout(() => {
+            try {
+              // Try to restore selection, but don't fail if position is invalid
+              const newDocSize = editor.state.doc.content.size;
+              const safeFrom = Math.min(from, newDocSize);
+              const safeTo = Math.min(to, newDocSize);
+              editor.commands.setTextSelection({ from: safeFrom, to: safeTo });
+            } catch (e) {
+              // If selection restoration fails, just focus the editor
+              editor.commands.focus();
+            }
+            isReorderingRef.current = false;
+          }, 50);
+        } else {
+          previousContentRef.current = JSON.parse(JSON.stringify(currentContent));
         }
-        if (node.content && Array.isArray(node.content)) {
-          node.content.forEach(checkForTaskItems);
-        }
-      };
-
-      checkForTaskItems(currentContent);
-
-      // Reorder if needed and not already reordering
-      if (shouldReorder && !isReorderingRef.current) {
-        isReorderingRef.current = true;
-        const reorderedContent = reorderTaskItems(currentContent);
-        editor.commands.setContent(reorderedContent);
-        // Use setTimeout to allow the editor to update before saving
-        setTimeout(() => {
-          isReorderingRef.current = false;
-        }, 100);
       } else {
-        isReorderingRef.current = false;
+        // Update previous content reference for next comparison
+        previousContentRef.current = JSON.parse(JSON.stringify(currentContent));
       }
 
       const content = editor.getJSON();
@@ -227,6 +276,8 @@ const NoteEditor = ({ noteId = null }) => {
       // Only update if content is different (avoid infinite loop)
       if (currentContent !== noteContent) {
         editor.commands.setContent(note.content);
+        // Update previous content reference to avoid false positives
+        previousContentRef.current = JSON.parse(JSON.stringify(note.content));
       }
     } else if (editor && !noteId) {
       // Clear editor when no note is selected
@@ -234,6 +285,7 @@ const NoteEditor = ({ noteId = null }) => {
         type: "doc",
         content: [],
       });
+      previousContentRef.current = null;
     }
   }, [editor, note, noteId]);
 
